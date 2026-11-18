@@ -118,3 +118,5 @@
 }
 .home2 .stitle { margin-bottom: 32px; }
 @media (max-width: 640px) { .home2 section + section { margin-top: 80px; } .contact2 { margin-top: 96px; padding-top: 48px; } .bento { gap: 20px; } }
+
+.reel__video { display: block; width: 100%; flex: 1; aspect-ratio: 16 / 9; object-fit: cover; background: #000; }
