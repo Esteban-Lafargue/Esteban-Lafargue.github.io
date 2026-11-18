@@ -121,6 +121,7 @@
 
   const layout = () => {
     rail.querySelectorAll('.rail__stop').forEach((n) => n.remove());
+    rail.classList.remove('is-end');
     const els = [...main.querySelectorAll('.stitle, [data-stop]')].filter((e) => e.offsetParent !== null);
     if (els.length < 2) { rail.hidden = true; return; }
     rail.hidden = false;
@@ -140,6 +141,10 @@
       rail.append(s);
       return { y, s };
     });
+    // the wire runs on to the bottom of the page, so it always ends full
+    const foot = main.querySelector('.footer');
+    const end = foot ? foot.getBoundingClientRect().top + scrollY - mTop : main.scrollHeight - 24;
+    stops.push({ y: Math.max(end, stops[stops.length - 1].y + 40), s: null });
     const first = stops[0].y, last = stops[stops.length - 1].y;
     rail.style.setProperty('--top', `${first}px`);
     rail.style.setProperty('--len', `${last - first}px`);
@@ -149,11 +154,14 @@
   const update = () => {
     if (!stops.length) return;
     const mTop = main.getBoundingClientRect().top + scrollY;
-    const reading = scrollY + innerHeight * 0.55 - mTop;
+    // reading line sits at 55% of the screen, then slides to the bottom edge as the page ends
+    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    const t = Math.min(1, scrollY / max);
+    const reading = scrollY + innerHeight * (0.55 + 0.45 * t ** 3) - mTop + (t > 0.995 ? 9999 : 0);
     const first = stops[0].y, last = stops[stops.length - 1].y;
     const fill = Math.max(0, Math.min(reading, last) - first);
     rail.style.setProperty('--fill', `${fill}px`);
-    stops.forEach(({ y, s }) => s.classList.toggle('is-on', y <= reading));
+    stops.forEach(({ y, s }) => s && s.classList.toggle('is-on', y <= reading));
   };
 
   let raf = 0;
@@ -194,5 +202,21 @@
       status.className = 'form__status is-err';
       status.textContent = MSG.err;
     } finally { btn.disabled = false; }
+  });
+})();
+
+/* 8. Demo reel: big play button over the poster, so it reads as clickable */
+(() => {
+  document.querySelectorAll('video.reel__video').forEach((v) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'reel__wrap';
+    v.replaceWith(wrap); wrap.append(v);
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'reel__play';
+    b.innerHTML = `<span class="yt__play" aria-hidden="true"></span><span class="reel__label">${document.documentElement.lang === 'fr' ? 'Lancer la Demo Reel' : 'Play the demo reel'}</span>`;
+    wrap.append(b);
+    v.removeAttribute('controls');
+    b.addEventListener('click', () => { v.controls = true; v.play(); });
+    v.addEventListener('play', () => wrap.classList.add('is-playing'));
   });
 })();
