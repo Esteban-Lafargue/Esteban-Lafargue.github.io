@@ -478,21 +478,26 @@
   });
 })();
 
-/* 14. Juice: downloading the CV feels like picking up loot. A burst of particles, then a small toast */
+/* 14. Juice: downloading the CV feels like picking up loot. A burst of particles, then a small toast under the button */
 (() => {
   if (!Element.prototype.animate) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FR = document.documentElement.lang === 'fr';
   const COLS = ['--c-gameplay', '--c-xp', '--c-tools', '--c-edu', '--c-projects', '--c-profile'];
   let toast, hideT;
-  const showToast = () => {
+  const showToast = (r) => {
     if (!toast) {
       toast = document.createElement('div');
       toast.className = 'loot'; toast.setAttribute('role', 'status');
       toast.innerHTML = `<span class="loot__pin"></span><span class="loot__txt">${FR ? 'CV acquis' : 'CV acquired'} <b>✓</b></span>`;
       document.body.appendChild(toast);
     }
-    toast.classList.remove('is-on'); void toast.offsetWidth; toast.classList.add('is-on');
+    // right under the button that was clicked, where the eyes already are
+    toast.classList.remove('is-on');
+    const half = toast.offsetWidth / 2 + 8;
+    toast.style.left = `${Math.min(innerWidth - half, Math.max(half, r.left + r.width / 2))}px`;
+    toast.style.top = `${r.bottom + 10}px`;
+    void toast.offsetWidth; toast.classList.add('is-on');
     clearTimeout(hideT); hideT = setTimeout(() => toast.classList.remove('is-on'), 2400);
   };
   const burst = (x, y) => {
@@ -515,11 +520,11 @@
   document.addEventListener('click', (e) => {
     const a = e.target.closest && e.target.closest('a[download][href$=".pdf"]');
     if (!a || e.button !== 0) return;
+    const r = a.getBoundingClientRect();
     if (!reduce) {
-      const r = a.getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height / 2);
       a.classList.remove('is-looted'); void a.offsetWidth; a.classList.add('is-looted');
     }
-    showToast();
+    showToast(r);
   });
 })();
