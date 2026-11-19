@@ -403,3 +403,35 @@
     el.style.setProperty('--my', `${e.clientY - r.top}px`);
   }, { passive: true });
 })();
+
+/* 12. Juice: project cards tilt toward the cursor, a glare slides across, a squash on click */
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const fine = matchMedia('(pointer: fine)').matches, MAX = 4; // degrees: subtle, it stays a portfolio
+  if (fine) {
+    document.addEventListener('pointermove', (e) => {
+      const el = e.target.closest && e.target.closest('a.card');
+      if (!el) return;
+      const r = el.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+      el.classList.add('is-tilt');
+      el.style.setProperty('--ry', `${((px - 0.5) * 2 * MAX).toFixed(2)}deg`);
+      el.style.setProperty('--rx', `${((0.5 - py) * 2 * MAX).toFixed(2)}deg`);
+      el.style.setProperty('--gp', `${(px * 100).toFixed(1)}%`);
+    }, { passive: true });
+    document.addEventListener('pointerout', (e) => {
+      const el = e.target.closest && e.target.closest('a.card');
+      if (!el || el.contains(e.relatedTarget)) return;
+      el.classList.remove('is-tilt');
+      el.style.removeProperty('--rx'); el.style.removeProperty('--ry');
+    });
+  }
+  // click: the card squashes, then the page opens
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest && e.target.closest('a.card[href]');
+    if (!el || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || el.target === '_blank') return;
+    e.preventDefault();
+    el.classList.remove('is-squash'); void el.offsetWidth; el.classList.add('is-squash');
+    setTimeout(() => { location.href = el.href; }, 170);
+  });
+  addEventListener('pageshow', () => document.querySelectorAll('a.card.is-squash').forEach((c) => c.classList.remove('is-squash')));
+})();

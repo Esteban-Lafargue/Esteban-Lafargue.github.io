@@ -417,9 +417,22 @@ a.card::before, a.next-proj::before, .hero__node::before, .node.direct::before, 
 }
 a.card:hover::before, a.next-proj:hover::before, .hero__node:hover::before, .node.direct:hover::before, .tuto-card:hover::before { opacity: 1; }
 
+/* project cards: tilt toward the cursor, a glare slides across, a squash on click (js §12) */
+a.card.is-tilt { transform: perspective(1100px) translateY(-5px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: opacity .7s ease, transform .15s ease-out, border-color .25s, box-shadow .25s; }
+a.card::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit; opacity: 0; transition: opacity .3s;
+  background: linear-gradient(110deg, transparent 35%, #ffffff12 48%, #ffffff1f 50%, #ffffff12 52%, transparent 65%) no-repeat;
+  background-size: 300% 100%; background-position: calc(100% - var(--gp, 50%)) 0;
+}
+a.card.is-tilt::after { opacity: 1; }
+a.card.is-squash { animation: card-squash .2s cubic-bezier(.3, 0, .3, 1); }
+@keyframes card-squash { 0% { transform: perspective(1100px) translateY(-5px); } 45% { transform: perspective(1100px) translateY(-1px) scale(.965, .95); } 100% { transform: perspective(1100px) translateY(-4px) scale(1.01); } }
+
 @media (prefers-reduced-motion: reduce) {
   .btn:active { transform: none; }
   .btn--primary::after { display: none; }
   .js .stitle .stitle__tag, .js .stitle .stitle__rule { opacity: 1; transform: none; transition: none; }
   .proof dt span.is-counted { animation: none; }
+  a.card.is-tilt, a.card.is-squash { transform: none; animation: none; }
+  a.card::after { display: none; }
 }
