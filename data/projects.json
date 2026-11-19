@@ -1,5 +1,5 @@
 {
-  "_readme": "Project list, read by js/projects.js. One entry per project, sorted by date automatically (newest first). 'featured': a number puts the project on the home page, in that order. Edit freely, like a Data Table: no code needed. Each project has a 'fr' block for the French site (same fields; missing ones fall back to English).",
+  "_readme": "Project list, read by js/projects.js. One entry per project, sorted by date automatically (newest first). 'featured': a number puts the project on the home page, in that order. Edit freely, like a Data Table: no code needed. Each project has a 'fr' block for the French site (same fields; missing ones fall back to English). 'spotlight': a number puts the project in the big 'Case studies' block of the projects page, in that order, with its 'proves' skills; the others go to the compact 'More work' list.",
   "categories": {
     "professional": {
       "label": "Professional",
@@ -66,11 +66,24 @@
         ],
         "hook": "Un système de construction qui s’aimante là où le joueur l’attend, sur un terrain allégé grâce aux HISM.",
         "metric": "Équipe de 3 · 8 mois · Bachelor Game Design",
-        "kind": "Projet de fin d’études"
+        "kind": "Projet de fin d’études",
+        "proves": [
+          "Système de construction",
+          "PCG",
+          "Optimisation (HISM)",
+          "UI"
+        ]
       },
       "hook": "A building system that snaps where players expect, on terrain that stays light with HISM.",
       "metric": "Team of 3 · 8 months · Bachelor’s in Game Design",
-      "kind": "Graduation project"
+      "kind": "Graduation project",
+      "spotlight": 2,
+      "proves": [
+        "Building system",
+        "PCG",
+        "Optimisation (HISM)",
+        "UI"
+      ]
     },
     {
       "id": "flying-ai",
@@ -105,11 +118,22 @@
         ],
         "hook": "Une IA volante 3D, 100 % Blueprint, qui évite les obstacles en temps réel.",
         "metric": "M’a valu la certification Unreal Authorized Instructor (Silver)",
-        "kind": "R&D · Tutoriel"
+        "kind": "R&D · Tutoriel",
+        "proves": [
+          "IA 3D",
+          "EQS",
+          "Pédagogie"
+        ]
       },
       "hook": "A 3D flying AI in Blueprint only that dodges obstacles in real time.",
       "metric": "Earned the Unreal Authorized Instructor (Silver) certification",
-      "kind": "R&D · Tutorial"
+      "kind": "R&D · Tutorial",
+      "spotlight": 3,
+      "proves": [
+        "3D AI",
+        "EQS",
+        "Teaching"
+      ]
     },
     {
       "id": "vr-fabre",
@@ -193,11 +217,24 @@
         ],
         "hook": "Jeu multijoueur non annoncé, sous NDA. J’ai refactorisé ses systèmes d’objets et d’inventaire : un Designer ajoute un objet en moins d’une minute.",
         "metric": "Gameplay Programmer, puis Technical Designer · équipe de 7",
-        "kind": "Studio · NDA"
+        "kind": "Studio · NDA",
+        "proves": [
+          "Outils pour Designers",
+          "Refactorisation",
+          "IA ennemie",
+          "CommonUI"
+        ]
       },
       "hook": "Unannounced multiplayer game, under NDA. I rebuilt its item and inventory systems so Designers add an item in under a minute.",
       "metric": "Gameplay Programmer, then Technical Designer · team of 7",
-      "kind": "Studio · NDA"
+      "kind": "Studio · NDA",
+      "spotlight": 4,
+      "proves": [
+        "Designer tools",
+        "Refactoring",
+        "Enemy AI",
+        "CommonUI"
+      ]
     },
     {
       "id": "interim-14",
@@ -304,11 +341,22 @@
         ],
         "hook": "Des créatures qu’on comprend au lieu de les combattre : navigation 3D sans NavMesh et un Creature Tuner pour les Designers.",
         "metric": "En production · budget IA ≤ 2 ms",
-        "kind": "Projet personnel"
+        "kind": "Projet personnel",
+        "proves": [
+          "IA de créatures",
+          "Navigation 3D",
+          "Outils pour Designers"
+        ]
       },
       "hook": "Creatures you read, not fight: 3D navigation without NavMesh and a Creature Tuner for Designers.",
       "metric": "In production · AI budget ≤ 2 ms",
-      "kind": "Personal project"
+      "kind": "Personal project",
+      "spotlight": 1,
+      "proves": [
+        "Creature AI",
+        "3D navigation",
+        "Designer tools"
+      ]
     },
     {
       "id": "workshops",

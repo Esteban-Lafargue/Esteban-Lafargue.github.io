@@ -1,6 +1,6 @@
 /* Projects: reads data/projects.json and renders cards.
    <div data-projects="featured" data-base=""></div>      → featured cards (home)
-   <div data-projects="all" data-base="../"></div>        → filters + year timeline (projects page) */
+   <div data-projects="all" data-base="../"></div>        → case studies + compact list (projects page) */
 (() => {
   'use strict';
   const hosts = document.querySelectorAll('[data-projects]');
@@ -76,6 +76,48 @@
     </${tag}>`;
   }
 
+  /* Case-study card (projects page): the skills it proves come first, then the hook */
+  function spotCard(p, cats, base, linkBase, T) {
+    const cat = cats[p.category] || { label: p.category, color: '--c-projects' };
+    const linked = p.url && !['soon', 'wip', 'info'].includes(p.status);
+    const tag = linked ? 'a' : 'div';
+    const href = linked ? ` href="${esc(abs(p.url, linkBase))}"` : '';
+    const media = p.thumb
+      ? `<img src="${esc(abs(p.thumb, base))}" alt="" loading="lazy">${p.hover ? `<video muted loop playsinline preload="none" src="${esc(abs(p.hover, base))}"></video>` : ''}`
+      : `<span class="card__ph card__ph--${esc(p.status)}">${esc(L(p, 'title'))}</span>`;
+    const proves = L(p, 'proves') || [];
+    return `<${tag} class="node card spot__item reveal" style="--c:var(${cat.color})"${href}>
+      <div class="node__head"><span class="node__icon" aria-hidden="true">ƒ</span>${esc(L(p, 'title'))}<span class="meta">${esc(L(p, 'kind') || CL(cat))} · ${esc(L(p, 'period'))}</span></div>
+      <div class="card__media">${media}</div>
+      <div class="card__body">
+        ${proves.length ? `<div class="proves"><span class="proves__label">${T.proves}</span>${proves.map((x) => `<span class="chip">${esc(x)}</span>`).join('')}</div>` : ''}
+        <p class="card__pitch">${esc(L(p, 'hook') || L(p, 'pitch'))}</p>
+        ${p.metric ? `<p class="bento__metric">${esc(L(p, 'metric'))}</p>` : ''}
+        ${known(L(p, 'role')) && !String(L(p, 'metric') || '').includes(L(p, 'role')) ? `<p class="card__role">${esc(L(p, 'role'))}</p>` : ''}
+        <span class="card__cta">${(FRL ? CTA_FR : CTA)[p.status] || ''}</span>
+      </div>
+    </${tag}>`;
+  }
+
+  /* Compact row (projects page): one line per smaller project, no empty image */
+  function row(p, cats, linkBase) {
+    const cat = cats[p.category] || { label: p.category, color: '--c-projects' };
+    const linked = p.url && !['soon', 'wip', 'info'].includes(p.status);
+    const tag = linked ? 'a' : 'div';
+    const href = linked ? ` href="${esc(abs(p.url, linkBase))}"` : '';
+    const ext = linked && /^https?:/.test(p.url) ? ' target="_blank" rel="noopener"' : '';
+    const who = [L(p, 'team'), L(p, 'role')].filter(known).map(esc).join(' · ');
+    return `<li class="reveal"><${tag} class="prow${linked ? '' : ' prow--soon'}" style="--c:var(${cat.color})"${href}${ext}>
+      <span class="prow__year">${esc(p.date.slice(0, 4))}</span>
+      <span class="prow__main">
+        <span class="prow__title">${esc(L(p, 'title'))}<span class="chip">${esc(CL(cat))}</span></span>
+        <span class="prow__pitch">${esc(L(p, 'pitch'))}</span>
+        ${who ? `<span class="prow__who">${who}</span>` : ''}
+      </span>
+      <span class="prow__cta">${(FRL ? CTA_FR : CTA)[p.status] || ''}</span>
+    </${tag}></li>`;
+  }
+
   function wireHover(root) {
     root.querySelectorAll('.card').forEach((c) => {
       const v = c.querySelector('video');
@@ -106,34 +148,22 @@
       return;
     }
 
-    /* All projects: filters + grouped by year */
-    const counts = list.reduce((m, p) => ((m[p.category] = (m[p.category] || 0) + 1), m), {});
-    const keys = Object.keys(cats).filter((k) => counts[k]);
+    /* All projects: big case-study cards first, then a compact list of everything else */
+    const spot = list.filter((p) => p.spotlight).sort((a, b) => a.spotlight - b.spotlight);
+    const rest = list.filter((p) => !p.spotlight);
+    const T = FRL
+      ? { spot: 'Études de cas', more: 'Autres projets', proves: 'Prouve' }
+      : { spot: 'Case studies', more: 'More work', proves: 'Proves' };
     host.innerHTML = `
-      <div class="filters" role="group" aria-label="${FRL ? 'Filtrer les projets' : 'Filter projects'}">
-        <button type="button" class="filter" aria-pressed="true" data-f="all">${FRL ? 'Tous' : 'All'} <span>${list.length}</span></button>
-        ${keys.map((k) => `<button type="button" class="filter" aria-pressed="false" data-f="${k}" style="--c:var(${cats[k].color})">${esc(CL(cats[k]))} <span>${counts[k]}</span></button>`).join('')}
-      </div>
-      <div class="timeline" aria-live="polite"></div>`;
-    const tl = host.querySelector('.timeline');
-    const render = (f) => {
-      const items = list.filter((p) => f === 'all' || p.category === f);
-      const years = [...new Set(items.map((p) => p.date.slice(0, 4)))];
-      tl.innerHTML = years.map((y) => `
-        <section class="year" aria-label="${y}">
-          <h2 class="year__label stitle" style="--c:var(--ac)"><span class="stitle__tag">${y}</span><span class="stitle__rule"></span></h2>
-          <div class="cards">${items.filter((p) => p.date.startsWith(y)).map((p) => card(p, cats, base, linkBase)).join('')}</div>
-        </section>`).join('');
-      wireHover(tl);
-      document.dispatchEvent(new CustomEvent('layout:changed'));
-    };
-    host.querySelectorAll('.filter').forEach((b) => b.addEventListener('click', () => {
-      host.querySelectorAll('.filter').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-      render(b.dataset.f);
-      try { history.replaceState(null, '', b.dataset.f === 'all' ? location.pathname : `#${b.dataset.f}`); } catch {}
-    }));
-    const start = location.hash.slice(1);
-    const btn = host.querySelector(`.filter[data-f="${CSS.escape(start)}"]`);
-    if (btn) btn.click(); else render('all');
+      <section class="ptier" aria-labelledby="ptier-spot">
+        <h2 id="ptier-spot" class="stitle" style="--c:var(--ac)"><span class="stitle__tag">${T.spot}</span><span class="stitle__rule"></span></h2>
+        <div class="spot">${spot.map((p) => spotCard(p, cats, base, linkBase, T)).join('')}</div>
+      </section>
+      <section class="ptier" aria-labelledby="ptier-more">
+        <h2 id="ptier-more" class="stitle" style="--c:var(--ac)"><span class="stitle__tag">${T.more}</span><span class="stitle__rule"></span></h2>
+        <ul class="plist">${rest.map((p) => row(p, cats, linkBase)).join('')}</ul>
+      </section>`;
+    wireHover(host);
+    document.dispatchEvent(new CustomEvent('layout:changed'));
   });
 })();

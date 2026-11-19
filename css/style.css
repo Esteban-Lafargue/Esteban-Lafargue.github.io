@@ -269,6 +269,32 @@ main.wrap { position: relative; }
 .filter[aria-pressed="true"] { color: var(--text-strong); border-color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--node)); }
 .year { margin-top: 56px; }
 .year__label .stitle__tag { font-family: var(--mono); letter-spacing: .08em; }
+/* projects page: case studies (2 x 2) then a compact list */
+.ptier { margin-top: 48px; }
+.spot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.proves { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.proves__label { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-right: 4px; }
+.proves .chip { --c: var(--text-strong); border-color: color-mix(in srgb, var(--c) 22%, transparent); }
+.spot__item .proves .chip { color: color-mix(in srgb, var(--c) 35%, var(--text-strong)); }
+.spot__item .card__pitch { font-size: 17px; }
+.plist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.prow { --c: var(--c-projects); display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 18px; padding: 14px 18px; border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 10px; background: var(--node); color: var(--text); transition: border-color .2s, background .2s, transform .2s; }
+a.prow:hover, a.prow:focus-visible { color: var(--text); border-color: color-mix(in srgb, var(--c) 60%, var(--line)); border-left-color: var(--c); background: color-mix(in srgb, var(--c) 7%, var(--node)); transform: translateX(3px); }
+.prow__year { font: 13px var(--mono); color: var(--text-faint); }
+.prow__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.prow__title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-weight: 600; color: var(--text-strong); }
+.prow__title .chip { font-size: 11px; padding: 1px 9px; }
+.prow__pitch { font-size: 14px; color: var(--text); }
+.prow__who { font-size: 13px; color: var(--text-muted); }
+.prow__cta { font: 13px var(--mono); color: var(--text-faint); white-space: nowrap; }
+a.prow .prow__cta { color: var(--text-strong); border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line)); border-radius: 18px; padding: 8px 14px; transition: background .2s, color .2s; }
+a.prow:hover .prow__cta, a.prow:focus-visible .prow__cta { background: var(--c); color: #050505; }
+@media (max-width: 760px) {
+  .spot { grid-template-columns: 1fr; }
+  .prow { grid-template-columns: 1fr; gap: 8px; padding: 14px 16px; }
+  .prow__cta { justify-self: start; white-space: normal; }
+}
+@media (prefers-reduced-motion: reduce) { a.prow:hover { transform: none; } }
 
 /* ---------- Contact form ---------- */
 .contact--form { align-items: flex-start; }
