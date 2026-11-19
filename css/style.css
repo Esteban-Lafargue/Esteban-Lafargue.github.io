@@ -428,6 +428,20 @@ a.card.is-tilt::after { opacity: 1; }
 a.card.is-squash { animation: card-squash .2s cubic-bezier(.3, 0, .3, 1); }
 @keyframes card-squash { 0% { transform: perspective(1100px) translateY(-5px); } 45% { transform: perspective(1100px) translateY(-1px) scale(.965, .95); } 100% { transform: perspective(1100px) translateY(-4px) scale(1.01); } }
 
+/* page transitions: a wire sweeps across, a curtain follows it (js §13) */
+.wipe { position: fixed; inset: 0; z-index: 9999; pointer-events: none; background: var(--bg); clip-path: inset(0 100% 0 0); }
+.wipe__wire { position: absolute; top: 0; bottom: 0; left: 0; width: 2px; background: var(--ac); box-shadow: 0 0 12px 2px var(--ac), 0 0 40px 6px color-mix(in srgb, var(--ac) 45%, transparent); opacity: 0; }
+.wipe__wire::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--bg); border: 2px solid var(--ac); box-shadow: 0 0 16px var(--ac); }
+.wipe.is-out { clip-path: inset(0 -20px 0 0); transition: clip-path .3s cubic-bezier(.65, 0, .35, 1); }
+.wipe.is-out .wipe__wire { left: calc(100% - 2px); opacity: 1; transition: left .3s cubic-bezier(.65, 0, .35, 1); }
+.wipe.is-covered { clip-path: inset(0 0 0 0); transition: none; }
+.wipe.is-covered .wipe__wire { left: 0; opacity: 1; transition: none; }
+.wipe.is-in { clip-path: inset(0 0 0 100%); transition: clip-path .45s cubic-bezier(.65, 0, .35, 1); }
+.wipe.is-in .wipe__wire { left: 100%; opacity: 0; transition: left .45s cubic-bezier(.65, 0, .35, 1), opacity .15s linear .3s; }
+/* arrival cover painted before the scripts run; it fades by itself if they never do */
+html.is-arriving::after { content: ""; position: fixed; inset: 0; z-index: 9999; background: var(--bg); animation: wipe-fallback .3s ease 1.2s forwards; }
+@keyframes wipe-fallback { to { opacity: 0; visibility: hidden; } }
+
 @media (prefers-reduced-motion: reduce) {
   .btn:active { transform: none; }
   .btn--primary::after { display: none; }
@@ -435,4 +449,5 @@ a.card.is-squash { animation: card-squash .2s cubic-bezier(.3, 0, .3, 1); }
   .proof dt span.is-counted { animation: none; }
   a.card.is-tilt, a.card.is-squash { transform: none; animation: none; }
   a.card::after { display: none; }
+  .wipe, html.is-arriving::after { display: none; }
 }

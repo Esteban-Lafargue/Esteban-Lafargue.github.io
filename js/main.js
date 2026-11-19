@@ -431,7 +431,47 @@
     if (!el || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || el.target === '_blank') return;
     e.preventDefault();
     el.classList.remove('is-squash'); void el.offsetWidth; el.classList.add('is-squash');
-    setTimeout(() => { location.href = el.href; }, 170);
+    setTimeout(() => (window.juiceGo || ((h) => { location.href = h; }))(el.href), 140);
   });
   addEventListener('pageshow', () => document.querySelectorAll('a.card.is-squash').forEach((c) => c.classList.remove('is-squash')));
+})();
+
+/* 13. Juice: page transitions. A Blueprint wire sweeps across and draws a curtain on the way out,
+   then keeps sweeping to uncover the next page. Internal links only; respects reduced motion. */
+(() => {
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wipe = document.createElement('div');
+  wipe.className = 'wipe'; wipe.setAttribute('aria-hidden', 'true');
+  wipe.innerHTML = '<span class="wipe__wire"></span>';
+  document.body.appendChild(wipe);
+
+  // arrival: the head script covered the page; uncover it with the wire still moving
+  if (root.classList.contains('is-arriving')) {
+    wipe.classList.add('is-covered');
+    root.classList.remove('is-arriving');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      wipe.classList.remove('is-covered'); wipe.classList.add('is-in');
+      setTimeout(() => wipe.classList.remove('is-in'), 500);
+    }));
+  }
+  addEventListener('pageshow', (e) => { if (e.persisted) wipe.className = 'wipe'; });
+
+  const go = (href) => {
+    if (reduce) { location.href = href; return; }
+    try { sessionStorage.setItem('wipe', '1'); } catch (err) { /* private mode: no arrival sweep */ }
+    wipe.className = 'wipe is-out';
+    setTimeout(() => { location.href = href; }, 300);
+  };
+  window.juiceGo = go;
+
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[href]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (a.target === '_blank' || a.hasAttribute('download') || a.origin !== location.origin) return;
+    if (/\.(pdf|mp4|jpg|png|zip)$/i.test(a.pathname)) return;
+    if (a.pathname === location.pathname && a.search === location.search) return; // same page / anchor
+    e.preventDefault();
+    go(a.href);
+  });
 })();
