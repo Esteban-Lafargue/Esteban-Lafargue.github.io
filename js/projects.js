@@ -86,7 +86,7 @@
       ? `<img src="${esc(abs(p.thumb, base))}" alt="" loading="lazy">${p.hover ? `<video muted loop playsinline preload="none" src="${esc(abs(p.hover, base))}"></video>` : ''}`
       : `<span class="card__ph card__ph--${esc(p.status)}">${esc(L(p, 'title'))}</span>`;
     const proves = L(p, 'proves') || [];
-    return `<${tag} class="node card spot__item reveal" style="--c:var(${cat.color})"${href}>
+    return `<${tag} class="node card spot__item reveal" data-skills="${esc((p.skills || []).join(' '))}" style="--c:var(${cat.color})"${href}>
       <div class="node__head"><span class="node__icon" aria-hidden="true">ƒ</span>${esc(L(p, 'title'))}<span class="meta">${esc(L(p, 'kind') || CL(cat))} · ${esc(L(p, 'period'))}</span></div>
       <div class="card__media">${media}</div>
       <div class="card__body">
@@ -107,7 +107,7 @@
     const href = linked ? ` href="${esc(abs(p.url, linkBase))}"` : '';
     const ext = linked && /^https?:/.test(p.url) ? ' target="_blank" rel="noopener"' : '';
     const who = [L(p, 'team'), L(p, 'role')].filter(known).map(esc).join(' · ');
-    return `<li class="reveal"><${tag} class="prow${linked ? '' : ' prow--soon'}" style="--c:var(${cat.color})"${href}${ext}>
+    return `<li class="reveal" data-skills="${esc((p.skills || []).join(' '))}"><${tag} class="prow${linked ? '' : ' prow--soon'}" style="--c:var(${cat.color})"${href}${ext}>
       <span class="prow__year">${esc(p.date.slice(0, 4))}</span>
       <span class="prow__main">
         <span class="prow__title">${esc(L(p, 'title'))}<span class="chip">${esc(CL(cat))}</span></span>
@@ -154,7 +154,15 @@
     const T = FRL
       ? { spot: 'Études de cas', more: 'Autres projets', proves: 'Prouve' }
       : { spot: 'Case studies', more: 'More work', proves: 'Proves' };
+    const skills = data.skills || {};
+    const sCount = (k) => list.filter((p) => (p.skills || []).includes(k)).length;
+    const sKeys = Object.keys(skills).filter(sCount);
     host.innerHTML = `
+      <div class="filters" role="group" aria-label="${FRL ? 'Filtrer par compétence' : 'Filter by skill'}">
+        <span class="filters__label">${FRL ? 'Compétence' : 'Skill'}</span>
+        <button type="button" class="filter" aria-pressed="true" data-f="all">${FRL ? 'Tous' : 'All'} <span>${list.length}</span></button>
+        ${sKeys.map((k) => `<button type="button" class="filter" aria-pressed="false" data-f="${k}" style="--c:var(${skills[k].color})">${esc(CL(skills[k]))} <span>${sCount(k)}</span></button>`).join('')}
+      </div>
       <section class="ptier" aria-labelledby="ptier-spot">
         <h2 id="ptier-spot" class="stitle" style="--c:var(--ac)"><span class="stitle__tag">${T.spot}</span><span class="stitle__rule"></span></h2>
         <div class="spot">${spot.map((p) => spotCard(p, cats, base, linkBase, T)).join('')}</div>
@@ -164,6 +172,17 @@
         <ul class="plist">${rest.map((p) => row(p, cats, linkBase)).join('')}</ul>
       </section>`;
     wireHover(host);
-    document.dispatchEvent(new CustomEvent('layout:changed'));
+    const apply = (f) => {
+      host.querySelectorAll('[data-skills]').forEach((el) => { el.hidden = f !== 'all' && !el.dataset.skills.split(' ').includes(f); });
+      host.querySelectorAll('.ptier').forEach((t) => { t.hidden = !t.querySelector('[data-skills]:not([hidden])'); });
+      document.dispatchEvent(new CustomEvent('layout:changed'));
+    };
+    host.querySelectorAll('.filter').forEach((b) => b.addEventListener('click', () => {
+      host.querySelectorAll('.filter').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      apply(b.dataset.f);
+      try { history.replaceState(null, '', b.dataset.f === 'all' ? location.pathname : `#${b.dataset.f}`); } catch {}
+    }));
+    const start = host.querySelector(`.filter[data-f="${CSS.escape(location.hash.slice(1))}"]`);
+    if (start) start.click(); else apply('all');
   });
 })();

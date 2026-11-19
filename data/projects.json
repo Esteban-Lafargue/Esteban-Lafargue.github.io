@@ -1,5 +1,5 @@
 {
-  "_readme": "Project list, read by js/projects.js. One entry per project, sorted by date automatically (newest first). 'featured': a number puts the project on the home page, in that order. Edit freely, like a Data Table: no code needed. Each project has a 'fr' block for the French site (same fields; missing ones fall back to English). 'spotlight': a number puts the project in the big 'Case studies' block of the projects page, in that order, with its 'proves' skills; the others go to the compact 'More work' list.",
+  "_readme": "Project list, read by js/projects.js. One entry per project, sorted by date automatically (newest first). 'featured': a number puts the project on the home page, in that order. Edit freely, like a Data Table: no code needed. Each project has a 'fr' block for the French site (same fields; missing ones fall back to English). 'spotlight': a number puts the project in the big 'Case studies' block of the projects page, in that order, with its 'proves' skills; the others go to the compact 'More work' list. 'skills': ids from the 'skills' list, used by the filters of the projects page (a project with none only shows under 'All').",
   "categories": {
     "professional": {
       "label": "Professional",
@@ -30,6 +30,33 @@
       "label": "Teaching",
       "color": "--c-gameplay",
       "label_fr": "Enseignement"
+    }
+  },
+  "skills": {
+    "ai": {
+      "label": "AI",
+      "label_fr": "IA",
+      "color": "--c-gameplay"
+    },
+    "tools": {
+      "label": "Tools & pipelines",
+      "label_fr": "Outils & pipelines",
+      "color": "--c-tools"
+    },
+    "gameplay": {
+      "label": "Gameplay systems",
+      "label_fr": "Systèmes de gameplay",
+      "color": "--c-projects"
+    },
+    "ui": {
+      "label": "UI",
+      "label_fr": "UI",
+      "color": "--c-soft"
+    },
+    "teaching": {
+      "label": "Teaching",
+      "label_fr": "Enseignement",
+      "color": "--c-edu"
     }
   },
   "projects": [
@@ -83,6 +110,10 @@
         "PCG",
         "Optimisation (HISM)",
         "UI"
+      ],
+      "skills": [
+        "gameplay",
+        "ui"
       ]
     },
     {
@@ -133,6 +164,10 @@
         "3D AI",
         "EQS",
         "Teaching"
+      ],
+      "skills": [
+        "ai",
+        "teaching"
       ]
     },
     {
@@ -159,7 +194,10 @@
           "Outils",
           "VR"
         ]
-      }
+      },
+      "skills": [
+        "tools"
+      ]
     },
     {
       "id": "bp-conventions",
@@ -183,7 +221,10 @@
         "tags": [
           "Méthodes & Qualité"
         ]
-      }
+      },
+      "skills": [
+        "tools"
+      ]
     },
     {
       "id": "wolfpeak",
@@ -234,6 +275,12 @@
         "Refactoring",
         "Enemy AI",
         "CommonUI"
+      ],
+      "skills": [
+        "ai",
+        "tools",
+        "gameplay",
+        "ui"
       ]
     },
     {
@@ -308,7 +355,10 @@
           "Combat spatial",
           "Solo"
         ]
-      }
+      },
+      "skills": [
+        "gameplay"
+      ]
     },
     {
       "id": "abyss",
@@ -356,6 +406,10 @@
         "Creature AI",
         "3D navigation",
         "Designer tools"
+      ],
+      "skills": [
+        "ai",
+        "tools"
       ]
     },
     {
@@ -382,7 +436,10 @@
           "Blueprint",
           "Enseignement"
         ]
-      }
+      },
+      "skills": [
+        "teaching"
+      ]
     },
     {
       "id": "fairy-tag",
@@ -407,7 +464,10 @@
           "Refactorisation",
           "Gameplay Framework"
         ]
-      }
+      },
+      "skills": [
+        "gameplay"
+      ]
     }
   ]
 }

@@ -265,6 +265,8 @@ main.wrap { position: relative; }
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; position: sticky; top: 69px; z-index: 5; padding: 12px 0; background: #050505f2; backdrop-filter: blur(10px); border-bottom: 1px solid #ffffff0d; }
 .filter { --c: var(--ac); display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border-radius: 22px; border: 1px solid var(--line); background: var(--node); color: var(--text-muted); font: 500 13px var(--font); cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
 .filter span { font: 12px var(--mono); color: var(--text-faint); }
+.filters__label { align-self: center; margin-right: 4px; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.ptier[hidden], .spot [hidden], .plist [hidden] { display: none; }
 .filter:hover { color: var(--text-strong); border-color: color-mix(in srgb, var(--c) 60%, var(--line)); }
 .filter[aria-pressed="true"] { color: var(--text-strong); border-color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--node)); }
 .year { margin-top: 56px; }
@@ -293,6 +295,9 @@ a.prow:hover .prow__cta, a.prow:focus-visible .prow__cta { background: var(--c);
   .spot { grid-template-columns: 1fr; }
   .prow { grid-template-columns: 1fr; gap: 8px; padding: 14px 16px; }
   .prow__cta { justify-self: start; white-space: normal; }
+  .filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter { flex: none; }
 }
 @media (prefers-reduced-motion: reduce) { a.prow:hover { transform: none; } }
 
