@@ -245,7 +245,7 @@
   const G = 32;
   const COLORS = ['#4da3ff', '#4fd8ff', '#b18cff', '#3ddc97', '#f2c14e'];
   const fine = matchMedia('(pointer: fine)').matches;
-  let rings = [];
+  let rings = [], debris = [];
   const SHAPES = ['circle', 'square', 'diamond', 'hex', 'tri', 'star'];
   const poly = (x, y, r, n, rot, inner) => { // regular polygon, or a star when inner is set
     const k = inner ? n * 2 : n;
@@ -315,6 +315,22 @@
       return true;
     });
 
+    // destroyed pulses: shards fly out and fade, with a quick flash
+    debris = debris.filter((d) => {
+      d.t += dt / d.ttl;
+      if (d.t >= 1) return false;
+      d.vx *= 0.92; d.vy *= 0.92; d.x += d.vx * dt; d.y += d.vy * dt;
+      const y = d.y - sy, a = 1 - d.t;
+      if (d.flash) {
+        ctx.fillStyle = `rgba(${d.rgb},${0.35 * a})`;
+        ctx.beginPath(); ctx.arc(d.x, y, 4 + 18 * (1 - a * a), 0, 6.283); ctx.fill();
+      } else {
+        ctx.strokeStyle = `rgba(${d.rgb},${a})`; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(d.x, y); ctx.lineTo(d.x - d.vx * 0.03, y - d.vy * 0.03); ctx.stroke();
+      }
+      return true;
+    });
+
     // pulses
     if (now > nextSpawn && pulses.filter((p) => !p.burst).length < (w < 700 ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
     ctx.lineWidth = 1.5;
@@ -376,8 +392,43 @@
       });
     } catch (err) { /* no audio: silent */ }
   };
+  // destroying a pulse: a short, soft "pop" that drops in pitch (also varied each time)
+  const pop = (xRatio) => {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const t = actx.currentTime, f = 700 + Math.random() * 300;
+      const o = actx.createOscillator(), g = actx.createGain(), lp = actx.createBiquadFilter();
+      o.type = 'triangle'; lp.type = 'lowpass'; lp.frequency.value = 2200;
+      o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 0.3, t + 0.14);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.06, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      o.connect(lp); lp.connect(g);
+      let node = g;
+      if (actx.createStereoPanner) { const pan = actx.createStereoPanner(); pan.pan.value = (xRatio - 0.5) * 0.8; g.connect(pan); node = pan; }
+      node.connect(actx.destination);
+      o.start(t); o.stop(t + 0.25);
+    } catch (err) { /* no audio: silent */ }
+  };
   addEventListener('click', (e) => {
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
+    // a travelling pulse under the click? destroy it instead of drawing a shape
+    const sy0 = scrollY;
+    const target = pulses.find((p) => {
+      if (p.burst) return false;
+      const hx = p.horiz ? p.pos : p.line + 0.5, hy = p.horiz ? p.line - sy0 : p.pos - sy0;
+      return Math.hypot(hx - e.clientX, hy - e.clientY) < 30;
+    });
+    if (target) {
+      const hx = target.horiz ? target.pos : target.line + 0.5, hyP = target.horiz ? target.line : target.pos, rgb = hex2rgb(target.c);
+      pulses.splice(pulses.indexOf(target), 1);
+      debris.push({ flash: true, x: hx, y: hyP, vx: 0, vy: 0, t: 0, ttl: 0.35, rgb });
+      for (let i = 0; i < 10; i++) {
+        const a = (6.283 * i) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
+        debris.push({ x: hx, y: hyP, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
+      }
+      pop(e.clientX / w);
+      return;
+    }
     const x = Math.round(e.clientX / G) * G, yPage = Math.round((e.clientY + scrollY) / G) * G;
     const c = COLORS[(Math.random() * COLORS.length) | 0];
     const kind = SHAPES[(Math.random() * SHAPES.length) | 0];
