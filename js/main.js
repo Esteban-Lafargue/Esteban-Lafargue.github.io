@@ -331,6 +331,28 @@
       return true;
     });
 
+    // the click burst is a weapon: its shape and its four pulses destroy the travelling pulses they reach
+    if (rings.length) {
+      const hits = [];
+      for (const p of pulses) {
+        if (p.burst) continue;
+        const hx = p.horiz ? p.pos : p.line + 0.5, hy = p.horiz ? p.line : p.pos; // page coordinates
+        const byRing = rings.some((r) => r.t < 0.8 && Math.hypot(hx - r.x, hy - r.y) < 6 + (1 - Math.pow(1 - r.t, 3)) * r.size + 6);
+        const byShot = !byRing && pulses.some((q) => q.burst && q.life > 0.2 && Math.hypot(hx - (q.horiz ? q.pos : q.line), hy - (q.horiz ? q.line : q.pos)) < 14);
+        if (byRing || byShot) hits.push(p);
+      }
+      hits.forEach((p, i) => {
+        const hx = p.horiz ? p.pos : p.line + 0.5, hy = p.horiz ? p.line : p.pos, rgb = hex2rgb(p.c);
+        pulses.splice(pulses.indexOf(p), 1);
+        debris.push({ flash: true, x: hx, y: hy, vx: 0, vy: 0, t: 0, ttl: 0.35, rgb });
+        for (let k = 0; k < 10; k++) {
+          const a = (6.283 * k) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
+          debris.push({ x: hx, y: hy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
+        }
+        setTimeout(() => pop(hx / w), i * 70);
+      });
+    }
+
     // pulses
     if (now > nextSpawn && pulses.filter((p) => !p.burst).length < (w < 700 ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
     ctx.lineWidth = 1.5;
@@ -411,24 +433,6 @@
   };
   addEventListener('click', (e) => {
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
-    // a travelling pulse under the click? destroy it instead of drawing a shape
-    const sy0 = scrollY;
-    const target = pulses.find((p) => {
-      if (p.burst) return false;
-      const hx = p.horiz ? p.pos : p.line + 0.5, hy = p.horiz ? p.line - sy0 : p.pos - sy0;
-      return Math.hypot(hx - e.clientX, hy - e.clientY) < 30;
-    });
-    if (target) {
-      const hx = target.horiz ? target.pos : target.line + 0.5, hyP = target.horiz ? target.line : target.pos, rgb = hex2rgb(target.c);
-      pulses.splice(pulses.indexOf(target), 1);
-      debris.push({ flash: true, x: hx, y: hyP, vx: 0, vy: 0, t: 0, ttl: 0.35, rgb });
-      for (let i = 0; i < 10; i++) {
-        const a = (6.283 * i) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
-        debris.push({ x: hx, y: hyP, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
-      }
-      pop(e.clientX / w);
-      return;
-    }
     const x = Math.round(e.clientX / G) * G, yPage = Math.round((e.clientY + scrollY) / G) * G;
     const c = COLORS[(Math.random() * COLORS.length) | 0];
     const kind = SHAPES[(Math.random() * SHAPES.length) | 0];
