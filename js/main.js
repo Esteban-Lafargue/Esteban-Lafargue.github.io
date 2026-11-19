@@ -351,11 +351,37 @@
   // click on the empty grid: the nearest crossing fires pulses along its four lines
   const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox';
   const hex2rgb = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)).join(',');
+  // a very soft synthesized "blip" on grid clicks: notes from a pentatonic scale, slight detune,
+  // panned toward the click side, so it never sounds twice the same (Web Audio, no file to load)
+  let actx = null;
+  const NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+  const blip = (xRatio) => {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const t = actx.currentTime, f = NOTES[(Math.random() * NOTES.length) | 0] * (Math.random() < 0.25 ? 0.5 : 1);
+      const out = actx.createGain(), lp = actx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 2400;
+      out.gain.setValueAtTime(0, t);
+      out.gain.linearRampToValueAtTime(0.045, t + 0.008);
+      out.gain.exponentialRampToValueAtTime(0.0001, t + 0.38 + Math.random() * 0.12);
+      let node = out;
+      if (actx.createStereoPanner) { const pan = actx.createStereoPanner(); pan.pan.value = (xRatio - 0.5) * 0.8; out.connect(pan); node = pan; }
+      lp.connect(out); node.connect(actx.destination);
+      [[f, 'triangle', 1], [f * 2, 'sine', 0.35]].forEach(([fr, type, g]) => {
+        const o = actx.createOscillator(), og = actx.createGain();
+        o.type = type; o.frequency.setValueAtTime(fr * 1.015, t); o.frequency.exponentialRampToValueAtTime(fr, t + 0.06);
+        o.detune.value = (Math.random() - 0.5) * 24; og.gain.value = g;
+        o.connect(og); og.connect(lp); o.start(t); o.stop(t + 0.55);
+      });
+    } catch (err) { /* no audio: silent */ }
+  };
   addEventListener('click', (e) => {
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
     const x = Math.round(e.clientX / G) * G, yPage = Math.round((e.clientY + scrollY) / G) * G;
     const c = COLORS[(Math.random() * COLORS.length) | 0];
     const kind = SHAPES[(Math.random() * SHAPES.length) | 0];
+    blip(e.clientX / w);
     rings.push({ x: x + 0.5, y: yPage + 0.5, t: 0, rgb: hex2rgb(c), kind, size: 80 + Math.random() * 30, rot: 0, spin: kind === 'circle' || kind === 'square' ? 0 : (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.8) });
     for (const [horiz, dir] of [[1, 1], [1, -1], [0, 1], [0, -1]]) {
       const start = horiz ? x : yPage;
