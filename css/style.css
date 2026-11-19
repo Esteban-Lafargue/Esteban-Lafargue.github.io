@@ -234,7 +234,22 @@ main.wrap { position: relative; }
   .rail__stop { width: 14px; height: 14px; margin-top: -7px; left: -6px; }
   .rail__stop::after { left: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { .rail__fill { transition: none; } }
+/* Juice: each pin pops and sends a ring when the wire reaches it; the last one lands harder */
+.rail__stop::before { content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--c); opacity: 0; pointer-events: none; }
+.rail__stop.is-hit { animation: rail-pop .5s cubic-bezier(.34, 1.8, .64, 1) .08s; }
+.rail__stop.is-hit::before { animation: rail-ring .7s ease-out .08s; }
+.rail__stop--end { width: 20px; height: 20px; margin-top: -10px; left: -9px; }
+.rail__stop--end.is-on { box-shadow: 0 0 18px var(--c), 0 0 36px color-mix(in srgb, var(--c) 45%, transparent); }
+.rail__stop--end.is-hit { animation: rail-pop-end .7s cubic-bezier(.34, 1.8, .64, 1) .08s; }
+.rail__stop--end.is-hit::before { animation: rail-ring-end 1s ease-out .08s; }
+.rail.is-end .rail__fill { animation: rail-flash .8s ease-out; }
+@keyframes rail-pop { 0% { transform: scale(1); } 35% { transform: scale(1.6); } 100% { transform: scale(1); } }
+@keyframes rail-pop-end { 0% { transform: scale(1); } 30% { transform: scale(1.9); } 60% { transform: scale(.9); } 100% { transform: scale(1); } }
+@keyframes rail-ring { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(3); } }
+@keyframes rail-ring-end { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(4.5); } }
+@keyframes rail-flash { 0% { box-shadow: 0 0 10px var(--ac); } 30% { box-shadow: 0 0 22px var(--ac), 0 0 6px #fff; } 100% { box-shadow: 0 0 10px var(--ac); } }
+@media (max-width: 640px) { .rail__stop--end { width: 18px; height: 18px; margin-top: -9px; left: -8px; } }
+@media (prefers-reduced-motion: reduce) { .rail__fill { transition: none; } .rail__stop.is-hit, .rail__stop.is-hit::before, .rail.is-end .rail__fill { animation: none; } }
 
 /* ---------- Project cards (data-driven) ---------- */
 .card__cat { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }

@@ -107,7 +107,8 @@
 })();
 
 /* 6. Exec rail: one continuous Blueprint wire in the left margin.
-      Every section title (.stitle) or [data-stop] element gets a pin; the wire fills as you read. */
+      Every section title (.stitle) or [data-stop] element gets a pin; the wire fills as you read,
+      each pin pops when reached and the wire stops exactly on the last one. */
 (() => {
   const main = document.querySelector('main.wrap');
   if (!main) return;
@@ -118,10 +119,12 @@
   rail.innerHTML = '<i class="rail__fill"></i>';
   main.prepend(rail);
   let stops = [];
+  let lastReading = -Infinity;
+  const hit = (s) => { s.classList.remove('is-hit'); void s.offsetWidth; s.classList.add('is-hit'); };
 
   const layout = () => {
+    const wasEnd = rail.classList.contains('is-end');
     rail.querySelectorAll('.rail__stop').forEach((n) => n.remove());
-    rail.classList.remove('is-end');
     const els = [...main.querySelectorAll('.stitle, [data-stop]')].filter((e) => e.offsetParent !== null);
     if (els.length < 2) { rail.hidden = true; return; }
     rail.hidden = false;
@@ -141,13 +144,13 @@
       rail.append(s);
       return { y, s };
     });
-    // the wire runs on to the bottom of the page, so it always ends full
-    const foot = main.querySelector('.footer');
-    const end = foot ? foot.getBoundingClientRect().top + scrollY - mTop : main.scrollHeight - 24;
-    stops.push({ y: Math.max(end, stops[stops.length - 1].y + 40), s: null });
+    // the wire ends exactly on the last pin: reaching it is the payoff
+    stops[stops.length - 1].s.classList.add('rail__stop--end');
+    stops.forEach((st) => { st.on = st.y <= lastReading; st.s.classList.toggle('is-on', st.on); });
     const first = stops[0].y, last = stops[stops.length - 1].y;
     rail.style.setProperty('--top', `${first}px`);
     rail.style.setProperty('--len', `${last - first}px`);
+    rail.classList.toggle('is-end', wasEnd && stops[stops.length - 1].on);
     update();
   };
 
@@ -161,7 +164,15 @@
     const first = stops[0].y, last = stops[stops.length - 1].y;
     const fill = Math.max(0, Math.min(reading, last) - first);
     rail.style.setProperty('--fill', `${fill}px`);
-    stops.forEach(({ y, s }) => s && s.classList.toggle('is-on', y <= reading));
+    lastReading = reading;
+    stops.forEach((st) => {
+      const on = st.y <= reading;
+      if (on === st.on) return;
+      st.on = on;
+      st.s.classList.toggle('is-on', on);
+      if (on) hit(st.s); // juice: the pin pops when the wire reaches it
+    });
+    rail.classList.toggle('is-end', stops[stops.length - 1].on);
   };
 
   let raf = 0;
