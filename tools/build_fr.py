@@ -108,7 +108,7 @@ def build(page):
     for a in soup.select('a[download]'):
         if "Esteban-Lafargue-CV-EN.pdf" in a.get("href", ""):
             a["href"] = "../" * (depth + 1) + "Esteban-Lafargue-CV-FR.pdf"
-            a["download"] = "Esteban-Lafargue-CV-FR.pdf"
+            a["download"] = "CV FR - Technical Designer - Esteban Lafargue.pdf"
     # language switch: FR page points back to the English page
     for a in soup.select("a[data-lang-switch]"):
         a["href"] = "../" * (depth + 1) + page
