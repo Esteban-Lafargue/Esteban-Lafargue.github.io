@@ -477,3 +477,49 @@
     go(a.href);
   });
 })();
+
+/* 14. Juice: downloading the CV feels like picking up loot. A burst of particles, then a small toast */
+(() => {
+  if (!Element.prototype.animate) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FR = document.documentElement.lang === 'fr';
+  const COLS = ['--c-gameplay', '--c-xp', '--c-tools', '--c-edu', '--c-projects', '--c-profile'];
+  let toast, hideT;
+  const showToast = () => {
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'loot'; toast.setAttribute('role', 'status');
+      toast.innerHTML = `<span class="loot__pin"></span><span class="loot__txt">${FR ? 'CV acquis' : 'CV acquired'} <b>✓</b></span>`;
+      document.body.appendChild(toast);
+    }
+    toast.classList.remove('is-on'); void toast.offsetWidth; toast.classList.add('is-on');
+    clearTimeout(hideT); hideT = setTimeout(() => toast.classList.remove('is-on'), 2400);
+  };
+  const burst = (x, y) => {
+    const cs = getComputedStyle(document.documentElement);
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('span');
+      p.className = 'loot-bit' + (i % 3 === 0 ? ' loot-bit--sq' : '');
+      p.style.left = `${x}px`; p.style.top = `${y}px`;
+      p.style.background = cs.getPropertyValue(COLS[i % COLS.length]).trim();
+      document.body.appendChild(p);
+      const a = (Math.PI * 2 * i) / 18 + Math.random() * 0.4, d = 40 + Math.random() * 50;
+      const dx = Math.cos(a) * d, dy = Math.sin(a) * d - 20;
+      p.animate([
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1) rotate(${Math.random() * 180}deg)`, opacity: 1, offset: 0.55 },
+        { transform: `translate(calc(-50% + ${dx * 1.1}px), calc(-50% + ${dy + 40}px)) scale(.3)`, opacity: 0 },
+      ], { duration: 750 + Math.random() * 250, easing: 'cubic-bezier(.2, .8, .3, 1)' }).onfinish = () => p.remove();
+    }
+  };
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[download][href$=".pdf"]');
+    if (!a || e.button !== 0) return;
+    if (!reduce) {
+      const r = a.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2);
+      a.classList.remove('is-looted'); void a.offsetWidth; a.classList.add('is-looted');
+    }
+    showToast();
+  });
+})();

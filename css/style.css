@@ -458,6 +458,19 @@ html.is-arriving::after { content: ""; position: fixed; inset: 0; z-index: 9999;
 .hero__node:hover .outputs li:nth-child(4) .pin { animation-delay: .65s; }
 @keyframes pin-fire { 40% { transform: scale(1.6); box-shadow: 0 0 14px var(--c); } }
 
+/* CV download = loot pickup: particles, a button pop and a toast (js §14) */
+.loot-bit { position: fixed; z-index: 10000; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; box-shadow: 0 0 6px currentColor; }
+.loot-bit--sq { border-radius: 1px; width: 6px; height: 6px; }
+a.is-looted { animation: loot-pop .4s cubic-bezier(.34, 1.8, .64, 1); }
+@keyframes loot-pop { 35% { transform: scale(1.12); } }
+.loot { position: fixed; left: 50%; bottom: 28px; z-index: 10000; display: flex; align-items: center; gap: 10px; padding: 10px 18px 10px 14px; border-radius: 999px;
+  background: var(--node, #0d0f14); border: 1px solid color-mix(in srgb, var(--c-gameplay) 55%, var(--line)); color: var(--text-strong); font: 500 13px var(--mono);
+  box-shadow: 0 12px 40px #000a, 0 0 24px color-mix(in srgb, var(--c-gameplay) 25%, transparent);
+  transform: translate(-50%, 20px) scale(.9); opacity: 0; pointer-events: none; transition: transform .25s ease, opacity .25s ease; }
+.loot.is-on { transform: translate(-50%, 0) scale(1); opacity: 1; transition: transform .45s cubic-bezier(.34, 1.6, .64, 1), opacity .2s; }
+.loot__pin { width: 10px; height: 10px; border-radius: 50%; background: var(--c-gameplay); box-shadow: 0 0 10px var(--c-gameplay); }
+.loot b { color: var(--c-gameplay); }
+
 @media (prefers-reduced-motion: reduce) {
   .btn:active { transform: none; }
   .btn--primary::after { display: none; }
@@ -468,5 +481,7 @@ html.is-arriving::after { content: ""; position: fixed; inset: 0; z-index: 9999;
   .wipe, html.is-arriving::after { display: none; }
   main.is-entering { animation: none; }
   .node__head::after { display: none; }
+  a.is-looted { animation: none; }
+  .loot, .loot.is-on { transition: opacity .2s; transform: translate(-50%, 0); }
   .node:hover > .node__head .node__icon, .hero__node:hover .outputs li .pin { animation: none; }
 }
