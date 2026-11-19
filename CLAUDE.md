@@ -1,7 +1,7 @@
 # Portfolio d'Esteban Lafargue — notes pour Claude
 
 Site statique (HTML/CSS/JS à la main, sans framework) publié par GitHub Pages depuis `main`, à la racine :
-https://katarn34.github.io — dépôt `Katarn34/katarn34.github.io`.
+https://esteban-lafargue.github.io — dépôt `Esteban-Lafargue/esteban-lafargue.github.io` (ancienne adresse katarn34.github.io, sans redirection).
 
 Esteban est Technical Designer sous Unreal Engine 5 (Montpellier). Il me parle en **français** ;
 le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (généré).
@@ -31,7 +31,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 3. Traductions : `python3 tools/build_fr.py` (nécessite `beautifulsoup4`). Il doit afficher **0 missing**. Sinon, ajouter les clés listées dans `tools/i18n/missing.json` dans un fichier `tools/i18n/fr-NN-sujet.json` (clé = HTML interne anglais, espaces normalisés ; valeur = HTML français), puis relancer.
    - Nouvelle page → l'ajouter à `PAGES` dans `tools/build_fr.py`.
 4. Vérifier visuellement (bureau 1440 px + mobile 390 px, pas de défilement horizontal) : `python3 -m http.server` puis capture Playwright ou navigateur.
-5. Commit + push sur `main`, puis **vérifier le déploiement** : `gh run list -R Katarn34/katarn34.github.io -L 1`. Si GitHub bloque (« in progress deployment », « syncing files »), relancer ou pousser un commit vide.
+5. Commit + push sur `main`, puis **vérifier le déploiement** : `gh run list -R Esteban-Lafargue/esteban-lafargue.github.io -L 1`. Si GitHub bloque (« in progress deployment », « syncing files »), relancer ou pousser un commit vide.
    - Auteur des commits : Esteban Lafargue <estebanlafargue34@gmail.com>.
 
 ## Abyss (routine)
