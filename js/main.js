@@ -246,6 +246,23 @@
   const COLORS = ['#4da3ff', '#4fd8ff', '#b18cff', '#3ddc97', '#f2c14e'];
   const fine = matchMedia('(pointer: fine)').matches;
   let rings = [];
+  const SHAPES = ['circle', 'square', 'diamond', 'hex', 'tri', 'star'];
+  const poly = (x, y, r, n, rot, inner) => { // regular polygon, or a star when inner is set
+    const k = inner ? n * 2 : n;
+    for (let i = 0; i <= k; i++) {
+      const a = rot + (i / k) * 6.283 - 1.5708, rr = inner && i % 2 ? r * inner : r;
+      i ? ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr) : ctx.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+    }
+  };
+  const shape = (kind, x, y, r, rot) => {
+    ctx.beginPath();
+    if (kind === 'circle') ctx.arc(x, y, r, 0, 6.283);
+    else if (kind === 'square') poly(x, y, r * 1.2, 4, rot + 0.785);
+    else if (kind === 'diamond') poly(x, y, r * 1.2, 4, rot);
+    else if (kind === 'hex') poly(x, y, r * 1.05, 6, rot);
+    else if (kind === 'tri') poly(x, y, r * 1.2, 3, rot);
+    else poly(x, y, r * 1.2, 5, rot, 0.5);
+  };
   let w = 0, h = 0, pulses = [], mx = -1e4, my = -1e4, gx = -1e4, gy = -1e4, prev = 0, nextSpawn = 0;
 
   const size = () => {
@@ -285,14 +302,14 @@
       ctx.stroke();
     }
 
-    // click bursts: a ring and a glowing node at the clicked grid crossing
+    // click bursts: a shape (circle, square, diamond, hexagon, triangle, star) and a glowing node
     rings = rings.filter((r) => {
       r.t += dt / 0.9;
       if (r.t >= 1) return false;
       const e = 1 - Math.pow(1 - r.t, 3), y = r.y - sy;
       ctx.lineWidth = 2 * (1 - r.t) + 0.5;
       ctx.strokeStyle = `rgba(${r.rgb},${0.6 * (1 - r.t)})`;
-      ctx.beginPath(); ctx.arc(r.x, y, 6 + e * 90, 0, 6.283); ctx.stroke();
+      shape(r.kind, r.x, y, 6 + e * r.size, r.rot + r.spin * e); ctx.stroke();
       ctx.fillStyle = `rgba(${r.rgb},${0.9 * (1 - r.t)})`;
       ctx.beginPath(); ctx.arc(r.x, y, 4 * (1 - r.t) + 1.5 + (r.t < 0.15 ? 3 * (1 - r.t / 0.15) : 0), 0, 6.283); ctx.fill();
       return true;
@@ -338,7 +355,8 @@
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
     const x = Math.round(e.clientX / G) * G, yPage = Math.round((e.clientY + scrollY) / G) * G;
     const c = COLORS[(Math.random() * COLORS.length) | 0];
-    rings.push({ x: x + 0.5, y: yPage + 0.5, t: 0, rgb: hex2rgb(c) });
+    const kind = SHAPES[(Math.random() * SHAPES.length) | 0];
+    rings.push({ x: x + 0.5, y: yPage + 0.5, t: 0, rgb: hex2rgb(c), kind, size: 80 + Math.random() * 30, rot: 0, spin: kind === 'circle' || kind === 'square' ? 0 : (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.8) });
     for (const [horiz, dir] of [[1, 1], [1, -1], [0, 1], [0, -1]]) {
       const start = horiz ? x : yPage;
       pulses.push({ burst: true, horiz: !!horiz, line: horiz ? yPage : x, pos: start, start, dir, len: 70, speed: 380 + Math.random() * 120, c, life: 1, ttl: 0.9 + Math.random() * 0.3 });
