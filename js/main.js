@@ -3,7 +3,7 @@
   'use strict';
 
   /* 1. Light up nodes, pins and wires as they enter the viewport */
-  const live = document.querySelectorAll('.reveal, .wire, .node');
+  const live = document.querySelectorAll('.reveal, .wire, .node, .stitle');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
@@ -230,4 +230,123 @@
     b.addEventListener('click', () => { v.controls = true; v.play(); });
     v.addEventListener('play', () => wrap.classList.add('is-playing'));
   });
+})();
+
+/* 9. Living background: soft light pulses travel along the grid, and the grid glows a little
+      under the cursor. Low contrast, behind everything, paused when the tab is hidden. */
+(() => {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv = document.createElement('canvas');
+  cv.className = 'bg-live';
+  cv.setAttribute('aria-hidden', 'true');
+  document.body.prepend(cv);
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+  const G = 32;
+  const COLORS = ['#4da3ff', '#4fd8ff', '#b18cff', '#3ddc97', '#f2c14e'];
+  const fine = matchMedia('(pointer: fine)').matches;
+  let w = 0, h = 0, pulses = [], mx = -1e4, my = -1e4, gx = -1e4, gy = -1e4, prev = 0, nextSpawn = 0;
+
+  const size = () => {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    w = innerWidth; h = innerHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  const spawn = () => {
+    const horiz = Math.random() < 0.55, dir = Math.random() < 0.5 ? 1 : -1;
+    const len = 90 + Math.random() * 140, speed = 45 + Math.random() * 70;
+    const c = COLORS[(Math.random() * COLORS.length) | 0];
+    if (horiz) { // page coordinates, so the pulse sticks to the scrolling grid
+      const line = Math.floor((scrollY + Math.random() * h) / G) * G;
+      pulses.push({ horiz, line, pos: dir > 0 ? -len : w + len, dir, len, speed, c });
+    } else {
+      const line = Math.floor((Math.random() * w) / G) * G;
+      pulses.push({ horiz, line, pos: dir > 0 ? scrollY - len : scrollY + h + len, dir, len, speed, c });
+    }
+  };
+
+  const frame = (now) => {
+    const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
+    ctx.clearRect(0, 0, w, h);
+    const sy = scrollY;
+
+    // grid glow under the cursor
+    if (fine && mx > -1e3) {
+      gx += (mx - gx) * 0.12; gy += (my - gy) * 0.12;
+      const R = 200;
+      const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, R);
+      g.addColorStop(0, 'rgba(77,163,255,.22)'); g.addColorStop(1, 'rgba(77,163,255,0)');
+      ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.beginPath();
+      for (let x = Math.floor((gx - R) / G) * G; x <= gx + R; x += G) { ctx.moveTo(x + 0.5, gy - R); ctx.lineTo(x + 0.5, gy + R); }
+      const off = -(sy % G);
+      for (let y = Math.floor((gy - R - off) / G) * G + off; y <= gy + R; y += G) { ctx.moveTo(gx - R, y + 0.5); ctx.lineTo(gx + R, y + 0.5); }
+      ctx.stroke();
+    }
+
+    // pulses
+    if (now > nextSpawn && pulses.length < (w < 700 ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
+    ctx.lineWidth = 1.5;
+    pulses = pulses.filter((p) => {
+      p.pos += p.dir * p.speed * dt;
+      const head = p.pos, tail = p.pos - p.dir * p.len;
+      let x1, y1, x2, y2;
+      if (p.horiz) { const y = p.line - sy + 0.5; if (y < -10 || y > h + 10) return false; x1 = tail; x2 = head; y1 = y2 = y; }
+      else { const x = p.line + 0.5; x1 = x2 = x; y1 = tail - sy; y2 = head - sy; }
+      const g = ctx.createLinearGradient(x1, y1, x2, y2);
+      g.addColorStop(0, p.c + '00'); g.addColorStop(1, p.c + '70');
+      ctx.strokeStyle = g; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.fillStyle = p.c + 'aa'; ctx.beginPath(); ctx.arc(x2, y2, 2, 0, 6.283); ctx.fill();
+      const range = p.horiz ? w : sy + h;
+      return p.dir > 0 ? tail < range + 10 : tail > (p.horiz ? -10 : sy - 10);
+    });
+    if (!document.hidden) requestAnimationFrame(frame);
+  };
+
+  size();
+  addEventListener('resize', size);
+  if (fine) {
+    addEventListener('pointermove', (e) => { mx = e.clientX; my = e.clientY; if (gx < -1e3) { gx = mx; gy = my; } }, { passive: true });
+    document.addEventListener('pointerleave', () => { mx = my = gx = gy = -1e4; });
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(frame); } });
+  requestAnimationFrame(frame);
+})();
+
+/* 10. Juice: key numbers count up when they appear, then pop */
+(() => {
+  const nums = [...document.querySelectorAll('.proof dt span')].filter((s) => /^\d+\+?$/.test(s.textContent.trim()));
+  if (!nums.length || !('IntersectionObserver' in window)) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const run = (s) => {
+    const txt = s.textContent.trim(), n = parseInt(txt, 10), plus = txt.endsWith('+') ? '+' : '';
+    if (reduce) return;
+    const t0 = performance.now(), dur = 900 + n * 6;
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 4);
+      s.textContent = Math.round(n * e) + (t === 1 ? plus : '');
+      if (t < 1) requestAnimationFrame(tick); else s.classList.add('is-counted');
+    };
+    s.textContent = '0';
+    requestAnimationFrame(tick);
+  };
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    io.unobserve(e.target);
+    e.target.querySelectorAll('dt span').forEach((s, i) => { if (nums.includes(s)) setTimeout(() => run(s), i * 120); });
+  }), { threshold: 0.4 });
+  document.querySelectorAll('.proof').forEach((p) => io.observe(p));
+})();
+
+/* 11. Juice: a soft light follows the cursor inside cards and nodes */
+(() => {
+  if (!matchMedia('(pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const SEL = 'a.card, a.next-proj, .hero__node, .node.direct, .tuto-card';
+  document.addEventListener('pointermove', (e) => {
+    const el = e.target.closest && e.target.closest(SEL);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    el.style.setProperty('--my', `${e.clientY - r.top}px`);
+  }, { passive: true });
 })();

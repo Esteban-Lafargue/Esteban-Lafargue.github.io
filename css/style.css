@@ -373,3 +373,53 @@ a.tuto-card__media:hover .yt__play { transform: scale(.95); background: #ff0033;
   .filters { top: 98px; }
   .nav__links a:not(.btn):not(.lang) { order: 4; flex: 1 1 0; text-align: center; padding: 10px 2px; font-family: var(--mono); font-size: 12px; white-space: nowrap; }
 }
+
+/* ==========================================================================
+   Alive + juice (mots d'ordre : satisfaisant, agréable, vivant)
+   ========================================================================== */
+/* living background canvas (js/main.js §9) */
+.bg-live { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+
+/* buttons: a press you can feel, and a light sweep on the primary one */
+.btn { position: relative; }
+.btn:active { transform: translateY(1px) scale(.96); transition-duration: .06s; }
+.btn--primary { overflow: hidden; isolation: isolate; }
+.btn--primary::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 35%, #ffffff66 50%, transparent 65%); transform: translateX(-120%); }
+.btn--primary:hover::after { transform: translateX(120%); transition: transform .6s ease; }
+.btn--ghost:hover { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ac) 18%, transparent); }
+
+/* nav: an underline that slides in, and a dot on the current page */
+.nav__links a:not(.btn):not(.lang) { position: relative; }
+.nav__links a:not(.btn):not(.lang)::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 6px; height: 2px; border-radius: 2px; background: var(--ac); transform: scaleX(0); transform-origin: left; transition: transform .25s cubic-bezier(.34, 1.56, .64, 1); }
+.nav__links a:not(.btn):not(.lang):hover::after, .nav__links a[aria-current="page"]::after { transform: scaleX(1); }
+.nav__links a[aria-current="page"] { color: var(--text-strong); }
+
+/* section titles pop in, their rule draws out */
+.js .stitle .stitle__tag { opacity: 0; transform: scale(.85); }
+.js .stitle .stitle__rule { transform: scaleX(0); transform-origin: left; }
+.js .stitle.is-live .stitle__tag { opacity: 1; transform: none; transition: opacity .3s, transform .5s cubic-bezier(.34, 1.8, .64, 1); }
+.js .stitle.is-live .stitle__rule { transform: none; transition: transform .9s cubic-bezier(.6, 0, .2, 1) .15s; }
+
+/* key numbers pop once they finish counting (js §10) */
+.proof dt span { display: inline-block; }
+.proof dt span.is-counted { animation: num-pop .45s cubic-bezier(.34, 1.8, .64, 1); text-shadow: 0 0 18px color-mix(in srgb, var(--c) 55%, transparent); }
+@keyframes num-pop { 40% { transform: scale(1.25); } }
+
+/* profile pins light up on hover */
+.outputs li .pin { transition: transform .25s cubic-bezier(.34, 1.8, .64, 1), box-shadow .25s; }
+.outputs li:hover .pin { transform: scale(1.5); box-shadow: 0 0 14px var(--c); }
+
+/* soft light under the cursor inside cards and nodes (js §11) */
+a.card, a.next-proj, .hero__node, .node.direct, .tuto-card { position: relative; }
+a.card::before, a.next-proj::before, .hero__node::before, .node.direct::before, .tuto-card::before {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--c, var(--ac)) 14%, transparent), transparent 70%);
+}
+a.card:hover::before, a.next-proj:hover::before, .hero__node:hover::before, .node.direct:hover::before, .tuto-card:hover::before { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:active { transform: none; }
+  .btn--primary::after { display: none; }
+  .js .stitle .stitle__tag, .js .stitle .stitle__rule { opacity: 1; transform: none; transition: none; }
+  .proof dt span.is-counted { animation: none; }
+}
