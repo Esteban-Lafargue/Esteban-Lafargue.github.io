@@ -30,6 +30,8 @@
     wip: 'In progress'
   };
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  /* A field still waiting for info (empty or "[Role]") is never shown */
+  const known = (v) => v != null && String(v).trim() !== '' && !/^\[.*\]$/.test(String(v).trim());
   const abs = (u, base) => (!u || /^(https?:|#|mailto:)/.test(u) ? u : base + u);
 
   function card(p, cats, base, linkBase) {
@@ -46,9 +48,9 @@
       <div class="node__head"><span class="node__icon" aria-hidden="true">ƒ</span>${esc(L(p, 'title'))}<span class="meta">${esc(L(p, 'period'))}</span></div>
       <div class="card__media">${media}</div>
       <div class="card__body">
-        <div class="card__cat"><span class="chip" style="--c:var(${cat.color})">${esc(CL(cat))}</span><span class="card__team">${esc(L(p, 'team'))}</span></div>
+        <div class="card__cat"><span class="chip" style="--c:var(${cat.color})">${esc(CL(cat))}</span>${known(L(p, 'team')) ? `<span class="card__team">${esc(L(p, 'team'))}</span>` : ''}</div>
         <p class="card__pitch">${esc(L(p, 'pitch'))}</p>
-        <p class="card__role">${esc(L(p, 'role'))}</p>
+        ${known(L(p, 'role')) ? `<p class="card__role">${esc(L(p, 'role'))}</p>` : ''}
         <span class="card__cta">${ctaMap[p.status] || ''}</span>
       </div>
     </${tag}>`;
