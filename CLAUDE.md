@@ -23,7 +23,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 - `js/main.js` : apparition au scroll, façade YouTube, vidéos au survol, lightbox, **rail d'exécution** (fil à gauche, arrêts sur `.stitle` et `[data-stop]`), formulaire Web3Forms, bouton lecture de la Demo Reel.
 - `js/projects.js` + `data/projects.json` : cartes de projets (`data-projects="featured"` avec `data-layout="bento"`, ou `"all"`). Champs : `title, category, period, team, role, pitch, hook, metric, kind, status, url, thumb, hover, featured` et bloc `fr` pour la traduction. `data-base` = chemin des données/médias, `data-link-base` = chemin des liens (pour rester dans la bonne langue).
 - `js/abyss.js` + `data/abyss.json` : feuille de route et devlog d'Abyss.
-- Médias : `assets/img/…`, `assets/video/…` (Demo Reel : `assets/video/reel/demo-reel.mp4`), CV EN/FR en PDF dans `assets/`.
+- Médias : `assets/img/…`, `assets/video/…` (Demo Reel : `assets/video/reel/demo-reel.mp4`), CV EN/FR en PDF **à la racine**, noms courts pour LinkedIn : `Esteban-Lafargue-CV-EN.pdf` et `Esteban-Lafargue-CV-FR.pdf` (https://esteban-lafargue.github.io/Esteban-Lafargue-CV-EN.pdf). Ne pas les renommer ni les déplacer : ces URL sont partagées sur LinkedIn. Pour mettre à jour un CV, remplacer le fichier sous le même nom.
 
 ## Workflow obligatoire à chaque modification
 1. Modifier les pages **anglaises** (et `data/*.json` si besoin).
