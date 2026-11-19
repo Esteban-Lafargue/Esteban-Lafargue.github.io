@@ -27,7 +27,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 
 ## Workflow obligatoire à chaque modification
 1. Modifier les pages **anglaises** (et `data/*.json` si besoin).
-2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=29' --include=*.html . | xargs sed -i 's/v=29/v=30/g'`). Version actuelle : **v=29**.
+2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=39' --include=*.html . | xargs sed -i 's/v=39/v=40/g'`). Version actuelle : **v=39**.
 3. Traductions : `python3 tools/build_fr.py` (nécessite `beautifulsoup4`). Il doit afficher **0 missing**. Sinon, ajouter les clés listées dans `tools/i18n/missing.json` dans un fichier `tools/i18n/fr-NN-sujet.json` (clé = HTML interne anglais, espaces normalisés ; valeur = HTML français), puis relancer.
    - Nouvelle page → l'ajouter à `PAGES` dans `tools/build_fr.py`.
 4. Vérifier visuellement (bureau 1440 px + mobile 390 px, pas de défilement horizontal) : `python3 -m http.server` puis capture Playwright ou navigateur.
@@ -44,7 +44,9 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 - Sources vidéo de la Demo Reel : `F:\Portfolio\Video Demo Reel` (PC d'Esteban).
 
 ## Design
-**Mots d'ordre : satisfaisant, agréable et vivant.** Du *gamefeel* / *juice* comme dans un jeu : chaque action (scroll, survol, clic, arrivée sur une section) donne un retour net et plaisant (pop, onde, lueur, léger rebond), sans gêner la lecture. Toujours respecter `prefers-reduced-motion`. Le site doit paraître vivant (fond animé discret : impulsions sur la grille, lueur sous la souris, onde + impulsions au clic sur la grille vide), sans jamais déconcentrer de la lecture. Ex. : le rail s'arrête pile sur son dernier point et chaque point « pop » ; les chiffres clés comptent ; les titres de section « pop ». Effets regroupés en fin de `css/style.css` (« Alive + juice ») et `js/main.js` §9-11.
+**Mots d'ordre : satisfaisant, agréable et vivant.** Du *gamefeel* / *juice* comme dans un jeu : chaque action (scroll, survol, clic, arrivée sur une section) donne un retour net et plaisant (pop, onde, lueur, léger rebond), sans gêner la lecture. Toujours respecter `prefers-reduced-motion`. Le site doit paraître vivant (fond animé discret : impulsions sur la grille, lueur sous la souris, onde + impulsions au clic sur la grille vide), sans jamais déconcentrer de la lecture. Ex. : le rail s'arrête pile sur son dernier point et chaque point « pop » ; les chiffres clés comptent ; les titres de section « pop ». Effets regroupés en fin de `css/style.css` (« Alive + juice ») et `js/main.js` §9-14.
+Effets validés par Esteban (ne pas en ajouter sans son accord ; « c'est un portfolio, pas un jeu ») : cartes de projets inclinées vers la souris + reflet + écrasement au clic (§12) ; transitions entre pages : fondu + fil fin en haut, pas de rideau (§13) ; impulsion d'exécution sur l'en-tête des nodes au survol, pins de BP_Esteban en cascade ; téléchargement du CV = particules + toast « CV acquired ✓ » sous le bouton (§14) ; son « blip » très léger et varié au clic sur la grille (Web Audio, gamme pentatonique) ; l'explosion du clic détruit les impulsions qu'elle touche (éclats + « pop ») ; compteur discret « Pulses destroyed » en haut à droite (sessionStorage).
+Procédure gamefeel : un effet = un commit, mis en ligne, puis validé ou annulé (`git revert`) par Esteban. Rappeler Ctrl+F5 page par page (GitHub Pages met les pages en cache 10 min).
 
 Univers du CV : fond très sombre, couleurs par section, « pins » et nodes Blueprint, Poppins + JetBrains Mono.
 Tout élément cliquable doit le montrer (survol + bouton visible au repos, utile sur mobile). Menu identique partout :
