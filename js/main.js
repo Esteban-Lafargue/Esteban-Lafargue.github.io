@@ -436,8 +436,8 @@
   addEventListener('pageshow', () => document.querySelectorAll('a.card.is-squash').forEach((c) => c.classList.remove('is-squash')));
 })();
 
-/* 13. Juice: page transitions. A Blueprint wire sweeps across and draws a curtain on the way out,
-   then keeps sweeping to uncover the next page. Internal links only; respects reduced motion. */
+/* 13. Juice: page transitions. The page dims softly while a thin Blueprint wire draws along the top,
+   then the next page fades in with a slight rise. Internal links only; respects reduced motion. */
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -452,7 +452,9 @@
     root.classList.remove('is-arriving');
     requestAnimationFrame(() => requestAnimationFrame(() => {
       wipe.classList.remove('is-covered'); wipe.classList.add('is-in');
-      setTimeout(() => wipe.classList.remove('is-in'), 500);
+      const main = document.querySelector('main');
+      if (main) main.classList.add('is-entering');
+      setTimeout(() => { wipe.classList.remove('is-in'); if (main) main.classList.remove('is-entering'); }, 600);
     }));
   }
   addEventListener('pageshow', (e) => { if (e.persisted) wipe.className = 'wipe'; });
@@ -461,7 +463,7 @@
     if (reduce) { location.href = href; return; }
     try { sessionStorage.setItem('wipe', '1'); } catch (err) { /* private mode: no arrival sweep */ }
     wipe.className = 'wipe is-out';
-    setTimeout(() => { location.href = href; }, 300);
+    setTimeout(() => { location.href = href; }, 400);
   };
   window.juiceGo = go;
 
