@@ -444,6 +444,20 @@ main.is-entering { animation: page-rise .55s cubic-bezier(.2, .7, .3, 1); }
 html.is-arriving::after { content: ""; position: fixed; inset: 0; z-index: 9999; background: var(--bg); opacity: .9; animation: wipe-fallback .3s ease 1.2s forwards; }
 @keyframes wipe-fallback { to { opacity: 0; visibility: hidden; } }
 
+/* Blueprint nodes: hovering a node runs it. An exec pulse travels along its header, the ƒ lights up,
+   and on the profile node the output pins fire one after another */
+.node__head { position: relative; }
+.node__head::after { content: ""; position: absolute; left: -90px; bottom: 0; width: 90px; height: 2px; border-radius: 2px; pointer-events: none; opacity: 0; background: linear-gradient(90deg, transparent, var(--c)); box-shadow: 0 0 8px var(--c); }
+.node:hover > .node__head::after { animation: exec-pulse .8s cubic-bezier(.4, 0, .2, 1); }
+@keyframes exec-pulse { 0% { left: -90px; opacity: 0; } 15% { opacity: 1; } 80% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+.node:hover > .node__head .node__icon { animation: exec-icon .6s ease; }
+@keyframes exec-icon { 30% { color: var(--c); text-shadow: 0 0 10px var(--c); } }
+.hero__node:hover .outputs li .pin { animation: pin-fire .45s cubic-bezier(.34, 1.8, .64, 1) .35s; }
+.hero__node:hover .outputs li:nth-child(2) .pin { animation-delay: .45s; }
+.hero__node:hover .outputs li:nth-child(3) .pin { animation-delay: .55s; }
+.hero__node:hover .outputs li:nth-child(4) .pin { animation-delay: .65s; }
+@keyframes pin-fire { 40% { transform: scale(1.6); box-shadow: 0 0 14px var(--c); } }
+
 @media (prefers-reduced-motion: reduce) {
   .btn:active { transform: none; }
   .btn--primary::after { display: none; }
@@ -453,4 +467,6 @@ html.is-arriving::after { content: ""; position: fixed; inset: 0; z-index: 9999;
   a.card::after { display: none; }
   .wipe, html.is-arriving::after { display: none; }
   main.is-entering { animation: none; }
+  .node__head::after { display: none; }
+  .node:hover > .node__head .node__icon, .hero__node:hover .outputs li .pin { animation: none; }
 }
