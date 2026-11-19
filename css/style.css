@@ -471,6 +471,23 @@ a.is-looted { animation: loot-pop .4s cubic-bezier(.34, 1.8, .64, 1); }
 .loot__pin { width: 10px; height: 10px; border-radius: 50%; background: var(--c-gameplay); box-shadow: 0 0 10px var(--c-gameplay); }
 .loot b { color: var(--c-gameplay); }
 
+/* destroyed-pulse counter, top right (js §9) */
+.kills { --k: var(--ac); position: fixed; right: 16px; top: 80px; z-index: 9; display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 10px; border-radius: 999px;
+  background: #050505b3; backdrop-filter: blur(6px); border: 1px solid color-mix(in srgb, var(--k) 40%, #ffffff14); font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint, #8a8a8a);
+  opacity: 0; transform: translateY(-6px) scale(.9); transition: opacity .3s, transform .45s cubic-bezier(.34, 1.6, .64, 1), border-color .3s; pointer-events: none; }
+.kills.is-on { opacity: .85; transform: none; }
+.kills__pin { width: 8px; height: 8px; border-radius: 50%; background: var(--k); box-shadow: 0 0 8px var(--k); transition: background .3s, box-shadow .3s; }
+.kills__num { position: relative; display: inline-grid; min-width: 2ch; height: 1.3em; overflow: hidden; font-size: 14px; font-weight: 600; letter-spacing: 0; color: var(--text-strong); text-align: right; }
+.kills__num > span { grid-area: 1 / 1; line-height: 1.3em; }
+.kills__num > .is-in { animation: kill-in .38s cubic-bezier(.34, 1.5, .64, 1); }
+.kills__num > .is-out { animation: kill-out .3s ease-in forwards; }
+@keyframes kill-in { from { transform: translateY(100%); opacity: 0; } }
+@keyframes kill-out { to { transform: translateY(-100%); opacity: 0; } }
+.kills.is-bump { animation: kill-bump .35s cubic-bezier(.34, 1.8, .64, 1); opacity: 1; }
+@keyframes kill-bump { 35% { transform: scale(1.1); box-shadow: 0 0 18px color-mix(in srgb, var(--k) 45%, transparent); } }
+.kills__plus { position: absolute; right: 10px; top: 100%; font: 600 11px var(--mono); color: var(--k); animation: kill-plus .8s ease-out forwards; }
+@keyframes kill-plus { from { transform: translateY(-4px); opacity: 1; } to { transform: translateY(14px); opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) {
   .btn:active { transform: none; }
   .btn--primary::after { display: none; }

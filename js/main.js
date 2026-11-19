@@ -284,6 +284,37 @@
     }
   };
 
+  // destroyed-pulse counter, top right under the menu. Shown from the first kill, kept for the visit
+  const FRL = document.documentElement.lang === 'fr';
+  let kills = 0, killBox = null, killNum = null;
+  try { kills = parseInt(sessionStorage.getItem('pulseKills'), 10) || 0; } catch (err) { /* private mode */ }
+  const placeKills = () => { const nav = document.querySelector('.nav'); if (killBox) killBox.style.top = `${(nav ? nav.getBoundingClientRect().height : 64) + 12}px`; };
+  const makeKills = () => {
+    killBox = document.createElement('div');
+    killBox.className = 'kills'; killBox.setAttribute('aria-hidden', 'true');
+    killBox.innerHTML = `<span class="kills__pin"></span><span class="kills__lbl">${FRL ? 'Impulsions détruites' : 'Pulses destroyed'}</span><span class="kills__num"><span>${kills}</span></span>`;
+    document.body.appendChild(killBox);
+    killNum = killBox.querySelector('.kills__num');
+    placeKills(); addEventListener('resize', placeKills);
+    requestAnimationFrame(() => killBox.classList.add('is-on'));
+  };
+  const addKill = (c) => {
+    kills++;
+    try { sessionStorage.setItem('pulseKills', kills); } catch (err) { /* private mode */ }
+    if (!killBox) makeKills();
+    killBox.style.setProperty('--k', c);
+    // odometer: the old number rolls up and out, the new one rolls in from below
+    const old = killNum.lastElementChild, nu = document.createElement('span');
+    nu.textContent = kills; nu.className = 'is-in';
+    killNum.appendChild(nu);
+    if (old) { old.className = 'is-out'; setTimeout(() => old.remove(), 400); }
+    killBox.classList.remove('is-bump'); void killBox.offsetWidth; killBox.classList.add('is-bump');
+    const plus = document.createElement('span');
+    plus.className = 'kills__plus'; plus.textContent = '+1';
+    killBox.appendChild(plus); setTimeout(() => plus.remove(), 800);
+  };
+  if (kills > 0) makeKills();
+
   const frame = (now) => {
     const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
     ctx.clearRect(0, 0, w, h);
@@ -349,7 +380,7 @@
           const a = (6.283 * k) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
           debris.push({ x: hx, y: hy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
         }
-        setTimeout(() => pop(hx / w), i * 70);
+        setTimeout(() => { pop(hx / w); addKill(p.c); }, i * 70);
       });
     }
 
