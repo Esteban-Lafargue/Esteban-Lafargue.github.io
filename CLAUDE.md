@@ -27,7 +27,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 
 ## Workflow obligatoire à chaque modification
 1. Modifier les pages **anglaises** (et `data/*.json` si besoin).
-2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=27' --include=*.html . | xargs sed -i 's/v=27/v=28/g'`). Version actuelle : **v=27**.
+2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=28' --include=*.html . | xargs sed -i 's/v=28/v=29/g'`). Version actuelle : **v=28**.
 3. Traductions : `python3 tools/build_fr.py` (nécessite `beautifulsoup4`). Il doit afficher **0 missing**. Sinon, ajouter les clés listées dans `tools/i18n/missing.json` dans un fichier `tools/i18n/fr-NN-sujet.json` (clé = HTML interne anglais, espaces normalisés ; valeur = HTML français), puis relancer.
    - Nouvelle page → l'ajouter à `PAGES` dans `tools/build_fr.py`.
 4. Vérifier visuellement (bureau 1440 px + mobile 390 px, pas de défilement horizontal) : `python3 -m http.server` puis capture Playwright ou navigateur.
@@ -44,7 +44,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 - Sources vidéo de la Demo Reel : `F:\Portfolio\Video Demo Reel` (PC d'Esteban).
 
 ## Design
-**Mots d'ordre : satisfaisant, agréable et vivant.** Du *gamefeel* / *juice* comme dans un jeu : chaque action (scroll, survol, clic, arrivée sur une section) donne un retour net et plaisant (pop, onde, lueur, léger rebond), sans gêner la lecture. Toujours respecter `prefers-reduced-motion`. Le site doit paraître vivant (fond animé discret : impulsions sur la grille, lueur sous la souris), sans jamais déconcentrer de la lecture. Ex. : le rail s'arrête pile sur son dernier point et chaque point « pop » ; les chiffres clés comptent ; les titres de section « pop ». Effets regroupés en fin de `css/style.css` (« Alive + juice ») et `js/main.js` §9-11.
+**Mots d'ordre : satisfaisant, agréable et vivant.** Du *gamefeel* / *juice* comme dans un jeu : chaque action (scroll, survol, clic, arrivée sur une section) donne un retour net et plaisant (pop, onde, lueur, léger rebond), sans gêner la lecture. Toujours respecter `prefers-reduced-motion`. Le site doit paraître vivant (fond animé discret : impulsions sur la grille, lueur sous la souris, onde + impulsions au clic sur la grille vide), sans jamais déconcentrer de la lecture. Ex. : le rail s'arrête pile sur son dernier point et chaque point « pop » ; les chiffres clés comptent ; les titres de section « pop ». Effets regroupés en fin de `css/style.css` (« Alive + juice ») et `js/main.js` §9-11.
 
 Univers du CV : fond très sombre, couleurs par section, « pins » et nodes Blueprint, Poppins + JetBrains Mono.
 Tout élément cliquable doit le montrer (survol + bouton visible au repos, utile sur mobile). Menu identique partout :

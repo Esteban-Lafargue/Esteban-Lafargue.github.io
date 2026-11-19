@@ -245,6 +245,7 @@
   const G = 32;
   const COLORS = ['#4da3ff', '#4fd8ff', '#b18cff', '#3ddc97', '#f2c14e'];
   const fine = matchMedia('(pointer: fine)').matches;
+  let rings = [];
   let w = 0, h = 0, pulses = [], mx = -1e4, my = -1e4, gx = -1e4, gy = -1e4, prev = 0, nextSpawn = 0;
 
   const size = () => {
@@ -284,19 +285,40 @@
       ctx.stroke();
     }
 
+    // click bursts: a ring and a glowing node at the clicked grid crossing
+    rings = rings.filter((r) => {
+      r.t += dt / 0.9;
+      if (r.t >= 1) return false;
+      const e = 1 - Math.pow(1 - r.t, 3), y = r.y - sy;
+      ctx.lineWidth = 2 * (1 - r.t) + 0.5;
+      ctx.strokeStyle = `rgba(${r.rgb},${0.6 * (1 - r.t)})`;
+      ctx.beginPath(); ctx.arc(r.x, y, 6 + e * 90, 0, 6.283); ctx.stroke();
+      ctx.fillStyle = `rgba(${r.rgb},${0.9 * (1 - r.t)})`;
+      ctx.beginPath(); ctx.arc(r.x, y, 4 * (1 - r.t) + 1.5 + (r.t < 0.15 ? 3 * (1 - r.t / 0.15) : 0), 0, 6.283); ctx.fill();
+      return true;
+    });
+
     // pulses
-    if (now > nextSpawn && pulses.length < (w < 700 ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
+    if (now > nextSpawn && pulses.filter((p) => !p.burst).length < (w < 700 ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
     ctx.lineWidth = 1.5;
     pulses = pulses.filter((p) => {
       p.pos += p.dir * p.speed * dt;
-      const head = p.pos, tail = p.pos - p.dir * p.len;
+      const head = p.pos;
+      let tail = p.pos - p.dir * p.len;
+      if (p.burst) { // clicked pulses start at the clicked node and fade out
+        if ((tail - p.start) * p.dir < 0) tail = p.start;
+        p.life -= dt / p.ttl;
+        if (p.life <= 0) return false;
+      }
       let x1, y1, x2, y2;
       if (p.horiz) { const y = p.line - sy + 0.5; if (y < -10 || y > h + 10) return false; x1 = tail; x2 = head; y1 = y2 = y; }
       else { const x = p.line + 0.5; x1 = x2 = x; y1 = tail - sy; y2 = head - sy; }
       const g = ctx.createLinearGradient(x1, y1, x2, y2);
-      g.addColorStop(0, p.c + '00'); g.addColorStop(1, p.c + '70');
+      const a = p.burst ? Math.round(255 * Math.min(1, p.life * 1.4)).toString(16).padStart(2, '0') : '70';
+      g.addColorStop(0, p.c + '00'); g.addColorStop(1, p.c + a);
+      ctx.lineWidth = p.burst ? 2 : 1.5;
       ctx.strokeStyle = g; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-      ctx.fillStyle = p.c + 'aa'; ctx.beginPath(); ctx.arc(x2, y2, 2, 0, 6.283); ctx.fill();
+      ctx.fillStyle = p.c + (p.burst ? a : 'aa'); ctx.beginPath(); ctx.arc(x2, y2, p.burst ? 2.6 : 2, 0, 6.283); ctx.fill();
       const range = p.horiz ? w : sy + h;
       return p.dir > 0 ? tail < range + 10 : tail > (p.horiz ? -10 : sy - 10);
     });
@@ -309,6 +331,19 @@
     addEventListener('pointermove', (e) => { mx = e.clientX; my = e.clientY; if (gx < -1e3) { gx = mx; gy = my; } }, { passive: true });
     document.addEventListener('pointerleave', () => { mx = my = gx = gy = -1e4; });
   }
+  // click on the empty grid: the nearest crossing fires pulses along its four lines
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox';
+  const hex2rgb = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)).join(',');
+  addEventListener('click', (e) => {
+    if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
+    const x = Math.round(e.clientX / G) * G, yPage = Math.round((e.clientY + scrollY) / G) * G;
+    const c = COLORS[(Math.random() * COLORS.length) | 0];
+    rings.push({ x: x + 0.5, y: yPage + 0.5, t: 0, rgb: hex2rgb(c) });
+    for (const [horiz, dir] of [[1, 1], [1, -1], [0, 1], [0, -1]]) {
+      const start = horiz ? x : yPage;
+      pulses.push({ burst: true, horiz: !!horiz, line: horiz ? yPage : x, pos: start, start, dir, len: 70, speed: 380 + Math.random() * 120, c, life: 1, ttl: 0.9 + Math.random() * 0.3 });
+    }
+  });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(frame); } });
   requestAnimationFrame(frame);
 })();
