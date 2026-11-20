@@ -289,12 +289,17 @@ a.prow:hover, a.prow:focus-visible { color: var(--text); border-color: color-mix
 .prow__pitch { font-size: 14px; color: var(--text); }
 .prow__who { font-size: 13px; color: var(--text-muted); }
 .prow__cta { font: 13px var(--mono); color: var(--text-faint); white-space: nowrap; }
+.prow--thumb { grid-template-columns: 56px 156px 1fr auto; }
+.prow__thumb { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); background: var(--node-2); }
+.prow__thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 a.prow .prow__cta { color: var(--text-strong); border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line)); border-radius: 18px; padding: 8px 14px; transition: background .2s, color .2s; }
 a.prow:hover .prow__cta, a.prow:focus-visible .prow__cta { background: var(--c); color: #050505; }
 @media (max-width: 760px) {
   .spot { grid-template-columns: 1fr; }
   .prow { grid-template-columns: 1fr; gap: 8px; padding: 14px 16px; }
   .prow__cta { justify-self: start; white-space: normal; }
+  .prow--thumb { grid-template-columns: 1fr; }
+  .prow__thumb { aspect-ratio: 2.14 / 1; }
   .filters { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   .filters::-webkit-scrollbar { display: none; }
   .filter { flex: none; }

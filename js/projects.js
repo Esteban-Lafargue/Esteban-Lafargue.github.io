@@ -100,15 +100,16 @@
   }
 
   /* Compact row (projects page): one line per smaller project, no empty image */
-  function row(p, cats, linkBase) {
+  function row(p, cats, base, linkBase) {
     const cat = cats[p.category] || { label: p.category, color: '--c-projects' };
     const linked = p.url && !['soon', 'wip', 'info'].includes(p.status);
     const tag = linked ? 'a' : 'div';
     const href = linked ? ` href="${esc(abs(p.url, linkBase))}"` : '';
     const ext = linked && /^https?:/.test(p.url) ? ' target="_blank" rel="noopener"' : '';
     const who = [L(p, 'team'), L(p, 'role')].filter(known).map(esc).join(' · ');
-    return `<li class="reveal" data-skills="${esc((p.skills || []).join(' '))}"><${tag} class="prow${linked ? '' : ' prow--soon'}" style="--c:var(${cat.color})"${href}${ext}>
-      <span class="prow__year">${esc(p.date.slice(0, 4))}</span>
+    const thumb = p.thumb ? `<span class="prow__thumb"><img src="${esc(base + p.thumb)}" alt="" loading="lazy"></span>` : '';
+    return `<li class="reveal" data-skills="${esc((p.skills || []).join(' '))}"><${tag} class="prow${linked ? '' : ' prow--soon'}${thumb ? ' prow--thumb' : ''}" style="--c:var(${cat.color})"${href}${ext}>
+      <span class="prow__year">${esc(p.date.slice(0, 4))}</span>${thumb}
       <span class="prow__main">
         <span class="prow__title">${esc(L(p, 'title'))}<span class="chip">${esc(CL(cat))}</span></span>
         <span class="prow__pitch">${esc(L(p, 'pitch'))}</span>
@@ -169,7 +170,7 @@
       </section>
       <section class="ptier" aria-labelledby="ptier-more">
         <h2 id="ptier-more" class="stitle" style="--c:var(--ac)"><span class="stitle__tag">${T.more}</span><span class="stitle__rule"></span></h2>
-        <ul class="plist">${rest.map((p) => row(p, cats, linkBase)).join('')}</ul>
+        <ul class="plist">${rest.map((p) => row(p, cats, base, linkBase)).join('')}</ul>
       </section>`;
     wireHover(host);
     const apply = (f) => {
