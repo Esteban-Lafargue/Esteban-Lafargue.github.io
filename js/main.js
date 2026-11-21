@@ -235,7 +235,8 @@
 /* 9. Living background: soft light pulses travel along the grid, and the grid glows a little
       under the cursor. Low contrast, behind everything, paused when the tab is hidden. */
 (() => {
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // soft mode when the system asks for less motion: slower, fewer pulses, shapes don't spin
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const cv = document.createElement('canvas');
   cv.className = 'bg-live';
   cv.setAttribute('aria-hidden', 'true');
@@ -273,7 +274,7 @@
   };
   const spawn = () => {
     const horiz = Math.random() < 0.55, dir = Math.random() < 0.5 ? 1 : -1;
-    const len = 90 + Math.random() * 140, speed = 45 + Math.random() * 70;
+    const len = 90 + Math.random() * 140, speed = (45 + Math.random() * 70) * (calm ? 0.5 : 1);
     const c = COLORS[(Math.random() * COLORS.length) | 0];
     if (horiz) { // page coordinates, so the pulse sticks to the scrolling grid
       const line = Math.floor((scrollY + Math.random() * h) / G) * G;
@@ -385,7 +386,7 @@
     }
 
     // pulses
-    if (now > nextSpawn && pulses.filter((p) => !p.burst).length < (w < 700 ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
+    if (now > nextSpawn && pulses.filter((p) => !p.burst).length < (w < 700 || calm ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
     ctx.lineWidth = 1.5;
     pulses = pulses.filter((p) => {
       p.pos += p.dir * p.speed * dt;
@@ -468,7 +469,7 @@
     const c = COLORS[(Math.random() * COLORS.length) | 0];
     const kind = SHAPES[(Math.random() * SHAPES.length) | 0];
     blip(e.clientX / w);
-    rings.push({ x: x + 0.5, y: yPage + 0.5, t: 0, rgb: hex2rgb(c), kind, size: 80 + Math.random() * 30, rot: 0, spin: kind === 'circle' || kind === 'square' ? 0 : (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.8) });
+    rings.push({ x: x + 0.5, y: yPage + 0.5, t: 0, rgb: hex2rgb(c), kind, size: 80 + Math.random() * 30, rot: 0, spin: calm || kind === 'circle' || kind === 'square' ? 0 : (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.8) });
     for (const [horiz, dir] of [[1, 1], [1, -1], [0, 1], [0, -1]]) {
       const start = horiz ? x : yPage;
       pulses.push({ burst: true, horiz: !!horiz, line: horiz ? yPage : x, pos: start, start, dir, len: 70, speed: 380 + Math.random() * 120, c, life: 1, ttl: 0.9 + Math.random() * 0.3 });
@@ -482,10 +483,8 @@
 (() => {
   const nums = [...document.querySelectorAll('.proof dt span')].filter((s) => /^\d+\+?$/.test(s.textContent.trim()));
   if (!nums.length || !('IntersectionObserver' in window)) return;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const run = (s) => {
     const txt = s.textContent.trim(), n = parseInt(txt, 10), plus = txt.endsWith('+') ? '+' : '';
-    if (reduce) return;
     const t0 = performance.now(), dur = 900 + n * 6;
     const tick = (now) => {
       const t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 4);
@@ -505,7 +504,7 @@
 
 /* 11. Juice: a soft light follows the cursor inside cards and nodes */
 (() => {
-  if (!matchMedia('(pointer: fine)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!matchMedia('(pointer: fine)').matches) return;
   const SEL = 'a.card, a.next-proj, .hero__node, .node.direct, .tuto-card';
   document.addEventListener('pointermove', (e) => {
     const el = e.target.closest && e.target.closest(SEL);
@@ -549,10 +548,9 @@
 })();
 
 /* 13. Juice: page transitions. The page dims softly while a thin Blueprint wire draws along the top,
-   then the next page fades in with a slight rise. Internal links only; respects reduced motion. */
+   then the next page fades in with a slight rise. Internal links only; soft mode (fade, no rise) on reduced motion. */
 (() => {
   const root = document.documentElement;
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wipe = document.createElement('div');
   wipe.className = 'wipe'; wipe.setAttribute('aria-hidden', 'true');
   wipe.innerHTML = '<span class="wipe__wire"></span>';
@@ -572,7 +570,6 @@
   addEventListener('pageshow', (e) => { if (e.persisted) wipe.className = 'wipe'; });
 
   const go = (href) => {
-    if (reduce) { location.href = href; return; }
     try { sessionStorage.setItem('wipe', '1'); } catch (err) { /* private mode: no arrival sweep */ }
     wipe.className = 'wipe is-out';
     setTimeout(() => { location.href = href; }, 400);

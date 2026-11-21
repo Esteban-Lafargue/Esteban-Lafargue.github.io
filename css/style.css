@@ -128,7 +128,6 @@ a:hover { color: var(--ac); }
 .wire.is-live .wire__live { stroke-dashoffset: 0; }
 
 @media (prefers-reduced-motion: reduce) {
-  .wire .wire__live { stroke-dashoffset: 0; transition: none; }
   .status::before { animation: none; }
 }
 
@@ -208,7 +207,7 @@ a:hover { color: var(--ac); }
 /* ---------- Reveal on scroll ---------- */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.is-live { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .reveal { transform: none; transition: opacity .7s ease; } } /* soft mode: fade only */
 .no-js .reveal { opacity: 1; transform: none; }
 
 @media (max-width: 640px) {
@@ -249,7 +248,7 @@ main.wrap { position: relative; }
 @keyframes rail-ring-end { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(4.5); } }
 @keyframes rail-flash { 0% { box-shadow: 0 0 10px var(--ac); } 30% { box-shadow: 0 0 22px var(--ac), 0 0 6px #fff; } 100% { box-shadow: 0 0 10px var(--ac); } }
 @media (max-width: 640px) { .rail__stop--end { width: 18px; height: 18px; margin-top: -9px; left: -8px; } }
-@media (prefers-reduced-motion: reduce) { .rail__fill { transition: none; } .rail__stop.is-hit, .rail__stop.is-hit::before, .rail.is-end .rail__fill { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .rail__stop.is-hit, .rail__stop.is-hit::before, .rail.is-end .rail__fill { animation: none; } }
 
 /* ---------- Project cards (data-driven) ---------- */
 .card__cat { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
@@ -528,13 +527,12 @@ a.is-looted { animation: loot-pop .4s cubic-bezier(.34, 1.8, .64, 1); }
 @media (prefers-reduced-motion: reduce) {
   .btn:active { transform: none; }
   .btn--primary::after { display: none; }
-  .js .stitle .stitle__tag, .js .stitle .stitle__rule { opacity: 1; transform: none; transition: none; }
+  .js .stitle .stitle__tag { transform: none; }
+  .js .stitle.is-live .stitle__tag { transition: opacity .4s; }
   .proof dt span.is-counted { animation: none; }
   a.card.is-tilt, a.card.is-squash { transform: none; animation: none; }
   a.card::after { display: none; }
-  .wipe, html.is-arriving::after { display: none; }
   main.is-entering { animation: none; }
-  .node__head::after { display: none; }
   a.is-looted { animation: none; }
   .loot, .loot.is-on { transition: opacity .2s; transform: translate(-50%, 0); }
   .node:hover > .node__head .node__icon, .hero__node:hover .outputs li .pin { animation: none; }
