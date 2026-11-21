@@ -13,12 +13,12 @@
     },
     "personal": {
       "label": "Personal",
-      "color": "--c-projects",
+      "color": "--c-human",
       "label_fr": "Personnel"
     },
     "jam": {
       "label": "Game Jams",
-      "color": "--c-soft",
+      "color": "--c-human",
       "label_fr": "Game Jams"
     },
     "rnd": {
@@ -28,7 +28,7 @@
     },
     "teaching": {
       "label": "Teaching",
-      "color": "--c-gameplay",
+      "color": "--c-edu",
       "label_fr": "Enseignement"
     }
   },
@@ -36,7 +36,7 @@
     "ai": {
       "label": "AI",
       "label_fr": "IA",
-      "color": "--c-gameplay"
+      "color": "--c-ai"
     },
     "tools": {
       "label": "Tools & pipelines",
@@ -46,12 +46,12 @@
     "gameplay": {
       "label": "Gameplay systems",
       "label_fr": "Systèmes de gameplay",
-      "color": "--c-projects"
+      "color": "--c-gameplay"
     },
     "ui": {
       "label": "UI",
       "label_fr": "UI",
-      "color": "--c-soft"
+      "color": "--c-profile"
     },
     "teaching": {
       "label": "Teaching",
@@ -379,7 +379,7 @@
       "status": "devlog",
       "featured": 4,
       "url": "abyss/",
- "thumb": "assets/img/abyss/thumb.jpg",
+      "thumb": "assets/img/abyss/thumb.jpg",
       "fr": {
         "period": "oct. 2026 – en cours",
         "team": "Solo",
