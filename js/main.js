@@ -272,20 +272,41 @@
     cv.width = w * dpr; cv.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
+  // the travelling pulses are little bugs crawling along the grid; now and then a rare golden "critical bug"
+  let nextCrit = performance.now() + 25000 + Math.random() * 20000, bugId = 0;
   const spawn = () => {
     const horiz = Math.random() < 0.55, dir = Math.random() < 0.5 ? 1 : -1;
-    const len = 90 + Math.random() * 140, speed = (45 + Math.random() * 70) * (calm ? 0.5 : 1);
-    const c = COLORS[(Math.random() * COLORS.length) | 0];
-    if (horiz) { // page coordinates, so the pulse sticks to the scrolling grid
+    const crit = performance.now() > nextCrit;
+    if (crit) nextCrit = performance.now() + 45000 + Math.random() * 30000;
+    const len = crit ? 60 : 90 + Math.random() * 140, speed = (45 + Math.random() * 70) * (calm ? 0.5 : 1) * (crit ? 0.8 : 1);
+    const c = crit ? '#ffd166' : COLORS[(Math.random() * COLORS.length) | 0];
+    const phase = Math.random() * 6.283;
+    if (horiz) { // page coordinates, so the bug sticks to the scrolling grid
       const line = Math.floor((scrollY + Math.random() * h) / G) * G;
-      pulses.push({ horiz, line, pos: dir > 0 ? -len : w + len, dir, len, speed, c });
+      pulses.push({ horiz, line, pos: dir > 0 ? -len : w + len, dir, len, speed, c, crit, phase });
     } else {
       const line = Math.floor((Math.random() * w) / G) * G;
-      pulses.push({ horiz, line, pos: dir > 0 ? scrollY - len : scrollY + h + len, dir, len, speed, c });
+      pulses.push({ horiz, line, pos: dir > 0 ? scrollY - len : scrollY + h + len, dir, len, speed, c, crit, phase });
     }
   };
+  // a tiny beetle: body, head, antennae, three pairs of legs that scuttle
+  const drawBug = (x, y, ang, c, t, crit) => {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+    if (crit) { ctx.shadowColor = c; ctx.shadowBlur = 10; }
+    ctx.strokeStyle = c + 'cc'; ctx.lineWidth = 1; ctx.beginPath();
+    for (let i = -1; i <= 1; i++) {
+      const wig = Math.sin(t * 22 + i * 2) * 0.9;
+      ctx.moveTo(i * 2.2, 0); ctx.lineTo(i * 2.2 + wig, -4.6);
+      ctx.moveTo(i * 2.2, 0); ctx.lineTo(i * 2.2 - wig, 4.6);
+    }
+    ctx.moveTo(5, -0.8); ctx.lineTo(7.6, -2.8); ctx.moveTo(5, 0.8); ctx.lineTo(7.6, 2.8);
+    ctx.stroke();
+    ctx.fillStyle = c; ctx.beginPath(); ctx.ellipse(-0.4, 0, 4, 2.7, 0, 0, 6.283); ctx.fill();
+    ctx.beginPath(); ctx.arc(4.4, 0, 1.7, 0, 6.283); ctx.fill();
+    ctx.restore();
+  };
 
-  // destroyed-pulse counter, top right under the menu. Shown from the first kill, kept for the visit
+  // fixed-bugs counter, top right under the menu. Shown from the first kill, kept for the visit
   const FRL = document.documentElement.lang === 'fr';
   let kills = 0, killBox = null, killNum = null;
   try { kills = parseInt(sessionStorage.getItem('pulseKills'), 10) || 0; } catch (err) { /* private mode */ }
@@ -293,14 +314,14 @@
   const makeKills = () => {
     killBox = document.createElement('div');
     killBox.className = 'kills'; killBox.setAttribute('aria-hidden', 'true');
-    killBox.innerHTML = `<span class="kills__pin"></span><span class="kills__lbl">${FRL ? 'Impulsions détruites' : 'Pulses destroyed'}</span><span class="kills__num"><span>${kills}</span></span>`;
+    killBox.innerHTML = `<span class="kills__pin"></span><span class="kills__lbl">${FRL ? 'Bugs corrigés' : 'Bugs fixed'}</span><span class="kills__num"><span>${kills}</span></span>`;
     document.body.appendChild(killBox);
     killNum = killBox.querySelector('.kills__num');
     placeKills(); addEventListener('resize', placeKills);
     requestAnimationFrame(() => killBox.classList.add('is-on'));
   };
-  const addKill = (c) => {
-    kills++;
+  const addKill = (c, n = 1) => {
+    kills += n;
     try { sessionStorage.setItem('pulseKills', kills); } catch (err) { /* private mode */ }
     if (!killBox) makeKills();
     killBox.style.setProperty('--k', c);
@@ -311,7 +332,7 @@
     if (old) { old.className = 'is-out'; setTimeout(() => old.remove(), 400); }
     killBox.classList.remove('is-bump'); void killBox.offsetWidth; killBox.classList.add('is-bump');
     const plus = document.createElement('span');
-    plus.className = 'kills__plus'; plus.textContent = '+1';
+    plus.className = 'kills__plus'; plus.textContent = `+${n}`;
     killBox.appendChild(plus); setTimeout(() => plus.remove(), 800);
   };
   if (kills > 0) makeKills();
@@ -353,7 +374,14 @@
       if (d.t >= 1) return false;
       d.vx *= 0.92; d.vy *= 0.92; d.x += d.vx * dt; d.y += d.vy * dt;
       const y = d.y - sy, a = 1 - d.t;
-      if (d.flash) {
+      if (d.label) { // "BUG_042 · FIXED" debug bubble that rises and fades
+        const e = 1 - Math.pow(1 - d.t, 3), ly = y - 16 - 12 * e, al = d.t < 0.7 ? 1 : (1 - d.t) / 0.3;
+        ctx.font = '600 10px "JetBrains Mono", ui-monospace, monospace';
+        const tw = ctx.measureText(d.label).width;
+        ctx.fillStyle = `rgba(5,5,5,${0.75 * al})`; ctx.fillRect(d.x - tw / 2 - 6, ly - 9, tw + 12, 15);
+        ctx.strokeStyle = `rgba(${d.rgb},${0.6 * al})`; ctx.lineWidth = 1; ctx.strokeRect(d.x - tw / 2 - 5.5, ly - 8.5, tw + 11, 14);
+        ctx.fillStyle = `rgba(${d.rgb},${al})`; ctx.textAlign = 'center'; ctx.fillText(d.label, d.x, ly + 2); ctx.textAlign = 'start';
+      } else if (d.flash) {
         ctx.fillStyle = `rgba(${d.rgb},${0.35 * a})`;
         ctx.beginPath(); ctx.arc(d.x, y, 4 + 18 * (1 - a * a), 0, 6.283); ctx.fill();
       } else {
@@ -367,28 +395,44 @@
     if (rings.length) {
       const hits = [];
       for (const p of pulses) {
-        if (p.burst) continue;
+        if (p.burst || p.frozen != null) continue;
         const hx = p.horiz ? p.pos : p.line + 0.5, hy = p.horiz ? p.line : p.pos; // page coordinates
         const byRing = rings.some((r) => r.t < 0.8 && Math.hypot(hx - r.x, hy - r.y) < 6 + (1 - Math.pow(1 - r.t, 3)) * r.size + 6);
         const byShot = !byRing && pulses.some((q) => q.burst && q.life > 0.2 && Math.hypot(hx - (q.horiz ? q.pos : q.line), hy - (q.horiz ? q.line : q.pos)) < 14);
         if (byRing || byShot) hits.push(p);
       }
-      hits.forEach((p, i) => {
-        const hx = p.horiz ? p.pos : p.line + 0.5, hy = p.horiz ? p.line : p.pos, rgb = hex2rgb(p.c);
-        pulses.splice(pulses.indexOf(p), 1);
-        debris.push({ flash: true, x: hx, y: hy, vx: 0, vy: 0, t: 0, ttl: 0.35, rgb });
-        for (let k = 0; k < 10; k++) {
-          const a = (6.283 * k) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
-          debris.push({ x: hx, y: hy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
-        }
-        setTimeout(() => { pop(hx / w); addKill(p.c); }, i * 70);
-      });
+      // a hit bug freezes on a red breakpoint first, then it is fixed (see the pulses loop)
+      hits.forEach((p, i) => { p.frozen = -i * 0.07; p.id = ++bugId; });
     }
 
     // pulses
     if (now > nextSpawn && pulses.filter((p) => !p.burst).length < (w < 700 || calm ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
     ctx.lineWidth = 1.5;
     pulses = pulses.filter((p) => {
+      if (p.frozen != null) { // breakpoint: the bug stops, a red ring closes on it, then it pops
+        p.frozen += dt;
+        const hx = p.horiz ? p.pos : p.line + 0.5, hyP = p.horiz ? p.line + 0.5 : p.pos, y = hyP - sy;
+        if (p.frozen >= 0.3) {
+          const rgb = hex2rgb(p.c);
+          debris.push({ flash: true, x: hx, y: hyP, vx: 0, vy: 0, t: 0, ttl: 0.35, rgb });
+          for (let k = 0; k < 10; k++) {
+            const a = (6.283 * k) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
+            debris.push({ x: hx, y: hyP, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
+          }
+          const fixed = FRL ? 'CORRIGÉ' : 'FIXED';
+          debris.push({ label: p.crit ? `CRITICAL BUG · ${fixed}` : `BUG_${String(p.id).padStart(3, '0')} · ${fixed}`, x: hx, y: hyP, vx: 0, vy: 0, t: 0, ttl: 1.1, rgb: p.crit ? '255,209,102' : '61,220,151' });
+          pop(hx / w); addKill(p.c, p.crit ? 3 : 1);
+          return false;
+        }
+        const f = Math.max(0, p.frozen), k = Math.min(1, f / 0.14);
+        drawBug(hx, y, p.horiz ? (p.dir > 0 ? 0 : Math.PI) : (p.dir > 0 ? 1.5708 : -1.5708), p.c, p.phase, p.crit);
+        if (p.frozen >= 0) {
+          ctx.strokeStyle = `rgba(255,77,77,${0.9 * k})`; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(hx, y, 16 - 7 * k, 0, 6.283); ctx.stroke();
+          ctx.fillStyle = `rgba(255,77,77,${0.18 * k})`; ctx.fill();
+        }
+        return true;
+      }
       p.pos += p.dir * p.speed * dt;
       const head = p.pos;
       let tail = p.pos - p.dir * p.len;
@@ -402,10 +446,11 @@
       else { const x = p.line + 0.5; x1 = x2 = x; y1 = tail - sy; y2 = head - sy; }
       const g = ctx.createLinearGradient(x1, y1, x2, y2);
       const a = p.burst ? Math.round(255 * Math.min(1, p.life * 1.4)).toString(16).padStart(2, '0') : '70';
-      g.addColorStop(0, p.c + '00'); g.addColorStop(1, p.c + a);
+      g.addColorStop(0, p.c + '00'); g.addColorStop(1, p.c + (p.burst ? a : '45'));
       ctx.lineWidth = p.burst ? 2 : 1.5;
       ctx.strokeStyle = g; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-      ctx.fillStyle = p.c + (p.burst ? a : 'aa'); ctx.beginPath(); ctx.arc(x2, y2, p.burst ? 2.6 : 2, 0, 6.283); ctx.fill();
+      if (p.burst) { ctx.fillStyle = p.c + a; ctx.beginPath(); ctx.arc(x2, y2, 2.6, 0, 6.283); ctx.fill(); }
+      else drawBug(x2, y2, p.horiz ? (p.dir > 0 ? 0 : Math.PI) : (p.dir > 0 ? 1.5708 : -1.5708), p.c, calm ? 0 : now / 1000 + p.phase, p.crit);
       const range = p.horiz ? w : sy + h;
       return p.dir > 0 ? tail < range + 10 : tail > (p.horiz ? -10 : sy - 10);
     });
