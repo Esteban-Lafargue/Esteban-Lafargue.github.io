@@ -2,6 +2,13 @@
 (() => {
   'use strict';
 
+  /* 0. Interface colour test (temporary): ?ui=blue or ?ui=neutral, kept for the session */
+  try {
+    const q = new URLSearchParams(location.search).get('ui');
+    if (q) sessionStorage.setItem('el-ui', q);
+    if (sessionStorage.getItem('el-ui') === 'blue') document.documentElement.dataset.ui = 'blue';
+  } catch (e) { /* storage blocked: default colour */ }
+
   /* 1. Light up nodes, pins and wires as they enter the viewport */
   const live = document.querySelectorAll('.reveal, .wire, .node, .stitle');
   if ('IntersectionObserver' in window) {

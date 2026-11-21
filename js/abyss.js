@@ -40,7 +40,7 @@
     }
     if (log) {
       log.innerHTML = (data.devlog || []).map((e0) => { const e = FRL && e0.fr ? { ...e0, ...e0.fr } : e0; return `
-        <article class="node entry reveal is-live" style="--c:var(--ac)">
+        <article class="node entry reveal is-live" style="--c:var(--pc, var(--ac))">
           <div class="node__head"><span class="node__icon" aria-hidden="true">✎</span>${esc(e.title)}<span class="meta">${fmt(e.date)}</span></div>
           <div class="node__body">
             ${(e.tags || []).length ? `<div class="card__tags">${e.tags.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}

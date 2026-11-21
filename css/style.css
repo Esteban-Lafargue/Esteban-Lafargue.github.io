@@ -20,7 +20,9 @@
   --text-faint: #8a8a8a;
 
   /* Accent (switch to cyan #2de2e6 for the Unknown Worlds variant) */
-  --ac: #4da3ff;
+  /* Interface colour (menu, buttons, rail, links): never used by a topic.
+     Project pages set --pc (project colour) for their content instead. */
+  --ac: #e8e8e8;
 
   /* Section colours — same as the CV */
   --c-soft: #ff8a4c;
@@ -42,7 +44,8 @@
 }
 
 /* Optional theme, e.g. <html data-theme="abyss"> */
-[data-theme="abyss"] { --ac: #2de2e6; --halo: #0b3546; }
+html[data-ui="blue"] { --ac: #4da3ff; }
+[data-theme="abyss"] { --pc: #2de2e6; --halo: #0b3546; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -67,6 +70,7 @@ body {
 img, video { max-width: 100%; display: block; }
 a { color: var(--text-strong); text-decoration: none; }
 a:hover { color: var(--ac); }
+html:not([data-ui="blue"]) main a:not([class]):hover { text-decoration: underline; text-underline-offset: 3px; }
 :focus-visible { outline: 2px solid var(--ac); outline-offset: 3px; border-radius: 4px; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
@@ -107,7 +111,7 @@ a:hover { color: var(--ac); }
 .exec { display: inline-block; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 10px solid var(--text-strong); }
 
 /* ---------- Node (the core component) ---------- */
-.node { --c: var(--ac); border: 1px solid var(--line); border-radius: var(--radius); background: var(--node); overflow: hidden; box-shadow: 0 20px 60px #00000080; transition: border-color .3s, box-shadow .3s; }
+.node { --c: var(--pc, var(--ac)); border: 1px solid var(--line); border-radius: var(--radius); background: var(--node); overflow: hidden; box-shadow: 0 20px 60px #00000080; transition: border-color .3s, box-shadow .3s; }
 .node.is-live { border-color: color-mix(in srgb, var(--c) 45%, var(--line)); box-shadow: 0 20px 60px #00000080, 0 0 0 1px color-mix(in srgb, var(--c) 20%, transparent), 0 0 40px color-mix(in srgb, var(--c) 12%, transparent); }
 .node__head { display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 42%, var(--node)), var(--node) 85%); color: var(--text-strong); font-weight: 600; }
 .node__head .meta { margin-left: auto; font-family: var(--mono); font-size: 12px; font-weight: 400; color: #c4c4c4; }
@@ -115,7 +119,7 @@ a:hover { color: var(--ac); }
 .node__body { padding: 18px 20px; }
 
 /* ---------- Section title (framed, as on the CV) ---------- */
-.stitle { --c: var(--ac); display: flex; align-items: center; gap: 12px; margin: 0 0 24px; }
+.stitle { --c: var(--pc, var(--ac)); display: flex; align-items: center; gap: 12px; margin: 0 0 24px; }
 .stitle__tag { display: inline-flex; align-items: center; gap: 10px; border: 1.5px solid var(--c); background: color-mix(in srgb, var(--c) 13%, transparent); border-radius: 6px; padding: 6px 14px 6px 12px; font-size: 16px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--text-strong); }
 .stitle__tag::before { content: ""; width: 11px; height: 11px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); }
 .stitle__rule { flex: 1; height: 1.5px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, transparent), transparent); }
