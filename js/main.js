@@ -272,22 +272,46 @@
     cv.width = w * dpr; cv.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
-  // the travelling pulses are little bugs crawling along the grid; now and then a rare golden "critical bug"
-  let nextCrit = performance.now() + 25000 + Math.random() * 20000, bugId = 0;
-  const spawn = () => {
-    const horiz = Math.random() < 0.55, dir = Math.random() < 0.5 ? 1 : -1;
-    const crit = performance.now() > nextCrit;
-    if (crit) nextCrit = performance.now() + 45000 + Math.random() * 30000;
-    const len = crit ? 60 : 90 + Math.random() * 140, speed = (45 + Math.random() * 70) * (calm ? 0.5 : 1) * (crit ? 0.8 : 1);
-    const c = crit ? '#ffd166' : COLORS[(Math.random() * COLORS.length) | 0];
-    const phase = Math.random() * 6.283;
-    if (horiz) { // page coordinates, so the bug sticks to the scrolling grid
-      const line = Math.floor((scrollY + Math.random() * h) / G) * G;
-      pulses.push({ horiz, line, pos: dir > 0 ? -len : w + len, dir, len, speed, c, crit, phase });
-    } else {
-      const line = Math.floor((Math.random() * w) / G) * G;
-      pulses.push({ horiz, line, pos: dir > 0 ? scrollY - len : scrollY + h + len, dir, len, speed, c, crit, phase });
+  // little bugs crawl along the empty grid. They never walk over content: at each grid crossing they look
+  // ahead and turn (or go back) when the next crossing is covered by text, a card, an image... Now and then
+  // a rare golden "critical bug" shows up.
+  let bugs = [], nextCrit = performance.now() + 25000 + Math.random() * 20000, bugId = 0;
+  const BLOCK = 'a, button, input, textarea, select, label, video, img, svg, iframe, figure, table, form, .node, .card, p, h1, h2, h3, h4, h5, li, dl, dt, dd, span, small, strong, em, b, blockquote, figcaption, .btn, .nav, .lightbox, .stitle, .chip, .rail, .kills, .loot, .wipe';
+  const navH = () => { const n = document.querySelector('.nav'); return n ? n.getBoundingClientRect().bottom : 0; };
+  const blocked = (x, y) => { // viewport coordinates
+    if (x < 6 || x > w - 6 || y < navH() + 6 || y > h - 6) return true;
+    for (const [ox, oy] of [[0, 0], [12, 0], [-12, 0], [0, 12], [0, -12]]) {
+      const el = document.elementFromPoint(x + ox, y + oy);
+      if (!el) return true;
+      if (el.closest(BLOCK)) return true;
+      for (const n of el.childNodes) if (n.nodeType === 3 && n.textContent.trim()) return true;
     }
+    return false;
+  };
+  const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  const spawnBug = () => {
+    const sy = scrollY, nh = navH();
+    for (let k = 0; k < 14; k++) {
+      const x = Math.round((20 + Math.random() * (w - 40)) / G) * G, yv = Math.round((nh + 20 + Math.random() * (h - nh - 40) + sy) / G) * G - sy;
+      if (blocked(x, yv)) continue;
+      const free = DIRS.filter(([dx, dy]) => !blocked(x + dx * G, yv + dy * G));
+      if (!free.length) continue;
+      const [dx, dy] = free[(Math.random() * free.length) | 0];
+      const crit = performance.now() > nextCrit;
+      if (crit) nextCrit = performance.now() + 45000 + Math.random() * 30000;
+      bugs.push({ x, y: yv + sy, dx, dy, tx: x + dx * G, ty: yv + sy + dy * G, ang: Math.atan2(dy, dx), speed: (34 + Math.random() * 30) * (calm ? 0.5 : 1) * (crit ? 0.8 : 1),
+        c: crit ? '#ffd166' : COLORS[(Math.random() * COLORS.length) | 0], crit, phase: Math.random() * 6.283, age: 0, life: 12 + Math.random() * 12 });
+      return;
+    }
+  };
+  const nextStep = (b) => { // at a crossing: keep going most of the time, else turn; never into content
+    const sy = scrollY, opts = DIRS.filter(([dx, dy]) => !(dx === -b.dx && dy === -b.dy));
+    opts.sort(() => Math.random() - 0.5);
+    if (Math.random() < 0.65) opts.sort((u, v) => (v[0] === b.dx && v[1] === b.dy) - (u[0] === b.dx && u[1] === b.dy));
+    opts.push([-b.dx, -b.dy]);
+    const ok = opts.find(([dx, dy]) => !blocked(b.x + dx * G, b.y - sy + dy * G));
+    if (!ok) { b.life = Math.min(b.life, b.age + 0.3); return; } // boxed in: fade away
+    b.dx = ok[0]; b.dy = ok[1]; b.tx = b.x + b.dx * G; b.ty = b.y + b.dy * G;
   };
   // a tiny beetle: body, head, antennae, three pairs of legs that scuttle
   const drawBug = (x, y, ang, c, t, crit) => {
@@ -321,9 +345,9 @@
     requestAnimationFrame(() => killBox.classList.add('is-on'));
   };
   const addKill = (c, n = 1) => {
+    if (!killBox) makeKills(); // appears showing the old score, then rolls to the new one
     kills += n;
     try { sessionStorage.setItem('pulseKills', kills); } catch (err) { /* private mode */ }
-    if (!killBox) makeKills();
     killBox.style.setProperty('--k', c);
     // odometer: the old number rolls up and out, the new one rolls in from below
     const old = killNum.lastElementChild, nu = document.createElement('span');
@@ -374,7 +398,10 @@
       if (d.t >= 1) return false;
       d.vx *= 0.92; d.vy *= 0.92; d.x += d.vx * dt; d.y += d.vy * dt;
       const y = d.y - sy, a = 1 - d.t;
-      if (d.label) { // "BUG_042 · FIXED" debug bubble that rises and fades
+      if (d.bp) { // quick red breakpoint ring snapping shut on the bug
+        ctx.strokeStyle = `rgba(${d.rgb},${a})`; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(d.x, y, 7 + 10 * (1 - Math.pow(1 - d.t, 2)), 0, 6.283); ctx.stroke();
+      } else if (d.label) { // "BUG_042 · FIXED" debug bubble that rises and fades
         const e = 1 - Math.pow(1 - d.t, 3), ly = y - 16 - 12 * e, al = d.t < 0.7 ? 1 : (1 - d.t) / 0.3;
         ctx.font = '600 10px "JetBrains Mono", ui-monospace, monospace';
         const tw = ctx.measureText(d.label).width;
@@ -391,48 +418,49 @@
       return true;
     });
 
-    // the click burst is a weapon: its shape and its four pulses destroy the travelling pulses they reach
+    // the click burst is a weapon: its shape and its four pulses fix every bug they reach, right away
     if (rings.length) {
-      const hits = [];
-      for (const p of pulses) {
-        if (p.burst || p.frozen != null) continue;
-        const hx = p.horiz ? p.pos : p.line + 0.5, hy = p.horiz ? p.line : p.pos; // page coordinates
-        const byRing = rings.some((r) => r.t < 0.8 && Math.hypot(hx - r.x, hy - r.y) < 6 + (1 - Math.pow(1 - r.t, 3)) * r.size + 6);
-        const byShot = !byRing && pulses.some((q) => q.burst && q.life > 0.2 && Math.hypot(hx - (q.horiz ? q.pos : q.line), hy - (q.horiz ? q.line : q.pos)) < 14);
-        if (byRing || byShot) hits.push(p);
-      }
-      // a hit bug freezes on a red breakpoint first, then it is fixed (see the pulses loop)
-      hits.forEach((p, i) => { p.frozen = -i * 0.07; p.id = ++bugId; });
+      const hits = bugs.filter((b) => b.age > 0.2 && (
+        rings.some((r) => r.t < 0.8 && Math.hypot(b.x - r.x, b.y - r.y) < 6 + (1 - Math.pow(1 - r.t, 3)) * r.size + 8) ||
+        pulses.some((q) => q.burst && q.life > 0.2 && Math.hypot(b.x - (q.horiz ? q.pos : q.line), b.y - (q.horiz ? q.line : q.pos)) < 14)));
+      hits.forEach((b, i) => {
+        bugs.splice(bugs.indexOf(b), 1);
+        const rgb = hex2rgb(b.c), fixed = FRL ? 'CORRIGÉ' : 'FIXED';
+        debris.push({ bp: true, x: b.x, y: b.y, vx: 0, vy: 0, t: 0, ttl: 0.4, rgb: '255,77,77' }); // red breakpoint ring
+        debris.push({ flash: true, x: b.x, y: b.y, vx: 0, vy: 0, t: 0, ttl: 0.35, rgb });
+        for (let k = 0; k < 10; k++) {
+          const a = (6.283 * k) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
+          debris.push({ x: b.x, y: b.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
+        }
+        debris.push({ label: b.crit ? `CRITICAL BUG · ${fixed}` : `BUG_${String(++bugId).padStart(3, '0')} · ${fixed}`, x: b.x, y: b.y, vx: 0, vy: 0, t: 0, ttl: 1.1, rgb: b.crit ? '255,209,102' : '61,220,151' });
+        addKill(b.c, b.crit ? 3 : 1);
+        setTimeout(() => pop(b.x / w), i * 70);
+      });
     }
 
-    // pulses
-    if (now > nextSpawn && pulses.filter((p) => !p.burst).length < (w < 700 || calm ? 3 : 7)) { spawn(); nextSpawn = now + 600 + Math.random() * 1400; }
+    // bugs: walk toward the next crossing, decide there; fade in, fade out at the end of their life
+    if (now > nextSpawn && bugs.length < (w < 700 || calm ? 3 : 5)) { spawnBug(); nextSpawn = now + 1200 + Math.random() * 1800; }
+    const nb = navH();
+    bugs = bugs.filter((b) => {
+      b.age += dt;
+      if (b.age > b.life + 0.4) return false;
+      const ddx = b.tx - b.x, ddy = b.ty - b.y, d = Math.hypot(ddx, ddy), step = b.speed * dt;
+      if (d <= step) { b.x = b.tx; b.y = b.ty; if (b.age < b.life) nextStep(b); }
+      else { b.x += (ddx / d) * step; b.y += (ddy / d) * step; }
+      const target = Math.atan2(b.dy, b.dx); let da = target - b.ang;
+      while (da > Math.PI) da -= 6.283; while (da < -Math.PI) da += 6.283;
+      b.ang += da * Math.min(1, dt * 14);
+      const yv = b.y - sy;
+      if (yv < nb + 4 || yv > h + 60) return false; // scrolled under the sticky menu or far below: gone
+      ctx.globalAlpha = Math.min(1, b.age / 0.3, Math.max(0, (b.life + 0.4 - b.age) / 0.4));
+      drawBug(b.x, yv, b.ang, b.c, calm ? b.phase : now / 1000 + b.phase, b.crit);
+      ctx.globalAlpha = 1;
+      return true;
+    });
+
+    // click pulses
     ctx.lineWidth = 1.5;
     pulses = pulses.filter((p) => {
-      if (p.frozen != null) { // breakpoint: the bug stops, a red ring closes on it, then it pops
-        p.frozen += dt;
-        const hx = p.horiz ? p.pos : p.line + 0.5, hyP = p.horiz ? p.line + 0.5 : p.pos, y = hyP - sy;
-        if (p.frozen >= 0.3) {
-          const rgb = hex2rgb(p.c);
-          debris.push({ flash: true, x: hx, y: hyP, vx: 0, vy: 0, t: 0, ttl: 0.35, rgb });
-          for (let k = 0; k < 10; k++) {
-            const a = (6.283 * k) / 10 + Math.random() * 0.5, v = 160 + Math.random() * 160;
-            debris.push({ x: hx, y: hyP, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: 0, ttl: 0.45 + Math.random() * 0.25, rgb });
-          }
-          const fixed = FRL ? 'CORRIGÉ' : 'FIXED';
-          debris.push({ label: p.crit ? `CRITICAL BUG · ${fixed}` : `BUG_${String(p.id).padStart(3, '0')} · ${fixed}`, x: hx, y: hyP, vx: 0, vy: 0, t: 0, ttl: 1.1, rgb: p.crit ? '255,209,102' : '61,220,151' });
-          pop(hx / w); addKill(p.c, p.crit ? 3 : 1);
-          return false;
-        }
-        const f = Math.max(0, p.frozen), k = Math.min(1, f / 0.14);
-        drawBug(hx, y, p.horiz ? (p.dir > 0 ? 0 : Math.PI) : (p.dir > 0 ? 1.5708 : -1.5708), p.c, p.phase, p.crit);
-        if (p.frozen >= 0) {
-          ctx.strokeStyle = `rgba(255,77,77,${0.9 * k})`; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.arc(hx, y, 16 - 7 * k, 0, 6.283); ctx.stroke();
-          ctx.fillStyle = `rgba(255,77,77,${0.18 * k})`; ctx.fill();
-        }
-        return true;
-      }
       p.pos += p.dir * p.speed * dt;
       const head = p.pos;
       let tail = p.pos - p.dir * p.len;
@@ -449,8 +477,7 @@
       g.addColorStop(0, p.c + '00'); g.addColorStop(1, p.c + (p.burst ? a : '45'));
       ctx.lineWidth = p.burst ? 2 : 1.5;
       ctx.strokeStyle = g; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-      if (p.burst) { ctx.fillStyle = p.c + a; ctx.beginPath(); ctx.arc(x2, y2, 2.6, 0, 6.283); ctx.fill(); }
-      else drawBug(x2, y2, p.horiz ? (p.dir > 0 ? 0 : Math.PI) : (p.dir > 0 ? 1.5708 : -1.5708), p.c, calm ? 0 : now / 1000 + p.phase, p.crit);
+      ctx.fillStyle = p.c + a; ctx.beginPath(); ctx.arc(x2, y2, 2.6, 0, 6.283); ctx.fill();
       const range = p.horiz ? w : sy + h;
       return p.dir > 0 ? tail < range + 10 : tail > (p.horiz ? -10 : sy - 10);
     });
