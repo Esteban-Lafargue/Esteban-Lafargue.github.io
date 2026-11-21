@@ -15,8 +15,8 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../../css/style.css?v=50" rel="stylesheet"/>
-<link href="../../css/case.css?v=50" rel="stylesheet"/>
+<link href="../../css/style.css?v=51" rel="stylesheet"/>
+<link href="../../css/case.css?v=51" rel="stylesheet"/>
 <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -61,9 +61,9 @@
 <p class="disclaimer">Le modèle du vaisseau est un X-Wing créé par des fans, utilisé dans un tutoriel gratuit et non commercial. Star Wars et X-Wing sont des marques de Lucasfilm Ltd. ; ce projet n’est ni affilié à Lucasfilm ni approuvé par Lucasfilm.</p>
 </section>
 <section aria-labelledby="why-title" id="why" style="margin-top:96px">
-<h2 class="stitle" style="--c:var(--c-profile)"><span class="stitle__tag" id="why-title">Pourquoi je l’ai créé</span><span class="stitle__rule"></span></h2>
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="why-title">Pourquoi je l’ai créé</span><span class="stitle__rule"></span></h2>
 <div class="pm">
-<article class="node pm__item reveal" style="--c:var(--c-profile)">
+<article class="node pm__item reveal" style="--c:var(--pc)">
 <dl class="pm__rows">
 <div><dt>Problème</dt><dd>Une IA volante en 3D, en Blueprint uniquement, est souvent évitée ou faite approximativement. La plupart des exemples que je voyais reposaient sur des <mark class="hl">line traces</mark> : l’IA avançait par à-coups et ne paraissait jamais naturelle.</dd></div>
 <div><dt>Objectif</dt><dd>Aller plus loin : une IA qui se déplace <mark class="hl">en continu, en temps réel</mark>, en choisissant un chemin sûr autour des obstacles pendant qu’elle vole, et qui reste assez simple pour servir de <mark class="hl">structure de départ</mark> sur laquelle chacun ajoute ses comportements.</dd></div>
@@ -73,22 +73,22 @@
 </div>
 </section>
 <section aria-labelledby="how-title" id="how" style="margin-top:96px">
-<h2 class="stitle" style="--c:var(--c-xp)"><span class="stitle__tag" id="how-title">Fonctionnement</span><span class="stitle__rule"></span></h2>
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="how-title">Fonctionnement</span><span class="stitle__rule"></span></h2>
 <p class="lead prose" style="margin:0 0 24px">Trois éléments communiquent par une seule Blueprint Interface : le controller décide où il est sûr d’aller, le pawn décide comment y voler.</p>
-<div class="node reveal" style="--c:var(--c-xp)">
+<div class="node reveal" style="--c:var(--pc)">
 <figure aria-label="Schéma de la boucle de l’IA volante" class="flow" style="padding-top:22px">
-<div class="flow__node" style="--c:var(--c-profile)"><b>AI Perception</b><span>Le sens Sight trouve la cible</span></div>
+<div class="flow__node" style="--c:var(--pc)"><b>AI Perception</b><span>Le sens Sight trouve la cible</span></div>
 <span aria-hidden="true" class="flow__arrow"></span>
-<div class="flow__node" style="--c:var(--c-xp)"><b>AI Controller</b><span>Lance la requête EQS sur un Tick retardé, à intervalle réglable</span></div>
+<div class="flow__node" style="--c:var(--pc)"><b>AI Controller</b><span>Lance la requête EQS sur un Tick retardé, à intervalle réglable</span></div>
 <span aria-hidden="true" class="flow__arrow"></span>
-<div class="flow__node" style="--c:var(--c-edu)"><b>EQS</b><span>Note un volume 3D de points : dégagés des obstacles, proches de la cible</span></div>
+<div class="flow__node" style="--c:var(--pc)"><b>EQS</b><span>Note un volume 3D de points : dégagés des obstacles, proches de la cible</span></div>
 <span aria-hidden="true" class="flow__arrow"></span>
-<div class="flow__node" style="--c:var(--c-gameplay)"><b>Pawn</b><span>Vole vers la position sûre : Floating Pawn Movement, rotation lissée, banking</span></div>
+<div class="flow__node" style="--c:var(--pc)"><b>Pawn</b><span>Vole vers la position sûre : Floating Pawn Movement, rotation lissée, banking</span></div>
 <figcaption>Chaque échange passe par l’interface BPI_FlyingAI : set target, set new safe location, set movement state.</figcaption>
 </figure>
 </div>
 <div class="pm" style="margin-top:24px">
-<article class="node pm__item reveal" id="eqs" style="--c:var(--c-edu)">
+<article class="node pm__item reveal" id="eqs" style="--c:var(--pc)">
 <div class="node__head"><span class="n">01</span>Un volume 3D à partir d’un générateur 2D<span class="meta">EQS</span></div>
 <dl class="pm__rows">
 <div><dt>L’astuce</dt><dd>
@@ -120,7 +120,7 @@
 </div>
 </details>
 </article>
-<article class="node pm__item reveal" id="flight" style="--c:var(--c-gameplay)">
+<article class="node pm__item reveal" id="flight" style="--c:var(--pc)">
 <div class="node__head"><span class="n">02</span>Voler comme un vaisseau, pas comme un curseur<span class="meta">Pawn</span></div>
 <dl class="pm__rows">
 <div><dt>Déplacement</dt><dd>Le pawn utilise le <mark class="hl">Floating Pawn Movement</mark> et ajoute un input de déplacement vers la dernière position sûre : il se déplace en douceur au lieu de sauter de point en point.</dd></div>
@@ -138,7 +138,7 @@
 </div>
 </details>
 </article>
-<article class="node pm__item reveal" id="interface" style="--c:var(--c-tools)">
+<article class="node pm__item reveal" id="interface" style="--c:var(--pc)">
 <div class="node__head"><span class="n">03</span>Modulaire par conception<span class="meta">Blueprint Interface</span></div>
 <dl class="pm__rows">
 <div><dt>Ce que j’ai fait</dt><dd>Le controller, le pawn et les contextes EQS ne se castent jamais entre eux : ils communiquent par une <mark class="hl">Blueprint Interface</mark> (get target location, set target, set new safe location, set movement state). N’importe quel pawn qui l’implémente peut utiliser le même controller et la même requête.</dd></div>
@@ -149,13 +149,13 @@
 </div>
 </section>
 <section aria-labelledby="tuning-title" id="tuning" style="margin-top:96px">
-<h2 class="stitle" style="--c:var(--c-tools)"><span class="stitle__tag" id="tuning-title">Pensé pour les Designers</span><span class="stitle__rule"></span></h2>
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="tuning-title">Pensé pour les Designers</span><span class="stitle__rule"></span></h2>
 <p class="lead prose" style="margin:0 0 24px">Tout ce qui façonne le comportement est une variable qu’un Designer peut modifier, sans ouvrir les graphes.</p>
 <div class="tune">
-<div class="node reveal" style="--c:var(--c-gameplay)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Vol<span class="meta">Pawn</span></div><ul class="tune__list"><li>Max Speed</li><li>Interp Speed</li><li>Rotation Power</li><li>Turning Boost</li></ul></div>
-<div class="node reveal" style="--c:var(--c-passions)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Banking<span class="meta">Pawn</span></div><ul class="tune__list"><li>Banking Power</li><li>Banking Speed</li><li>Min Banking Roll</li><li>Max Banking Roll</li></ul></div>
-<div class="node reveal" style="--c:var(--c-edu)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Évitement<span class="meta">Controller · EQS</span></div><ul class="tune__list"><li>Intervalle de tick (fréquence des requêtes)</li><li>Start EQS Distance</li><li>First / Last 3D Floor · Z Offset</li><li>Rayon · espacement de la grille</li><li>Rayon du sphere trace</li></ul></div>
-<div class="node reveal" style="--c:var(--c-xp)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Perception<span class="meta">Controller</span></div><ul class="tune__list"><li>Sight Radius</li><li>Lose Sight Radius</li><li>Peripheral Vision Angle</li><li>Détection par affiliation</li></ul></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Vol<span class="meta">Pawn</span></div><ul class="tune__list"><li>Max Speed</li><li>Interp Speed</li><li>Rotation Power</li><li>Turning Boost</li></ul></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Banking<span class="meta">Pawn</span></div><ul class="tune__list"><li>Banking Power</li><li>Banking Speed</li><li>Min Banking Roll</li><li>Max Banking Roll</li></ul></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Évitement<span class="meta">Controller · EQS</span></div><ul class="tune__list"><li>Intervalle de tick (fréquence des requêtes)</li><li>Start EQS Distance</li><li>First / Last 3D Floor · Z Offset</li><li>Rayon · espacement de la grille</li><li>Rayon du sphere trace</li></ul></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Perception<span class="meta">Controller</span></div><ul class="tune__list"><li>Sight Radius</li><li>Lose Sight Radius</li><li>Peripheral Vision Angle</li><li>Détection par affiliation</li></ul></div>
 </div>
 </section>
 <section aria-labelledby="tests-title" class="node reveal" data-stop="" id="tests" style="--c:var(--ac);margin-top:96px">
@@ -165,7 +165,7 @@
 <section aria-labelledby="pm-title" id="post-mortem" style="margin-top:96px">
 <h2 class="stitle" style="--c:var(--c-edu)"><span class="stitle__tag" id="pm-title">Ce que je ferais ensuite</span><span class="stitle__rule"></span></h2>
 <div class="pm">
-<article class="node pm__item reveal" style="--c:var(--c-edu)">
+<article class="node pm__item reveal" style="--c:var(--pc)">
 <dl class="pm__rows">
 <div><dt>Compromis</dt><dd>Le format de tutoriel de 30 minutes imposait d’aller droit au but : la logique se trouve directement dans le controller et le pawn.</dd></div>
 <div class="pm__next"><dt>La prochaine fois</dt><dd>Regrouper le déplacement et le banking dans un <mark class="hl">Actor Component</mark>, pour qu’un pawn puisse voler en ajoutant un seul composant, et proposer la version Behavior Tree par défaut pour des comportements plus riches.</dd></div>
@@ -208,6 +208,6 @@
 <button aria-label="Fermer" data-lb="close" type="button">✕</button>
 </div>
 </dialog>
-<script defer="" src="../../js/main.js?v=50"></script>
+<script defer="" src="../../js/main.js?v=51"></script>
 </body>
 </html>

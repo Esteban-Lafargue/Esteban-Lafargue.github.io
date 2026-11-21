@@ -2,7 +2,9 @@
    Case-study pages — builds on style.css (nodes, pins, wires, chips)
    ========================================================================== */
 
-[data-theme="klappen"] { --pc: #3ddc97; --halo: #0f2a22; }
+/* Project colours: light, one per project, used for the content of its pages */
+[data-theme="klappen"] { --pc: #8fe6b0; --halo: #0f2a22; }
+[data-theme="wolfpeak"] { --pc: #d6e4f5; --halo: #141c28; }
 
 .back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 13px var(--mono); color: var(--text-muted); }
 .back:hover { color: var(--ac); }
@@ -45,8 +47,8 @@
 .media .card__ph { text-align: center; padding: 0 16px; }
 .caption { font: 12px var(--mono); color: var(--text-faint); }
 
-.why { margin-top: 14px; padding: 14px 16px; border-radius: 8px; background: color-mix(in srgb, var(--c-edu) 8%, transparent); border: 1px solid color-mix(in srgb, var(--c-edu) 35%, transparent); font-size: 14px; }
-.why b { display: block; margin-bottom: 4px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--c-edu); }
+.why { margin-top: 14px; padding: 14px 16px; border-radius: 8px; background: color-mix(in srgb, var(--pc, var(--c-edu)) 8%, transparent); border: 1px solid color-mix(in srgb, var(--pc, var(--c-edu)) 35%, transparent); font-size: 14px; }
+.why b { display: block; margin-bottom: 4px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--pc, var(--c-edu)); }
 
 .draft { display: inline-block; margin-bottom: 10px; padding: 2px 8px; border-radius: 4px; background: #ff5f6d22; border: 1px solid #ff5f6d66; color: #ff9aa3; font: 11px var(--mono); }
 
@@ -151,14 +153,14 @@
 .lesson__more { display: block; margin-top: 12px; font: 13px var(--mono); color: var(--pc, var(--ac)); }
 
 .pm { display: flex; flex-direction: column; gap: 24px; }
-.pm .node__head .n { font: 500 13px var(--mono); color: var(--c-edu); }
+.pm .node__head .n { font: 500 13px var(--mono); color: var(--pc, var(--c-edu)); }
 .pm__rows { margin: 0; padding: 6px 22px 18px; }
 .pm__rows > div { display: flex; flex-wrap: wrap; gap: 4px 24px; padding: 14px 0; border-bottom: 1px solid var(--line-soft); }
 .pm__rows > div:last-child { border-bottom: 0; }
 .pm__rows dt { flex: 0 0 130px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); padding-top: 4px; }
 .pm__rows dd { flex: 1 1 420px; min-width: 0; margin: 0; }
-.pm__next { margin: 6px -12px 0; padding: 14px 12px !important; border-radius: 8px; background: color-mix(in srgb, var(--c-edu) 8%, transparent); border: 1px solid color-mix(in srgb, var(--c-edu) 30%, transparent) !important; }
-.pm__next dt { color: var(--c-edu); }
+.pm__next { margin: 6px -12px 0; padding: 14px 12px !important; border-radius: 8px; background: color-mix(in srgb, var(--pc, var(--c-edu)) 8%, transparent); border: 1px solid color-mix(in srgb, var(--pc, var(--c-edu)) 30%, transparent) !important; }
+.pm__next dt { color: var(--pc, var(--c-edu)); }
 .pm__next dd { color: var(--text-strong); }
 .case-hero .back, .case-hero .eyebrow { display: flex; width: fit-content; }
 
@@ -196,7 +198,7 @@
 .details__row--in { padding-left: 32px; }
 .details__val { padding: 3px 8px; border-radius: 4px; background: #0d0d0d; border: 1px solid #333; color: #fff; font-family: var(--mono); font-size: 12px; }
 .details__idx { color: #9a9a9a; }
-.details__pick { justify-self: start; padding: 3px 10px; border-radius: 4px; background: color-mix(in srgb, var(--c-tools) 25%, #111); border: 1px solid var(--c-tools); color: #fff; font-family: var(--mono); font-size: 12px; }
+.details__pick { justify-self: start; padding: 3px 10px; border-radius: 4px; background: color-mix(in srgb, var(--pc, var(--c-tools)) 25%, #111); border: 1px solid var(--pc, var(--c-tools)); color: #fff; font-family: var(--mono); font-size: 12px; }
 .details figcaption { padding: 10px 12px; background: #101010; }
 .code { flex: 1 1 380px; min-width: 0; margin: 0; border: 1px solid var(--line); border-radius: 8px; background: #070a10; overflow: hidden; }
 .code__bar { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line); font: 12px var(--mono); color: var(--text-faint); }
@@ -214,7 +216,7 @@
 .enemies b, .tools b { display: block; margin-bottom: 2px; color: var(--text-strong); font-weight: 600; font-size: 15px; }
 
 /* ---------- Flying AI ---------- */
-[data-theme="flying"] { --pc: #4fd8ff; --halo: #0b2236; }
+[data-theme="flying"] { --pc: #ffb48a; --halo: #2a1709; }
 .media--flat { aspect-ratio: auto; border-radius: 0; border: 0; }
 .media--flat video { height: auto; display: block; }
 .ao .media--flat { border-radius: 8px; border: 1px solid var(--line-soft); overflow: hidden; }

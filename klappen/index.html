@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="../css/style.css?v=50">
-  <link rel="stylesheet" href="../css/case.css?v=50">
+  <link rel="stylesheet" href="../css/style.css?v=51">
+  <link rel="stylesheet" href="../css/case.css?v=51">
   <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -58,7 +58,7 @@
   </section>
 
   <!-- ===== Gameplay ===== -->
-  <section class="node reveal" data-stop style="--c:var(--c-gameplay);margin-top:72px" aria-labelledby="trailer-title">
+  <section class="node reveal" data-stop style="--c:var(--pc);margin-top:72px" aria-labelledby="trailer-title">
     <div class="node__head"><span class="node__icon" aria-hidden="true">▶</span><span id="trailer-title">Gameplay · building a cabin</span><span class="meta">38 s</span></div>
     <video class="demo" controls preload="metadata" playsinline poster="../assets/img/klappen/building-demo.jpg">
       <source src="../assets/video/klappen/building-demo.mp4" type="video/mp4">
@@ -66,23 +66,23 @@
   </section>
 
   <section id="role" aria-labelledby="role-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-profile)"><span class="stitle__tag" id="role-title">My Role</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="role-title">My Role</span><span class="stitle__rule"></span></h2>
     <div class="card__tags" style="margin-bottom:24px">
-      <span class="chip" style="--c:var(--c-gameplay)">Gameplay Programmer</span>
-      <span class="chip" style="--c:var(--c-tools)">Technical Game Designer</span>
-      <span class="chip" style="--c:var(--c-projects)">UI Programmer</span>
-      <span class="chip" style="--c:var(--c-passions)">UX Designer</span>
-      <span class="chip" style="--c:var(--c-soft)">Game Designer</span>
+      <span class="chip" style="--c:var(--pc)">Gameplay Programmer</span>
+      <span class="chip" style="--c:var(--pc)">Technical Game Designer</span>
+      <span class="chip" style="--c:var(--pc)">UI Programmer</span>
+      <span class="chip" style="--c:var(--pc)">UX Designer</span>
+      <span class="chip" style="--c:var(--pc)">Game Designer</span>
     </div>
     <div class="roles">
-      <div class="node reveal" style="--c:var(--c-gameplay)">
+      <div class="node reveal" style="--c:var(--pc)">
         <div class="node__head"><span class="pin" aria-hidden="true"></span>Gameplay &amp; Technical Design</div>
         <div class="node__body">
           <p style="margin:0 0 12px">I implemented the core gameplay systems and mechanics, starting with the <strong style="color:var(--text-strong)">building system</strong>, turning design intentions into robust, scalable technical solutions.</p>
           <p style="margin:0">I also took part in Game Design decisions: prototyping features, iterating on mechanics and keeping every player interaction in line with the project’s vision and tone.</p>
         </div>
       </div>
-      <div class="node reveal" style="--c:var(--c-projects)">
+      <div class="node reveal" style="--c:var(--pc)">
         <div class="node__head"><span class="pin" aria-hidden="true"></span>UI Programming &amp; UX</div>
         <div class="node__body">
           <p style="margin:0 0 12px">I designed and built the interfaces with a focus on clarity, accessibility and player comfort: UI logic structure, integration with gameplay systems such as the <strong style="color:var(--text-strong)">Inventory Menu</strong>, and refinement through playtesting.</p>
@@ -100,43 +100,43 @@
 
   <!-- ===== Systems ===== -->
   <section id="systems" aria-labelledby="systems-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-gameplay)"><span class="stitle__tag" id="systems-title">Systems I built</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="systems-title">Systems I built</span><span class="stitle__rule"></span></h2>
     <p class="lead prose" style="margin:0 0 28px">Each system has its own breakdown: reasoning, Blueprint graphs, trade-offs and what I would do differently. Pick one to dive in.</p>
 
-    <a class="sys sys--main node reveal" href="building/" style="--c:var(--c-gameplay)">
+    <a class="sys sys--main node reveal" href="building/" style="--c:var(--pc)">
       <div class="sys__media"><img src="../assets/img/klappen/building-demo.jpg" alt="" loading="lazy"><video muted loop playsinline preload="none" src="../assets/video/klappen/card-hover.mp4"></video></div>
       <div class="sys__body">
         <div class="eyebrow"><span class="exec" aria-hidden="true"></span>System 01 · 8 steps · post-mortem</div>
         <h3>Building System</h3>
         <p>From picking a piece in the inventory to removing it with a refund: snapping, a math grid fallback, a two-stage placement pipeline, and an HISM conversion that keeps large villages cheap.</p>
         <ul class="sys__points">
-          <li><span class="pin is-live" style="--c:var(--c-gameplay)"></span>19 pieces, editable by Designers in a Data Table</li>
-          <li><span class="pin is-live" style="--c:var(--c-tools)"></span>Snapping points + virtual math grid</li>
-          <li><span class="pin is-live" style="--c:var(--c-passions)"></span>Actors → HISM beyond 2,000 units</li>
-          <li><span class="pin is-live" style="--c:var(--c-edu)"></span>20+ Blueprint graphs, profiled in Unreal Insights</li>
+          <li><span class="pin is-live" style="--c:var(--pc)"></span>19 pieces, editable by Designers in a Data Table</li>
+          <li><span class="pin is-live" style="--c:var(--pc)"></span>Snapping points + virtual math grid</li>
+          <li><span class="pin is-live" style="--c:var(--pc)"></span>Actors → HISM beyond 2,000 units</li>
+          <li><span class="pin is-live" style="--c:var(--pc)"></span>20+ Blueprint graphs, profiled in Unreal Insights</li>
         </ul>
         <span class="btn btn--primary sys__cta">Open the breakdown ▷</span>
       </div>
     </a>
 
     <div class="sys__grid">
-        <div class="sys sys--soon node" style="--c:var(--c-edu)"><div class="node__head"><span class="pin" aria-hidden="true"></span>PCG per biome<span class="meta">soon</span></div><div class="node__body">Procedural resources placed per biome.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-passions)"><div class="node__head"><span class="pin" aria-hidden="true"></span>HISM forest<span class="meta">soon</span></div><div class="node__body">Interactive trees and rocks rendered as instances.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-projects)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Inventory &amp; UI<span class="meta">soon</span></div><div class="node__body">Construction inventory, menus and resource feedback.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-tools)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Resource harvesting<span class="meta">soon</span></div><div class="node__body">Collecting wood and stone to fund each build.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-soft)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Cabin validation<span class="meta">soon</span></div><div class="node__body">Line traces on every side tell each animal whether its cabin has walls, a floor, a roof and decorations nearby.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>PCG per biome<span class="meta">soon</span></div><div class="node__body">Procedural resources placed per biome.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>HISM forest<span class="meta">soon</span></div><div class="node__body">Interactive trees and rocks rendered as instances.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Inventory &amp; UI<span class="meta">soon</span></div><div class="node__body">Construction inventory, menus and resource feedback.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Resource harvesting<span class="meta">soon</span></div><div class="node__body">Collecting wood and stone to fund each build.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Cabin validation<span class="meta">soon</span></div><div class="node__body">Line traces on every side tell each animal whether its cabin has walls, a floor, a roof and decorations nearby.</div></div>
     </div>
   </section>
 
   <!-- ===== Lessons teaser ===== -->
   <section id="lessons" aria-labelledby="lessons-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-edu)"><span class="stitle__tag" id="lessons-title">Lessons learned</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="lessons-title">Lessons learned</span><span class="stitle__rule"></span></h2>
     <div class="lessons">
-      <a class="node reveal lesson" href="building/#post-mortem" style="--c:var(--c-edu)">
+      <a class="node reveal lesson" href="building/#post-mortem" style="--c:var(--pc)">
         <div class="node__head"><span class="pin" aria-hidden="true"></span>Freedom is not creativity</div>
         <div class="node__body">Total building freedom left players lost. A snapping grid made building readable, at the cost of precision we should have handed back to the player.<span class="lesson__more">Read the post-mortem ▷</span></div>
       </a>
-      <a class="node reveal lesson" href="building/#post-mortem" style="--c:var(--c-edu)">
+      <a class="node reveal lesson" href="building/#post-mortem" style="--c:var(--pc)">
         <div class="node__head"><span class="pin" aria-hidden="true"></span>Optimise for the real need</div>
         <div class="node__body">Our HISM conversion worked, but the average session was too short to ever need it. Measure the real play session before optimising.<span class="lesson__more">Read the post-mortem ▷</span></div>
       </a>
@@ -170,6 +170,6 @@
   </footer>
 </main>
 
-<script src="../js/main.js?v=50" defer></script>
+<script src="../js/main.js?v=51" defer></script>
 </body>
 </html>

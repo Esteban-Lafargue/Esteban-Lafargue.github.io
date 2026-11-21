@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="../css/style.css?v=50">
-  <link rel="stylesheet" href="../css/case.css?v=50">
+  <link rel="stylesheet" href="../css/style.css?v=51">
+  <link rel="stylesheet" href="../css/case.css?v=51">
   <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -65,9 +65,9 @@
   </section>
 
   <section id="why" aria-labelledby="why-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-profile)"><span class="stitle__tag" id="why-title">Why I built it</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="why-title">Why I built it</span><span class="stitle__rule"></span></h2>
     <div class="pm">
-      <article class="node pm__item reveal" style="--c:var(--c-profile)">
+      <article class="node pm__item reveal" style="--c:var(--pc)">
         <dl class="pm__rows">
           <div><dt>Problem</dt><dd>Flying AI in 3D, in Blueprint only, is often avoided or done roughly. Most examples I saw relied on <mark class="hl">line traces</mark>: the AI moved in jerky steps and never looked natural.</dd></div>
           <div><dt>Goal</dt><dd>Push it further: an AI that moves <mark class="hl">continuously, in real time</mark>, choosing a safe path around obstacles while it flies, and that stays simple enough to be a <mark class="hl">starting structure</mark> anyone can build behaviour on.</dd></div>
@@ -78,24 +78,24 @@
   </section>
 
   <section id="how" aria-labelledby="how-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-xp)"><span class="stitle__tag" id="how-title">How it works</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="how-title">How it works</span><span class="stitle__rule"></span></h2>
     <p class="lead prose" style="margin:0 0 24px">Three pieces talk through one Blueprint Interface: the controller decides where it is safe to go, the pawn decides how to fly there.</p>
 
-    <div class="node reveal" style="--c:var(--c-xp)">
+    <div class="node reveal" style="--c:var(--pc)">
       <figure class="flow" style="padding-top:22px" aria-label="Diagram of the flying AI loop">
-        <div class="flow__node" style="--c:var(--c-profile)"><b>AI Perception</b><span>Sight sense finds the target</span></div>
+        <div class="flow__node" style="--c:var(--pc)"><b>AI Perception</b><span>Sight sense finds the target</span></div>
         <span class="flow__arrow" aria-hidden="true"></span>
-        <div class="flow__node" style="--c:var(--c-xp)"><b>AI Controller</b><span>Runs the EQS query on a delayed Tick, with a tunable interval</span></div>
+        <div class="flow__node" style="--c:var(--pc)"><b>AI Controller</b><span>Runs the EQS query on a delayed Tick, with a tunable interval</span></div>
         <span class="flow__arrow" aria-hidden="true"></span>
-        <div class="flow__node" style="--c:var(--c-edu)"><b>EQS</b><span>Scores a 3D volume of points: clear of obstacles, close to the target</span></div>
+        <div class="flow__node" style="--c:var(--pc)"><b>EQS</b><span>Scores a 3D volume of points: clear of obstacles, close to the target</span></div>
         <span class="flow__arrow" aria-hidden="true"></span>
-        <div class="flow__node" style="--c:var(--c-gameplay)"><b>Pawn</b><span>Flies to the safe location: Floating Pawn Movement, smooth rotation, banking</span></div>
+        <div class="flow__node" style="--c:var(--pc)"><b>Pawn</b><span>Flies to the safe location: Floating Pawn Movement, smooth rotation, banking</span></div>
         <figcaption>Every exchange goes through the BPI_FlyingAI interface: set target, set new safe location, set movement state.</figcaption>
       </figure>
     </div>
 
     <div class="pm" style="margin-top:24px">
-      <article class="node pm__item reveal" id="eqs" style="--c:var(--c-edu)">
+      <article class="node pm__item reveal" id="eqs" style="--c:var(--pc)">
         <div class="node__head"><span class="n">01</span>A 3D volume from a 2D generator<span class="meta">EQS</span></div>
         <dl class="pm__rows">
           <div><dt>The trick</dt><dd>
@@ -129,7 +129,7 @@
         </details>
       </article>
 
-      <article class="node pm__item reveal" id="flight" style="--c:var(--c-gameplay)">
+      <article class="node pm__item reveal" id="flight" style="--c:var(--pc)">
         <div class="node__head"><span class="n">02</span>Flying like a ship, not a cursor<span class="meta">Pawn</span></div>
         <dl class="pm__rows">
           <div><dt>Movement</dt><dd>The pawn uses <mark class="hl">Floating Pawn Movement</mark> and adds movement input towards the latest safe location, so it moves smoothly instead of teleporting from point to point.</dd></div>
@@ -149,7 +149,7 @@
         </details>
       </article>
 
-      <article class="node pm__item reveal" id="interface" style="--c:var(--c-tools)">
+      <article class="node pm__item reveal" id="interface" style="--c:var(--pc)">
         <div class="node__head"><span class="n">03</span>Modular by design<span class="meta">Blueprint Interface</span></div>
         <dl class="pm__rows">
           <div><dt>What I did</dt><dd>The controller, the pawn and the EQS contexts never cast to each other: they communicate through a <mark class="hl">Blueprint Interface</mark> (get target location, set target, set new safe location, set movement state). Any pawn that implements it can use the same controller and query.</dd></div>
@@ -161,13 +161,13 @@
   </section>
 
   <section id="tuning" aria-labelledby="tuning-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-tools)"><span class="stitle__tag" id="tuning-title">Built for Designers</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="tuning-title">Built for Designers</span><span class="stitle__rule"></span></h2>
     <p class="lead prose" style="margin:0 0 24px">Everything that shapes the behaviour is a variable a Designer can change, without opening the graphs.</p>
     <div class="tune">
-      <div class="node reveal" style="--c:var(--c-gameplay)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Flight<span class="meta">Pawn</span></div><ul class="tune__list"><li>Max Speed</li><li>Interp Speed</li><li>Rotation Power</li><li>Turning Boost</li></ul></div>
-      <div class="node reveal" style="--c:var(--c-passions)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Banking<span class="meta">Pawn</span></div><ul class="tune__list"><li>Banking Power</li><li>Banking Speed</li><li>Min Banking Roll</li><li>Max Banking Roll</li></ul></div>
-      <div class="node reveal" style="--c:var(--c-edu)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Avoidance<span class="meta">Controller · EQS</span></div><ul class="tune__list"><li>Tick interval (query rate)</li><li>Start EQS Distance</li><li>First / Last 3D Floor · Z Offset</li><li>Grid radius · spacing</li><li>Sphere trace radius</li></ul></div>
-      <div class="node reveal" style="--c:var(--c-xp)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Perception<span class="meta">Controller</span></div><ul class="tune__list"><li>Sight Radius</li><li>Lose Sight Radius</li><li>Peripheral Vision Angle</li><li>Detection by affiliation</li></ul></div>
+      <div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Flight<span class="meta">Pawn</span></div><ul class="tune__list"><li>Max Speed</li><li>Interp Speed</li><li>Rotation Power</li><li>Turning Boost</li></ul></div>
+      <div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Banking<span class="meta">Pawn</span></div><ul class="tune__list"><li>Banking Power</li><li>Banking Speed</li><li>Min Banking Roll</li><li>Max Banking Roll</li></ul></div>
+      <div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Avoidance<span class="meta">Controller · EQS</span></div><ul class="tune__list"><li>Tick interval (query rate)</li><li>Start EQS Distance</li><li>First / Last 3D Floor · Z Offset</li><li>Grid radius · spacing</li><li>Sphere trace radius</li></ul></div>
+      <div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Perception<span class="meta">Controller</span></div><ul class="tune__list"><li>Sight Radius</li><li>Lose Sight Radius</li><li>Peripheral Vision Angle</li><li>Detection by affiliation</li></ul></div>
     </div>
   </section>
 
@@ -179,7 +179,7 @@
   <section id="post-mortem" aria-labelledby="pm-title" style="margin-top:96px">
     <h2 class="stitle" style="--c:var(--c-edu)"><span class="stitle__tag" id="pm-title">What I’d do next</span><span class="stitle__rule"></span></h2>
     <div class="pm">
-      <article class="node pm__item reveal" style="--c:var(--c-edu)">
+      <article class="node pm__item reveal" style="--c:var(--pc)">
         <dl class="pm__rows">
           <div><dt>Trade-off</dt><dd>The 30-minute tutorial format meant going straight to the point: the logic lives directly in the controller and the pawn.</dd></div>
           <div class="pm__next"><dt>Next time</dt><dd>Package the movement and banking into an <mark class="hl">Actor Component</mark>, so any pawn gets flight by adding one component, and offer the Behavior Tree version as the default for richer behaviours.</dd></div>
@@ -227,6 +227,6 @@
   </div>
 </dialog>
 
-<script src="../js/main.js?v=50" defer></script>
+<script src="../js/main.js?v=51" defer></script>
 </body>
 </html>

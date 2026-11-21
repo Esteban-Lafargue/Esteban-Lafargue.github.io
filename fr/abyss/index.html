@@ -15,8 +15,8 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../../css/style.css?v=50" rel="stylesheet"/>
-<link href="../../css/case.css?v=50" rel="stylesheet"/>
+<link href="../../css/style.css?v=51" rel="stylesheet"/>
+<link href="../../css/case.css?v=51" rel="stylesheet"/>
 <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -52,26 +52,26 @@
 <section aria-labelledby="plan-title" id="plan" style="margin-top:96px">
 <h2 class="stitle" style="--c:var(--ac)"><span class="stitle__tag" id="plan-title">Ce que je construis</span><span class="stitle__rule"></span></h2>
 <div class="lessons">
-<div class="node reveal" style="--c:var(--c-gameplay)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Curiosité<span class="meta">« J’ai envie de m’approcher. »</span></div><div class="node__body">Un pilotage 3D crédible, des comportements au repos lisibles, une créature qui vient vers le joueur.</div></div>
-<div class="node reveal" style="--c:var(--c-profile)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Tension<span class="meta">« Il prévient avant d’agir. »</span></div><div class="node__body">Un prédateur à la vigilance progressive, avec des paliers explicites et des charges télégraphiées, le tout en données.</div></div>
-<div class="node reveal" style="--c:var(--c-edu)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Lisibilité<span class="meta">« Je comprends toujours. »</span></div><div class="node__body">Chaque comportement observable émet un signal (posture, lumière, son), avec des outils de debug pour le vérifier.</div></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Curiosité<span class="meta">« J’ai envie de m’approcher. »</span></div><div class="node__body">Un pilotage 3D crédible, des comportements au repos lisibles, une créature qui vient vers le joueur.</div></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Tension<span class="meta">« Il prévient avant d’agir. »</span></div><div class="node__body">Un prédateur à la vigilance progressive, avec des paliers explicites et des charges télégraphiées, le tout en données.</div></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Lisibilité<span class="meta">« Je comprends toujours. »</span></div><div class="node__body">Chaque comportement observable émet un signal (posture, lumière, son), avec des outils de debug pour le vérifier.</div></div>
 </div>
 <div class="pm" style="margin-top:24px">
-<article class="node pm__item reveal" style="--c:var(--c-xp)">
+<article class="node pm__item reveal" style="--c:var(--pc)">
 <div class="node__head"><span class="n">01</span>Navigation 3D sans NavMesh<span class="meta">Suite de Flying AI</span></div>
 <dl class="pm__rows">
 <div><dt>Idée</dt><dd>Le NavMesh d’Unreal ne couvre que les surfaces où l’on marche : les créatures naviguent donc en <mark class="hl">trois couches</mark>. Un Behavior Tree ou un State Tree décide <em>quoi</em> faire, une requête <mark class="hl">EQS</mark> choisit le prochain point de passage libre vers cet objectif, et un <mark class="hl">composant de steering</mark> fait nager la créature jusque-là en douceur, en s’inclinant dans les virages et en enchaînant les points sans s’arrêter.</dd></div>
 <div><dt>Pourquoi</dt><dd>L’EQS seul planifie bien mais zigzague et s’arrête à chaque point ; le steering seul voit trop court et se coince dans les rochers en U. C’est la suite directe de mon <a href="../flying-ai/">Flying AI</a>.</dd></div>
 </dl>
 </article>
-<article class="node pm__item reveal" style="--c:var(--c-tools)">
+<article class="node pm__item reveal" style="--c:var(--pc)">
 <div class="node__head"><span class="n">02</span>Le Creature Tuner<span class="meta">Editor Utility Widget</span></div>
 <dl class="pm__rows">
 <div><dt>Objectif</dt><dd>Un Designer choisit une espèce, la règle, la fait apparaître en jeu et observe sa perception et sa vigilance en direct, <mark class="hl">sans ouvrir un seul graphe Blueprint</mark>. Objectif : une nouvelle espèce en moins de 3 minutes.</dd></div>
 <div><dt>Comment</dt><dd>Le widget d’éditeur et la session de jeu vivent dans deux mondes différents : un <mark class="hl">Data Asset sert donc de canal</mark> entre eux, via un acteur passerelle qui n’existe que hors des builds de production.</dd></div>
 </dl>
 </article>
-<article class="node pm__item reveal" style="--c:var(--c-edu)">
+<article class="node pm__item reveal" style="--c:var(--pc)">
 <div class="node__head"><span class="n">03</span>Le bon framework pour chaque créature<span class="meta">BT · State Tree</span></div>
 <dl class="pm__rows">
 <div><dt>Choix</dt><dd>Un banc de poissons aux états simples (croisière, fuite, regroupement) tourne sur un <mark class="hl">State Tree</mark> ; le serpent de mer, avec ses priorités et ses interruptions, sur un <mark class="hl">Behavior Tree</mark>. L’objectif est aussi de montrer que je travaille avec les frameworks d’Unreal au lieu de les réinventer.</dd></div>
@@ -80,12 +80,12 @@
 </div>
 </section>
 <section aria-labelledby="roadmap-title" id="roadmap" style="margin-top:96px">
-<h2 class="stitle" style="--c:var(--c-gameplay)"><span class="stitle__tag" id="roadmap-title">Feuille de route</span><span class="stitle__rule"></span></h2>
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="roadmap-title">Feuille de route</span><span class="stitle__rule"></span></h2>
 <p class="lead prose" style="margin:0 0 24px">Synchronisée avec le plan de production du projet. Chaque jalon se termine par une version jouable.</p>
 <div class="road" data-abyss-roadmap="" data-base="../../"><noscript><p>The roadmap needs JavaScript.</p></noscript></div>
 </section>
 <section aria-labelledby="devlog-title" id="devlog" style="margin-top:96px">
-<h2 class="stitle" style="--c:var(--c-projects)"><span class="stitle__tag" id="devlog-title">Devlog</span><span class="stitle__rule"></span></h2>
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="devlog-title">Devlog</span><span class="stitle__rule"></span></h2>
 <div class="devlog" data-abyss-devlog=""></div>
 </section>
 <section aria-labelledby="next-title" class="next-proj-wrap" style="margin-top:96px">
@@ -112,7 +112,7 @@
 <span>Fait main · sans framework · hébergé sur GitHub Pages</span>
 </footer>
 </main>
-<script defer="" src="../../js/abyss.js?v=50"></script>
-<script defer="" src="../../js/main.js?v=50"></script>
+<script defer="" src="../../js/abyss.js?v=51"></script>
+<script defer="" src="../../js/main.js?v=51"></script>
 </body>
 </html>

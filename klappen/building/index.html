@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="../../css/style.css?v=50">
-  <link rel="stylesheet" href="../../css/case.css?v=50">
+  <link rel="stylesheet" href="../../css/style.css?v=51">
+  <link rel="stylesheet" href="../../css/case.css?v=51">
   <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -52,7 +52,7 @@
   </section>
 
   <section id="steps" aria-labelledby="steps-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-gameplay)"><span class="stitle__tag" id="steps-title">The 8 steps</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="steps-title">The 8 steps</span><span class="stitle__rule"></span></h2>
     <ol class="pipeline" aria-label="Building system steps">
       <li><a href="#step-1"><span class="n">01</span>Spawning from inventory</a></li>
       <li><a href="#step-2"><span class="n">02</span>Line trace &amp; snapping</a></li>
@@ -66,7 +66,7 @@
 
     <div style="display:flex;flex-direction:column;gap:28px;margin-top:40px">
 
-      <article class="node step reveal" id="step-1" style="--c:var(--c-gameplay)">
+      <article class="node step reveal" id="step-1" style="--c:var(--pc)">
         <div class="node__head"><span class="n">01</span>Spawning from inventory<span class="meta">Data Table → Preview Actor</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -99,7 +99,7 @@
         </details>
       </article>
 
-      <article class="node step reveal" id="step-2" style="--c:var(--c-gameplay)">
+      <article class="node step reveal" id="step-2" style="--c:var(--pc)">
         <div class="node__head"><span class="n">02</span>Line trace &amp; snapping<span class="meta">Validation</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -138,7 +138,7 @@
         </details>
       </article>
 
-      <article class="node step reveal" id="step-3" style="--c:var(--c-gameplay)">
+      <article class="node step reveal" id="step-3" style="--c:var(--pc)">
         <div class="node__head"><span class="n">03</span>Grid fallback<span class="meta">Virtual grid</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -171,7 +171,7 @@
         </details>
       </article>
 
-      <article class="node step reveal" id="step-4" style="--c:var(--c-gameplay)">
+      <article class="node step reveal" id="step-4" style="--c:var(--pc)">
         <div class="node__head"><span class="n">04</span>90° rotation<span class="meta">Playtest-driven</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -198,7 +198,7 @@
         </details>
       </article>
 
-      <article class="node step reveal" id="step-5" style="--c:var(--c-gameplay)">
+      <article class="node step reveal" id="step-5" style="--c:var(--pc)">
         <div class="node__head"><span class="n">05</span>Placement pipeline<span class="meta">PlayerController → Player</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -241,7 +241,7 @@
         </details>
       </article>
 
-      <article class="node step reveal" id="step-6" style="--c:var(--c-passions)">
+      <article class="node step reveal" id="step-6" style="--c:var(--pc)">
         <div class="node__head"><span class="n">06</span>HISM conversion<span class="meta">Optimisation</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -272,7 +272,7 @@
         </details>
       </article>
 
-      <article class="node step reveal" id="step-7" style="--c:var(--c-passions)">
+      <article class="node step reveal" id="step-7" style="--c:var(--pc)">
         <div class="node__head"><span class="n">07</span>Re-conversion, no popping<span class="meta">Batched · 0.2 s</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -303,7 +303,7 @@
         </details>
       </article>
 
-      <article class="node step reveal" id="step-8" style="--c:var(--c-soft)">
+      <article class="node step reveal" id="step-8" style="--c:var(--pc)">
         <div class="node__head"><span class="n">08</span>Destruction &amp; refund<span class="meta">Hold to remove</span></div>
         <div class="step__grid">
           <div class="step__text">
@@ -342,11 +342,11 @@
 
   <!-- ===== Post-mortem ===== -->
   <section id="post-mortem" class="step" aria-labelledby="pm-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-edu)"><span class="stitle__tag" id="pm-title">Post-mortem</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="pm-title">Post-mortem</span><span class="stitle__rule"></span></h2>
     <p class="lead prose" style="margin:0 0 28px">What we believed, what playtests and hindsight showed, and what I would do now.</p>
     <div class="pm">
 
-      <article class="node pm__item reveal" style="--c:var(--c-edu)">
+      <article class="node pm__item reveal" style="--c:var(--pc)">
         <div class="node__head"><span class="n">01</span>Freedom is not creativity</div>
         <dl class="pm__rows">
           <div><dt>We believed</dt><dd>That total building freedom would unlock the player’s creativity and let them build any house they could imagine.</dd></div>
@@ -357,7 +357,7 @@
         </dl>
       </article>
 
-      <article class="node pm__item reveal" style="--c:var(--c-edu)">
+      <article class="node pm__item reveal" style="--c:var(--pc)">
         <div class="node__head"><span class="n">02</span>Optimise for the real need</div>
         <dl class="pm__rows">
           <div><dt>We believed</dt><dd>That large villages would eventually hurt performance, so we built the HISM conversion ahead of time.</dd></div>
@@ -366,7 +366,7 @@
         </dl>
       </article>
 
-      <article class="node pm__item reveal" style="--c:var(--c-edu)">
+      <article class="node pm__item reveal" style="--c:var(--pc)">
         <div class="node__head"><span class="n">03</span>Structure the modes early</div>
         <dl class="pm__rows">
           <div><dt>Reality</dt><dd>Build, destroy, decoration and animal placement were routed through branches in the PlayerController. It worked, but every new mode made the logic harder to read.</dd></div>
@@ -377,13 +377,13 @@
   </section>
 
   <section aria-labelledby="other-title" style="margin-top:96px">
-    <h2 class="stitle" style="--c:var(--c-projects)"><span class="stitle__tag" id="other-title">Other systems in Kläppen</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="other-title">Other systems in Kläppen</span><span class="stitle__rule"></span></h2>
     <div class="sys__grid">
-        <div class="sys sys--soon node" style="--c:var(--c-edu)"><div class="node__head"><span class="pin" aria-hidden="true"></span>PCG per biome<span class="meta">soon</span></div><div class="node__body">Procedural resources placed per biome.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-passions)"><div class="node__head"><span class="pin" aria-hidden="true"></span>HISM forest<span class="meta">soon</span></div><div class="node__body">Interactive trees and rocks rendered as instances.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-projects)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Inventory &amp; UI<span class="meta">soon</span></div><div class="node__body">Construction inventory, menus and resource feedback.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-tools)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Resource harvesting<span class="meta">soon</span></div><div class="node__body">Collecting wood and stone to fund each build.</div></div>
-        <div class="sys sys--soon node" style="--c:var(--c-soft)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Cabin validation<span class="meta">soon</span></div><div class="node__body">Line traces on every side tell each animal whether its cabin has walls, a floor, a roof and decorations nearby.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>PCG per biome<span class="meta">soon</span></div><div class="node__body">Procedural resources placed per biome.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>HISM forest<span class="meta">soon</span></div><div class="node__body">Interactive trees and rocks rendered as instances.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Inventory &amp; UI<span class="meta">soon</span></div><div class="node__body">Construction inventory, menus and resource feedback.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Resource harvesting<span class="meta">soon</span></div><div class="node__body">Collecting wood and stone to fund each build.</div></div>
+        <div class="sys sys--soon node" style="--c:var(--pc)"><div class="node__head"><span class="pin" aria-hidden="true"></span>Cabin validation<span class="meta">soon</span></div><div class="node__body">Line traces on every side tell each animal whether its cabin has walls, a floor, a roof and decorations nearby.</div></div>
     </div>
     <p style="margin:24px 0 0"><a class="btn btn--ghost" href="../">◂ Back to the Kläppen overview</a></p>
   </section>
@@ -427,6 +427,6 @@
   </div>
 </dialog>
 
-<script src="../../js/main.js?v=50" defer></script>
+<script src="../../js/main.js?v=51" defer></script>
 </body>
 </html>
