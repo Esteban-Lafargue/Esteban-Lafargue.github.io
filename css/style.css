@@ -27,10 +27,10 @@
   /* Topic colours: one topic = one colour, everywhere on the site.
      Blue is the interface (--ac) and no topic uses it. */
   --c-profile: #ff5f6d;   /* me, profile */
-  --c-xp: #b18cff;        /* professional experience */
+  --c-xp: #c8e85a;        /* professional experience */
   --c-edu: #f2c14e;       /* teaching, education, student work */
   --c-gameplay: #3ddc97;  /* gameplay systems */
-  --c-ai: #c8e85a;        /* AI */
+  --c-ai: #b18cff;        /* AI */
   --c-tools: #ff8a4c;     /* tools, pipelines, R&D */
   --c-human: #ff7ad9;     /* how I work, passions, game jams */
   --c-soft: var(--c-human);
