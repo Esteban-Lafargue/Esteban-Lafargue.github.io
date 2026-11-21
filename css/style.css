@@ -22,7 +22,7 @@
   /* Accent (switch to cyan #2de2e6 for the Unknown Worlds variant) */
   /* Interface colour (menu, buttons, rail, links): never used by a topic.
      Project pages set --pc (project colour) for their content instead. */
-  --ac: #e8e8e8;
+  --ac: #4da3ff;
 
   /* Section colours — same as the CV */
   --c-soft: #ff8a4c;
@@ -44,7 +44,6 @@
 }
 
 /* Optional theme, e.g. <html data-theme="abyss"> */
-html[data-ui="blue"] { --ac: #4da3ff; }
 [data-theme="abyss"] { --pc: #2de2e6; --halo: #0b3546; }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -70,7 +69,6 @@ body {
 img, video { max-width: 100%; display: block; }
 a { color: var(--text-strong); text-decoration: none; }
 a:hover { color: var(--ac); }
-html:not([data-ui="blue"]) main a:not([class]):hover { text-decoration: underline; text-underline-offset: 3px; }
 :focus-visible { outline: 2px solid var(--ac); outline-offset: 3px; border-radius: 4px; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
