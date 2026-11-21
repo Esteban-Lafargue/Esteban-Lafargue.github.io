@@ -47,7 +47,7 @@
 }
 
 /* Optional theme, e.g. <html data-theme="abyss"> */
-[data-theme="abyss"] { --pc: #5ff0e0; --halo: #0b3546; }
+[data-theme="abyss"] { --pc: #ff9be0; --halo: #2a0f26; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
