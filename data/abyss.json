@@ -86,7 +86,7 @@
     {
       "id": "M1",
       "name": "Creature framework",
-      "hours": 17,
+      "hours": 26,
       "tasks": [
         {
           "id": "1.1",
@@ -117,13 +117,28 @@
           "id": "1.6",
           "title": "Creature Tuner spike",
           "done": false
+        },
+        {
+          "id": "1.7",
+          "title": "Replication: server authority",
+          "done": false
+        },
+        {
+          "id": "1.8",
+          "title": "Replicated locomotion",
+          "done": false
+        },
+        {
+          "id": "1.9",
+          "title": "Replicated visible state",
+          "done": false
         }
       ]
     },
     {
       "id": "M2",
       "name": "Shoal, State Tree",
-      "hours": 12,
+      "hours": 15,
       "tasks": [
         {
           "id": "2.1",
@@ -143,6 +158,16 @@
         {
           "id": "2.4",
           "title": "Fish visual & flee signal",
+          "done": false
+        },
+        {
+          "id": "2.5",
+          "title": "Shoal replication",
+          "done": false
+        },
+        {
+          "id": "2.6",
+          "title": "C++ port of the hot path (only if 2.2 exceeds the budget)",
           "done": false
         }
       ]
@@ -187,7 +212,7 @@
     {
       "id": "M4",
       "name": "Sea serpent, Behavior Tree",
-      "hours": 19,
+      "hours": 31,
       "tasks": [
         {
           "id": "4.1",
@@ -217,6 +242,26 @@
         {
           "id": "4.6",
           "title": "Hunting the shoal & serpent tasks",
+          "done": false
+        },
+        {
+          "id": "4.7",
+          "title": "Replicated vigilance & signals",
+          "done": false
+        },
+        {
+          "id": "4.8",
+          "title": "Multiplayer perception",
+          "done": false
+        },
+        {
+          "id": "4.9",
+          "title": "Server-validated charge",
+          "done": false
+        },
+        {
+          "id": "4.10",
+          "title": "Two-player test & capture",
           "done": false
         }
       ]
@@ -362,7 +407,7 @@
       ]
     }
   ],
-  "synced": "2026-11-08",
+  "synced": "2026-11-22",
   "milestone_names_fr": {
     "M0": "Fondations",
     "M1": "Framework des créatures",
