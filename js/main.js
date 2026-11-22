@@ -330,7 +330,7 @@
     ctx.restore();
   };
 
-  // fixed-bugs counter, top right under the menu. Shown from the first kill, kept for the visit
+  // fixed-bugs counter: a toast top right under the menu, only while bugs are being fixed; score kept for the visit
   const FRL = document.documentElement.lang === 'fr';
   let kills = 0, killBox = null, killNum = null;
   try { kills = parseInt(sessionStorage.getItem('pulseKills'), 10) || 0; } catch (err) { /* private mode */ }
@@ -342,10 +342,13 @@
     document.body.appendChild(killBox);
     killNum = killBox.querySelector('.kills__num');
     placeKills(); addEventListener('resize', placeKills);
-    requestAnimationFrame(() => killBox.classList.add('is-on'));
   };
+  let killHide = 0;
   const addKill = (c, n = 1) => {
-    if (!killBox) makeKills(); // appears showing the old score, then rolls to the new one
+    // a toast: it pops in on a fix (showing the old score, then rolling to the new one) and leaves after a short while
+    if (!killBox) makeKills();
+    killBox.classList.add('is-on');
+    clearTimeout(killHide); killHide = setTimeout(() => killBox.classList.remove('is-on', 'is-bump'), 2600);
     kills += n;
     try { sessionStorage.setItem('pulseKills', kills); } catch (err) { /* private mode */ }
     killBox.style.setProperty('--k', c);
@@ -359,7 +362,6 @@
     plus.className = 'kills__plus'; plus.textContent = `+${n}`;
     killBox.appendChild(plus); setTimeout(() => plus.remove(), 800);
   };
-  if (kills > 0) makeKills();
 
   const frame = (now) => {
     const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
