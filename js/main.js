@@ -446,7 +446,11 @@
     bugs = bugs.filter((b) => {
       b.age += dt;
       if (b.age > b.life + 0.4) return false;
-      const ddx = b.tx - b.x, ddy = b.ty - b.y, d = Math.hypot(ddx, ddy), step = b.speed * dt;
+      // the bug notices the mouse: it slows down, gets nervous (legs faster, a little shiver) and glows softly
+      const near = fine && Math.hypot(b.x - mx, b.y - sy - my) < 80;
+      b.alert = (b.alert || 0) + ((near ? 1 : 0) - (b.alert || 0)) * Math.min(1, dt * 8);
+      b.legT = (b.legT || b.phase) + dt * (1 + 2.2 * b.alert);
+      const ddx = b.tx - b.x, ddy = b.ty - b.y, d = Math.hypot(ddx, ddy), step = b.speed * (1 - 0.7 * b.alert) * dt;
       if (d <= step) { b.x = b.tx; b.y = b.ty; if (b.age < b.life) nextStep(b); }
       else { b.x += (ddx / d) * step; b.y += (ddy / d) * step; }
       const target = Math.atan2(b.dy, b.dx); let da = target - b.ang;
@@ -455,7 +459,13 @@
       const yv = b.y - sy;
       if (yv < nb + 4 || yv > h + 60) return false; // scrolled under the sticky menu or far below: gone
       ctx.globalAlpha = Math.min(1, b.age / 0.3, Math.max(0, (b.life + 0.4 - b.age) / 0.4));
-      drawBug(b.x, yv, b.ang, b.c, calm ? b.phase : now / 1000 + b.phase, b.crit);
+      const jit = calm ? 0 : Math.sin(now / 16) * 0.7 * b.alert;
+      if (b.alert > 0.05) {
+        const gl = ctx.createRadialGradient(b.x, yv, 0, b.x, yv, 16);
+        gl.addColorStop(0, `rgba(${hex2rgb(b.c)},${0.35 * b.alert})`); gl.addColorStop(1, `rgba(${hex2rgb(b.c)},0)`);
+        ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(b.x, yv, 16, 0, 6.283); ctx.fill();
+      }
+      drawBug(b.x + jit * -Math.sin(b.ang), yv + jit * Math.cos(b.ang), b.ang, b.c, calm ? b.phase : b.legT, b.crit);
       ctx.globalAlpha = 1;
       return true;
     });
