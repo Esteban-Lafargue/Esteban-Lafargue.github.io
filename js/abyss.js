@@ -10,7 +10,8 @@
                 : { tasks: 'tasks done', plan: 'of the plan', all: 'all milestones', done: 'Done', last: 'last update', isDone: ' (done)' };
   const fmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString(FRL ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
-  fetch(((road || log).dataset.base || (road && road.dataset.base) || '../') + 'data/abyss.json').then((r) => r.json()).then((data) => {
+  const base = (road || log).dataset.base || (road && road.dataset.base) || '../';
+  fetch(base + 'data/abyss.json').then((r) => r.json()).then((data) => {
     const MN = (m) => (FRL && data.milestone_names_fr && data.milestone_names_fr[m.id]) || m.name;
     const ms = data.milestones || [];
     const all = ms.flatMap((m) => m.tasks);
@@ -45,8 +46,8 @@
           <div class="node__body">
             ${(e.tags || []).length ? `<div class="card__tags">${e.tags.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
             ${(e.text || []).map((p) => `<p>${esc(p)}</p>`).join('')}
-            ${e.video ? `<video class="entry__media" controls preload="none" playsinline ${e.poster ? `poster="../${esc(e.poster)}"` : ''}><source src="../${esc(e.video)}" type="video/mp4"></video>` : ''}
-            ${(e.images || []).map((i) => `<figure class="entry__fig"><img src="../${esc(i.src)}" alt="${esc(i.alt || '')}" loading="lazy"><figcaption>${esc(i.caption || '')}</figcaption></figure>`).join('')}
+            ${e.video ? `<video class="entry__media" controls preload="none" playsinline ${e.poster ? `poster="${base}${esc(e.poster)}"` : ''}><source src="${base}${esc(e.video)}" type="video/mp4"></video>` : ''}
+            ${(e.images || []).map((i) => `<figure class="entry__fig"><img src="${base}${esc(i.src)}" alt="${esc(i.alt || '')}" loading="lazy"><figcaption>${esc(i.caption || '')}</figcaption></figure>`).join('')}
           </div>
         </article>`; }).join('');
     }
