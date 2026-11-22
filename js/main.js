@@ -264,6 +264,7 @@
     else if (kind === 'tri') poly(x, y, r * 1.2, 3, rot);
     else poly(x, y, r * 1.2, 5, rot, 0.5);
   };
+  let overFree = false, aiming = false;
   let w = 0, h = 0, pulses = [], mx = -1e4, my = -1e4, gx = -1e4, gy = -1e4, prev = 0, nextSpawn = 0;
 
   const size = () => {
@@ -493,13 +494,16 @@
       const range = p.horiz ? w : sy + h;
       return p.dir > 0 ? tail < range + 10 : tail > (p.horiz ? -10 : sy - 10);
     });
+    // near a bug, on the empty grid: the cursor turns into a small crosshair
+    const aim = fine && overFree && bugs.some((b) => b.alert > 0.5);
+    if (aim !== aiming) { aiming = aim; document.documentElement.classList.toggle('is-aiming', aim); }
     if (!document.hidden) requestAnimationFrame(frame);
   };
 
   size();
   addEventListener('resize', size);
   if (fine) {
-    addEventListener('pointermove', (e) => { mx = e.clientX; my = e.clientY; if (gx < -1e3) { gx = mx; gy = my; } }, { passive: true });
+    addEventListener('pointermove', (e) => { mx = e.clientX; my = e.clientY; overFree = !(e.target.closest && e.target.closest(SKIP)); if (gx < -1e3) { gx = mx; gy = my; } }, { passive: true });
     document.addEventListener('pointerleave', () => { mx = my = gx = gy = -1e4; });
   }
   // click on the empty grid: the nearest crossing fires pulses along its four lines

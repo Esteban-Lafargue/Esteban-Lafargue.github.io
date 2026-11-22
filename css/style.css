@@ -529,6 +529,9 @@ a.is-looted { animation: loot-pop .4s cubic-bezier(.34, 1.8, .64, 1); }
 .kills__plus { position: absolute; right: 10px; top: 100%; font: 600 11px var(--mono); color: var(--k); animation: kill-plus .8s ease-out forwards; }
 @keyframes kill-plus { from { transform: translateY(-4px); opacity: 1; } to { transform: translateY(14px); opacity: 0; } }
 
+/* crosshair cursor when the mouse is near a bug, on the empty grid (js §9) */
+html.is-aiming, html.is-aiming body, html.is-aiming body *:not(a):not(button) { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cg fill='none' stroke='%23ff4d4d' stroke-width='1.6'%3E%3Ccircle cx='12' cy='12' r='6.5'/%3E%3Cpath d='M12 1v5M12 18v5M1 12h5M18 12h5'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='1.3' fill='%23ff4d4d'/%3E%3C/svg%3E") 12 12, crosshair; }
+
 @media (prefers-reduced-motion: reduce) {
   .btn:active { transform: none; }
   .btn--primary::after { display: none; }
