@@ -1,5 +1,5 @@
 {
-  "_readme": "Project list, read by js/projects.js. One entry per project, sorted by date automatically (newest first). 'featured': a number puts the project on the home page, in that order. Edit freely, like a Data Table: no code needed. Each project has a 'fr' block for the French site (same fields; missing ones fall back to English). 'spotlight': a number puts the project in the big 'Case studies' block of the projects page, in that order, with its 'proves' skills; the others go to the compact 'More work' list. 'skills': ids from the 'skills' list, used by the filters of the projects page (a project with none only shows under 'All').",
+  "_readme": "Project list, read by js/projects.js. One entry per project, sorted by date automatically (newest first). 'featured': a number puts the project on the home page, in that order. Edit freely, like a Data Table: no code needed. Each project has a 'fr' block for the French site (same fields; missing ones fall back to English). 'spotlight': a number puts the project in the big 'Case studies' block of the projects page, in that order, with its 'proves' skills; the others go to the compact 'More work' list. 'skills': ids from the 'skills' list, used by the filters of the projects page (a project with none only shows under 'All'). 'color': optional, the project's own colour token (same as its page), used for its card instead of the category colour.",
   "categories": {
     "professional": {
       "label": "Professional",
@@ -114,7 +114,8 @@
       "skills": [
         "gameplay",
         "ui"
-      ]
+      ],
+      "color": "--p-klappen"
     },
     {
       "id": "flying-ai",
@@ -168,7 +169,8 @@
       "skills": [
         "ai",
         "teaching"
-      ]
+      ],
+      "color": "--p-flying"
     },
     {
       "id": "vr-fabre",
@@ -281,7 +283,8 @@
         "tools",
         "gameplay",
         "ui"
-      ]
+      ],
+      "color": "--p-wolfpeak"
     },
     {
       "id": "interim-14",
@@ -412,7 +415,8 @@
       "skills": [
         "ai",
         "tools"
-      ]
+      ],
+      "color": "--p-abyss"
     },
     {
       "id": "workshops",

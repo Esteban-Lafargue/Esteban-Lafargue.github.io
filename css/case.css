@@ -3,8 +3,8 @@
    ========================================================================== */
 
 /* Project colours: light, one per project, used for the content of its pages */
-[data-theme="klappen"] { --pc: #8fe6b0; --halo: #0f2a22; }
-[data-theme="wolfpeak"] { --pc: #d6e4f5; --halo: #141c28; }
+[data-theme="klappen"] { --pc: var(--p-klappen); --halo: #0f2a22; }
+[data-theme="wolfpeak"] { --pc: var(--p-wolfpeak); --halo: #141c28; }
 
 .back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font: 13px var(--mono); color: var(--text-muted); }
 .back:hover { color: var(--ac); }
@@ -216,7 +216,7 @@
 .enemies b, .tools b { display: block; margin-bottom: 2px; color: var(--text-strong); font-weight: 600; font-size: 15px; }
 
 /* ---------- Flying AI ---------- */
-[data-theme="flying"] { --pc: #ffb48a; --halo: #2a1709; }
+[data-theme="flying"] { --pc: var(--p-flying); --halo: #2a1709; }
 .media--flat { aspect-ratio: auto; border-radius: 0; border: 0; }
 .media--flat video { height: auto; display: block; }
 .ao .media--flat { border-radius: 8px; border: 1px solid var(--line-soft); overflow: hidden; }

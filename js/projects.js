@@ -44,7 +44,7 @@
     const media = p.thumb
       ? `<img src="${esc(abs(p.thumb, base))}" alt="" loading="lazy">${p.hover ? `<video muted loop playsinline preload="none" src="${esc(abs(p.hover, base))}"></video>` : ''}`
       : `<span class="card__ph card__ph--${esc(p.status)}">${p.status === 'nda' ? (FRL ? 'NDA · sans visuels' : 'NDA · no visuals') : esc(CL(cat))}</span>`;
-    return `<${tag} class="node card reveal${linked ? '' : ' card--soon'}" style="--c:var(${cat.color})"${href}${ext}>
+    return `<${tag} class="node card reveal${linked ? '' : ' card--soon'}" style="--c:var(${p.color || cat.color})"${href}${ext}>
       <div class="node__head"><span class="node__icon" aria-hidden="true">ƒ</span>${esc(L(p, 'title'))}<span class="meta">${esc(L(p, 'period'))}</span></div>
       <div class="card__media">${media}</div>
       <div class="card__body">
@@ -65,7 +65,7 @@
     const media = p.thumb
       ? `<img src="${esc(abs(p.thumb, base))}" alt="" loading="lazy">${p.hover ? `<video muted loop playsinline preload="none" src="${esc(abs(p.hover, base))}"></video>` : ''}`
       : `<span class="card__ph card__ph--${esc(p.status)}">${esc(L(p, 'title'))}</span>`;
-    return `<${tag} class="node card bento__item bento__item--${i} reveal" style="--c:var(${cat.color})"${href}>
+    return `<${tag} class="node card bento__item bento__item--${i} reveal" style="--c:var(${p.color || cat.color})"${href}>
       <div class="node__head"><span class="node__icon" aria-hidden="true">ƒ</span>${esc(L(p, 'title'))}<span class="meta">${esc(L(p, 'kind') || CL(cat))} · ${esc(L(p, 'period'))}</span></div>
       <div class="card__media">${media}</div>
       <div class="card__body">
@@ -86,7 +86,7 @@
       ? `<img src="${esc(abs(p.thumb, base))}" alt="" loading="lazy">${p.hover ? `<video muted loop playsinline preload="none" src="${esc(abs(p.hover, base))}"></video>` : ''}`
       : `<span class="card__ph card__ph--${esc(p.status)}">${esc(L(p, 'title'))}</span>`;
     const proves = L(p, 'proves') || [];
-    return `<${tag} class="node card spot__item reveal" data-skills="${esc((p.skills || []).join(' '))}" style="--c:var(${cat.color})"${href}>
+    return `<${tag} class="node card spot__item reveal" data-skills="${esc((p.skills || []).join(' '))}" style="--c:var(${p.color || cat.color})"${href}>
       <div class="node__head"><span class="node__icon" aria-hidden="true">ƒ</span>${esc(L(p, 'title'))}<span class="meta">${esc(L(p, 'kind') || CL(cat))} · ${esc(L(p, 'period'))}</span></div>
       <div class="card__media">${media}</div>
       <div class="card__body">
@@ -108,7 +108,7 @@
     const ext = linked && /^https?:/.test(p.url) ? ' target="_blank" rel="noopener"' : '';
     const who = [L(p, 'team'), L(p, 'role')].filter(known).map(esc).join(' · ');
     const thumb = p.thumb ? `<span class="prow__thumb"><img src="${esc(base + p.thumb)}" alt="" loading="lazy"></span>` : '';
-    return `<li class="reveal" data-skills="${esc((p.skills || []).join(' '))}"><${tag} class="prow${linked ? '' : ' prow--soon'}${thumb ? ' prow--thumb' : ''}" style="--c:var(${cat.color})"${href}${ext}>
+    return `<li class="reveal" data-skills="${esc((p.skills || []).join(' '))}"><${tag} class="prow${linked ? '' : ' prow--soon'}${thumb ? ' prow--thumb' : ''}" style="--c:var(${p.color || cat.color})"${href}${ext}>
       <span class="prow__year">${esc(p.date.slice(0, 4))}</span>${thumb}
       <span class="prow__main">
         <span class="prow__title">${esc(L(p, 'title'))}<span class="chip">${esc(CL(cat))}</span></span>

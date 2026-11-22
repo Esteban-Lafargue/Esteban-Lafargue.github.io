@@ -35,7 +35,12 @@
   --c-human: #ff7ad9;     /* how I work, passions, game jams */
   --c-soft: var(--c-human);
   --c-passions: var(--c-human);
-  --c-projects: #e8e8e8;  /* projects in general (each project page has its own colour) */
+  --c-projects: #e8e8e8;  /* projects in general */
+  /* Project colours: one per project, on its page AND on its cards */
+  --p-klappen: #8fe6b0;
+  --p-flying: #ffb48a;
+  --p-abyss: #ff9be0;
+  --p-wolfpeak: #d6e4f5;
 
   /* Type */
   --font: 'Poppins', system-ui, sans-serif;
@@ -47,7 +52,7 @@
 }
 
 /* Optional theme, e.g. <html data-theme="abyss"> */
-[data-theme="abyss"] { --pc: #ff9be0; --halo: #2a0f26; }
+[data-theme="abyss"] { --pc: var(--p-abyss); --halo: #2a0f26; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
