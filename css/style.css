@@ -398,7 +398,7 @@ a.tuto-card__media:hover .yt__play { transform: scale(.95); background: #ff0033;
 .reel__wrap { position: relative; flex: 1; display: flex; }
 .reel__play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border: 0; background: linear-gradient(0deg, #050505b3, transparent 55%); color: var(--text-strong); font: 500 14px var(--mono); }
 .reel__play .yt__play { transform: scale(1.15); background: #050505b3; transition: transform .25s, background .25s; }
-.reel__play:hover .yt__play, .reel__play:focus-visible .yt__play { transform: scale(1.3); background: var(--c-projects, var(--ac)); }
+.reel__play:hover .yt__play, .reel__play:focus-visible .yt__play { transform: scale(1.3); background: var(--c, var(--ac)); }
 .reel__label { padding: 6px 14px; border-radius: 16px; background: #050505b3; border: 1px solid #ffffff33; }
 .reel__wrap.is-playing .reel__play { display: none; }
 @media (prefers-reduced-motion: reduce) { a.card:hover, a.next-proj:hover { transform: none; } a.card:hover .card__media img { transform: none; } }
