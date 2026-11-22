@@ -526,6 +526,11 @@ a.is-looted { animation: loot-pop .4s cubic-bezier(.34, 1.8, .64, 1); }
 @keyframes kill-out { to { transform: translateY(-100%); opacity: 0; } }
 .kills.is-bump { animation: kill-bump .35s cubic-bezier(.34, 1.8, .64, 1); opacity: 1; }
 @keyframes kill-bump { 35% { transform: scale(1.1); box-shadow: 0 0 18px color-mix(in srgb, var(--k) 45%, transparent); } }
+.kills.is-milestone { border-color: #ffd166; box-shadow: 0 0 22px #ffd16655; opacity: 1; }
+.kills.is-milestone .kills__lbl { color: #ffd166; animation: kill-title .5s cubic-bezier(.34, 1.8, .64, 1); }
+.kills.is-milestone .kills__pin { background: #ffd166; box-shadow: 0 0 10px #ffd166; }
+@keyframes kill-title { from { transform: scale(.7); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .kills.is-milestone .kills__lbl { animation: none; } }
 .kills__plus { position: absolute; right: 10px; top: 100%; font: 600 11px var(--mono); color: var(--k); animation: kill-plus .8s ease-out forwards; }
 @keyframes kill-plus { from { transform: translateY(-4px); opacity: 1; } to { transform: translateY(14px); opacity: 0; } }
 

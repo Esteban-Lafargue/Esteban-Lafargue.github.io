@@ -345,12 +345,23 @@
     placeKills(); addEventListener('resize', placeKills);
   };
   let killHide = 0;
+  const MILESTONES = [[10, 'Debugger', 'Débuggeur'], [25, 'Bug hunter', 'Chasseur de bugs'], [50, 'QA legend', 'Légende du QA'], [100, 'Ship it!', 'On peut livrer !']];
   const addKill = (c, n = 1) => {
     // a toast: it pops in on a fix (showing the old score, then rolling to the new one) and leaves after a short while
     if (!killBox) makeKills();
     killBox.classList.add('is-on');
-    clearTimeout(killHide); killHide = setTimeout(() => killBox.classList.remove('is-on', 'is-bump'), 2600);
+    const before = kills;
     kills += n;
+    // milestones: the toast shows a short title for a moment, in gold, with a small chime
+    const ms = MILESTONES.filter(([v]) => before < v && kills >= v).pop();
+    clearTimeout(killHide); killHide = setTimeout(() => killBox.classList.remove('is-on', 'is-bump', 'is-milestone'), ms ? 3600 : 2600);
+    const lbl = killBox.querySelector('.kills__lbl');
+    if (ms) {
+      lbl.textContent = FRL ? ms[2] : ms[1];
+      killBox.classList.add('is-milestone');
+      chime();
+      clearTimeout(lbl._t); lbl._t = setTimeout(() => { lbl.textContent = FRL ? 'Bugs corrigés' : 'Bugs fixed'; killBox.classList.remove('is-milestone'); }, 3400);
+    }
     try { sessionStorage.setItem('pulseKills', kills); } catch (err) { /* private mode */ }
     killBox.style.setProperty('--k', c);
     // odometer: the old number rolls up and out, the new one rolls in from below
@@ -531,6 +542,20 @@
         o.type = type; o.frequency.setValueAtTime(fr * 1.015, t); o.frequency.exponentialRampToValueAtTime(fr, t + 0.06);
         o.detune.value = (Math.random() - 0.5) * 24; og.gain.value = g;
         o.connect(og); og.connect(lp); o.start(t); o.stop(t + 0.55);
+      });
+    } catch (err) { /* no audio: silent */ }
+  };
+  // milestone reached: a soft rising arpeggio
+  const chime = () => {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if (actx.state === 'suspended') actx.resume();
+      const t0 = actx.currentTime + 0.12;
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+        const t = t0 + i * 0.08, o = actx.createOscillator(), g = actx.createGain();
+        o.type = 'triangle'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.04, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+        o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + 0.55);
       });
     } catch (err) { /* no audio: silent */ }
   };
