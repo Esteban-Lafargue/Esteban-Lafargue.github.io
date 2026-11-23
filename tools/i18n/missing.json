@@ -1,6 +1,4 @@
 {
- "<span class=\"pin is-live\" style=\"--c:var(--pc)\"></span>19 pieces, editable by Designers in a Data Table": "klappen/",
- "<span class=\"pin is-live\" style=\"--c:var(--pc)\"></span>Snapping points + virtual math grid": "klappen/",
- "<span class=\"pin is-live\" style=\"--c:var(--pc)\"></span>Actors → HISM beyond 2,000 units": "klappen/",
- "<span class=\"pin is-live\" style=\"--c:var(--pc)\"></span>20+ Blueprint graphs, profiled in Unreal Insights": "klappen/"
+ "<b>Clean ownership, ready for several players.</b> Every system knows who created what and who owns it, through proper references rather than shortcuts like <code>Get Player Character</code> with index 0 or unsafe casts. <span data-wip=\"\" hidden=\"\">Today it runs in local split-screen, with one widget per player and the right Owning Player; networking</span><span data-wip-alt=\"\">Networking</span> was handled by my mentor, and I worked closely with him, producing test builds to catch programming and multiplayer issues early.": "wolfpeak/",
+ "Enemies show a <mark class=\"hl\">health bar above their head</mark>, the player doesn’t. I built it as a dedicated Widget Component class that <mark class=\"hl\">initialises itself</mark>, so nobody has to wire it by hand<span data-wip=\"\" hidden=\"\">, and handled the split-screen constraint: a Widget Component in Screen space only renders in player 1’s viewport. It works with several players</span>.": "wolfpeak/"
 }

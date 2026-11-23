@@ -2,6 +2,25 @@
 (() => {
   'use strict';
 
+  /* 0. WIP mode: ?wip shows every element masked with [data-wip][hidden] (unfinished content kept for
+        demos and tests), ?wip=0 turns it off. Remembered for the tab (sessionStorage); visitors never see it. */
+  {
+    let wip = false;
+    const q = new URLSearchParams(location.search);
+    try {
+      if (q.has('wip')) { if (q.get('wip') === '0') sessionStorage.removeItem('wip'); else sessionStorage.setItem('wip', '1'); }
+      wip = sessionStorage.getItem('wip') === '1';
+    } catch (err) { wip = q.has('wip') && q.get('wip') !== '0'; }
+    if (wip) {
+      document.documentElement.classList.add('is-wip');
+      document.querySelectorAll('[data-wip][hidden]').forEach((el) => el.removeAttribute('hidden'));
+      const badge = document.createElement('a');
+      badge.className = 'wip-badge'; badge.href = '?wip=0';
+      badge.textContent = 'WIP mode · hidden items shown · exit';
+      document.body.appendChild(badge);
+    }
+  }
+
   /* 1. Light up nodes, pins and wires as they enter the viewport */
   const live = document.querySelectorAll('.reveal, .wire, .node, .stitle');
   if ('IntersectionObserver' in window) {

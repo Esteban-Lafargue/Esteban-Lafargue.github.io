@@ -21,13 +21,13 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 - `fr/…` : **généré, ne jamais modifier à la main.**
 - `css/style.css` (tokens, nav, nodes Blueprint, rail, cartes, survols), `css/case.css` (études de cas, thèmes `[data-theme]`), `css/home.css` (accueil + page contact).
 - `js/main.js` : apparition au scroll, façade YouTube, vidéos au survol, lightbox, **rail d'exécution** (fil à gauche, arrêts sur `.stitle` et `[data-stop]`), formulaire Web3Forms, bouton lecture de la Demo Reel.
-- `js/projects.js` + `data/projects.json` : cartes de projets (`data-projects="featured"` avec `data-layout="bento"`, ou `"all"`). Champs : `title, category, period, team, role, pitch, hook, metric, kind, status, url, thumb, hover, featured` et bloc `fr` pour la traduction. `data-base` = chemin des données/médias, `data-link-base` = chemin des liens (pour rester dans la bonne langue).
+- `js/projects.js` + `data/projects.json` : cartes de projets (`data-projects="featured"` avec `data-layout="bento"`, ou `"all"`). Champs : `title, category, period, team, role, pitch, hook, metric, kind, status, url, thumb, hover, featured, hidden` et bloc `fr` pour la traduction. `data-base` = chemin des données/médias, `data-link-base` = chemin des liens (pour rester dans la bonne langue).
 - `js/abyss.js` + `data/abyss.json` : feuille de route et devlog d'Abyss.
 - Médias : `assets/img/…`, `assets/video/…` (Demo Reel : `assets/video/reel/demo-reel.mp4`), CV EN/FR en PDF **à la racine**, noms courts pour LinkedIn : `Esteban-Lafargue-CV-EN.pdf` et `Esteban-Lafargue-CV-FR.pdf` (https://esteban-lafargue.github.io/Esteban-Lafargue-CV-EN.pdf). Ne pas les renommer ni les déplacer : ces URL sont partagées sur LinkedIn. Pour mettre à jour un CV, remplacer le fichier sous le même nom.
 
 ## Workflow obligatoire à chaque modification
 1. Modifier les pages **anglaises** (et `data/*.json` si besoin).
-2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=61' --include=*.html . | xargs sed -i 's/v=61/v=62/g'`). Version actuelle : **v=61**.
+2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=62' --include=*.html . | xargs sed -i 's/v=62/v=63/g'`). Version actuelle : **v=62**.
 3. Traductions : `python3 tools/build_fr.py` (nécessite `beautifulsoup4`). Il doit afficher **0 missing**. Sinon, ajouter les clés listées dans `tools/i18n/missing.json` dans un fichier `tools/i18n/fr-NN-sujet.json` (clé = HTML interne anglais, espaces normalisés ; valeur = HTML français), puis relancer.
    - Nouvelle page → l'ajouter à `PAGES` dans `tools/build_fr.py`.
 4. Vérifier visuellement (bureau 1440 px + mobile 390 px, pas de défilement horizontal) : `python3 -m http.server` puis capture Playwright ou navigateur.
@@ -52,6 +52,17 @@ Procédure gamefeel : un effet = un commit, mis en ligne, puis validé ou annul�
 Univers du CV : fond très sombre, couleurs par section, « pins » et nodes Blueprint, Poppins + JetBrains Mono.
 Tout élément cliquable doit le montrer (survol + bouton visible au repos, utile sur mobile). Menu identique partout :
 Home · Projects · Tutorials · About · Contact · FR · CV.
+
+## Éléments masqués (gel du portfolio, 23 nov. 2026)
+Portfolio gelé jusqu'à la candidature Unknown Worlds (15 mars 2027) : pas de nouvelles pages ni améliorations. Rien n'est supprimé, tout est réversible.
+- **Mode WIP** : ajouter `?wip` à n'importe quelle URL réaffiche tout ce qui est masqué (contour pointillé orange + badge en bas à gauche) ; reste actif dans l'onglet ; `?wip=0` ou le badge pour sortir. Les visiteurs ne voient rien.
+- **Masquer** : attribut `data-wip hidden` sur l'élément (texte de remplacement éventuel : `data-wip-alt`, caché en mode WIP). Projets : `"hidden": true` dans `data/projects.json`. **Réafficher pour de bon** : retirer `hidden` / `"hidden": true`, puis `build_fr.py`.
+- Kläppen (`klappen/`) : bloc des 5 systèmes « soon ».
+- Kläppen › Building (`klappen/building/`) : titre « Other systems in Kläppen » + les 5 systèmes « soon ».
+- Tutorials : carte « Tiered Blueprint workshops · coming soon ».
+- Projets (`data/projects.json`, `hidden`) : VR Musée Fabre, Blueprint Conventions, Interim-14, Splashdown, Tiered Blueprint workshops (cartes « coming soon », sans image).
+- WolfPeak : tuile « 0 bugs » et paragraphe « No more bugs » (surestimation) ; liste détaillée des ennemis (NDA) ; 2 mentions de l'écran partagé local (NDA).
+- Conservés volontairement : liens katarn34.itch.io (compte itch toujours actif), système de cartes de compétences WolfPeak.
 
 ## En attente (à demander à Esteban)
 - Étude de cas **SplashDown** (rôle, équipe, année 2024 ; sources dans `F:\Portfolio\SplashDown`).

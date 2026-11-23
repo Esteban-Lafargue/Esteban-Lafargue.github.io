@@ -136,7 +136,10 @@
     let data;
     try { data = await (await fetch(base + 'data/projects.json')).json(); } catch { return; }
     const cats = data.categories;
-    const list = [...data.projects].sort((a, b) => b.date.localeCompare(a.date));
+    // Projects flagged "hidden" are shown only in WIP mode (?wip, see js/main.js §0)
+    let wip = false;
+    try { wip = new URLSearchParams(location.search).has('wip') ? new URLSearchParams(location.search).get('wip') !== '0' : sessionStorage.getItem('wip') === '1'; } catch { /* storage blocked */ }
+    const list = [...data.projects].filter((p) => wip || !p.hidden).sort((a, b) => b.date.localeCompare(a.date));
 
     if (host.dataset.projects === 'featured') {
       const feat = list.filter((p) => p.featured).sort((a, b) => a.featured - b.featured);

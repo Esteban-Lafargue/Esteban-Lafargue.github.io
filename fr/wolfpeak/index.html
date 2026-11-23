@@ -15,8 +15,8 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../../css/style.css?v=61" rel="stylesheet"/>
-<link href="../../css/case.css?v=61" rel="stylesheet"/>
+<link href="../../css/style.css?v=62" rel="stylesheet"/>
+<link href="../../css/case.css?v=62" rel="stylesheet"/>
 <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -59,7 +59,7 @@
 <div class="node__head"><span aria-hidden="true" class="node__icon">⇉</span><h2 id="glance-title" style="margin:0;font-size:inherit">En bref</h2></div>
 <ul class="glance">
 <li><b>4 systèmes</b><span>Inventaire, craft, interaction et équipement, refactorisés et documentés</span></li>
-<li><b>0 bug</b><span>Les systèmes refactorisés restent stables, quels que soient les tests des Designers</span></li>
+<li data-wip="" hidden=""><b>0 bug</b><span>Les systèmes refactorisés restent stables, quels que soient les tests des Designers</span></li>
 <li><b>&lt; 1 minute</b><span>Pour créer un nouvel objet ou un nouveau texte d’interaction, sans programmeur</span></li>
 <li><b>Action Objects</b><span>Des effets d’objets que les Designers configurent sans code, sur une base C++</span></li>
 <li><b>4 IA ennemies</b><span>30+ nœuds custom, des sous-arbres modulaires et 5 outils de debug utilisés chaque jour par les Designers</span></li>
@@ -78,10 +78,10 @@
 <div><dt>Ce que j’ai fait</dt><dd>
 <p>J’ai réparé les systèmes existants pour que le jeu continue de fonctionner, marqué l’ancien code comme <mark class="hl">DEPRECATED</mark>, puis conçu et reconstruit une <mark class="hl">architecture évolutive</mark> pour chaque nouveau système et chaque nouvel objet.</p>
 <p><b>Des interactions pilotées par les données.</b> Chaque objet porte des <mark class="hl">Gameplay Tags</mark> qui décrivent ce qu’on peut en faire. Quand un joueur interagit, le tag indique au système quelle interaction lancer, et une <mark class="hl">Data Table</mark> fournit le texte à afficher pour ce type. Un nouvel objet ou une nouvelle interaction, c’est une ligne de données, pas du nouveau code.</p>
-<p><b>Des responsabilités claires, prêtes pour plusieurs joueurs.</b> Chaque système sait qui a créé quoi et à qui ça appartient, grâce à de vraies références plutôt qu’à des raccourcis comme <code>Get Player Character</code> à l’index 0 ou des casts hasardeux. Aujourd’hui, le jeu tourne en écran partagé local, avec un widget par joueur et le bon Owning Player ; le réseau était géré par mon mentor, avec qui j’ai travaillé étroitement en produisant des builds de test pour repérer tôt les erreurs de programmation et les problèmes multijoueur.</p>
+<p><b>Des responsabilités claires, prêtes pour plusieurs joueurs.</b> Chaque système sait qui a créé quoi et à qui ça appartient, grâce à de vraies références plutôt qu’à des raccourcis comme <code>Get Player Character</code> à l’index 0 ou des casts hasardeux. <span data-wip="" hidden="">Aujourd’hui, le jeu tourne en écran partagé local, avec un widget par joueur et le bon Owning Player ; le réseau</span><span data-wip-alt="">Le réseau</span> était géré par mon mentor, avec qui j’ai travaillé étroitement en produisant des builds de test pour repérer tôt les erreurs de programmation et les problèmes multijoueur.</p>
 </dd></div>
 <div class="pm__next"><dt>Impact</dt><dd>
-<p><b>Plus aucun bug :</b> les systèmes restent stables quels que soient les tests des Designers.</p>
+<p data-wip="" hidden=""><b>Plus aucun bug :</b> les systèmes restent stables quels que soient les tests des Designers.</p>
 <p><b>Un nouvel objet en moins d’une minute :</b> dupliquer le <mark class="hl">Data Asset</mark> d’un objet, remplir ses données, placer l’objet dans le monde avec ce Data Asset dans ses Details. Terminé.</p>
 <p><b>Un nouveau texte d’interaction en une minute environ :</b> ajouter une ligne pour le tag dans la Data Table des interactions, ou créer un nouveau tag si besoin.</p>
 <p><b>Facile à étendre :</b> les nouvelles demandes sont devenues simples à ajouter, comme des interactions propres à chaque objet dans l’inventaire : maintenir pour consommer certains objets, un simple clic pour d’autres.</p>
@@ -167,7 +167,7 @@ TArray&lt;TObjectPtr&lt;UActionObject&gt;&gt; Actions;</code></pre>
 <div class="node__head"><span class="n">03</span>IA ennemie &amp; outils pour les Designers<span class="meta">Gameplay Programmer stagiaire</span></div>
 <dl class="pm__rows">
 <div><dt>Périmètre</dt><dd>L’IA a été mon plus gros chantier sur le projet : <mark class="hl">4 types d’ennemis</mark>, et les outils qui permettent aux Designers et Level Designers de façonner eux-mêmes leur comportement, en direct pendant les revues de sprint.</dd></div>
-<div><dt>Ennemis</dt><dd>
+<div data-wip="" hidden=""><dt>Ennemis</dt><dd>
 <ul class="enemies">
 <li><b>Duelliste au corps à corps</b>Conçu pour le combat rapproché : esquive les coups, choisit ses attaques selon le comportement du joueur, coup de pied, dégainement de l’épée, attaque sautée. Une anticipation et un feedback marqués pour que le joueur lise chaque action.</li>
 <li><b>Archer</b>Garde toujours la bonne distance avec le joueur tout en tirant, et se déplace en hauteur. Une anticipation claire avant chaque tir.</li>
@@ -231,7 +231,7 @@ TArray&lt;TObjectPtr&lt;UActionObject&gt;&gt; Actions;</code></pre>
 <dl class="pm__rows">
 <div><dt>Vie</dt><dd>
 <p>Un <mark class="hl">composant de vie plug &amp; play</mark> : ajouté à n’importe quel acteur, il se branche sur le système de dégâts natif d’Unreal et prévient les autres systèmes par des dispatchers.</p>
-<p>Les ennemis affichent une <mark class="hl">barre de vie au-dessus de leur tête</mark>, pas le joueur. Je l’ai faite sous forme de classe de Widget Component dédiée qui <mark class="hl">s’initialise seule</mark>, pour que personne n’ait à la brancher à la main, et j’ai réglé la contrainte de l’écran partagé : un Widget Component en mode Screen ne s’affiche que dans le viewport du joueur 1. Elle fonctionne avec plusieurs joueurs.</p>
+<p>Les ennemis affichent une <mark class="hl">barre de vie au-dessus de leur tête</mark>, pas le joueur. Je l’ai faite sous forme de classe de Widget Component dédiée qui <mark class="hl">s’initialise seule</mark>, pour que personne n’ait à la brancher à la main<span data-wip="" hidden="">, et j’ai réglé la contrainte de l’écran partagé : un Widget Component en mode Screen ne s’affiche que dans le viewport du joueur 1. Elle fonctionne avec plusieurs joueurs</span>.</p>
 </dd></div>
 <div><dt>Courbe d’XP</dt><dd>
 <p>Les seuils de niveau suivent une <mark class="hl">formule quadratique</mark> (coefficient × niveau² + base) avec des paramètres nommés que les Designers peuvent régler. Les gros gains d’XP sont traités en boucle, ce qui permet <mark class="hl">plusieurs passages de niveau</mark> d’un coup, et le seuil d’un niveau reste séparé de l’XP restante.</p>
@@ -312,6 +312,6 @@ TArray&lt;TObjectPtr&lt;UActionObject&gt;&gt; Actions;</code></pre>
 <span>Fait main · sans framework · hébergé sur GitHub Pages</span>
 </footer>
 </main>
-<script defer="" src="../../js/main.js?v=61"></script>
+<script defer="" src="../../js/main.js?v=62"></script>
 </body>
 </html>

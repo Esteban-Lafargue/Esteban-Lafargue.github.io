@@ -555,3 +555,10 @@ html.is-aiming, html.is-aiming body, html.is-aiming body *:not(a):not(button) { 
   .loot, .loot.is-on { transition: opacity .2s; transform: translate(-50%, 0); }
   .node:hover > .node__head .node__icon, .hero__node:hover .outputs li .pin { animation: none; }
 }
+
+/* WIP mode (js/main.js §0): masked items stay hidden for visitors, outlined when shown with ?wip */
+[data-wip][hidden] { display: none !important; }
+.is-wip [data-wip-alt] { display: none; }
+.is-wip [data-wip] { outline: 1px dashed var(--c-warn, #f5a524); outline-offset: 4px; }
+.wip-badge { position: fixed; left: 12px; bottom: 12px; z-index: 9999; padding: 6px 10px; border: 1px dashed #f5a524; border-radius: 6px; background: #0b0d12; color: #f5a524; font: 500 12px/1.2 'JetBrains Mono', monospace; text-decoration: none; }
+.wip-badge:hover { background: #f5a524; color: #0b0d12; }

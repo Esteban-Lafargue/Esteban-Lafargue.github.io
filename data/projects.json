@@ -186,6 +186,7 @@
         "VR"
       ],
       "status": "soon",
+      "hidden": true,
       "fr": {
         "title": "Jeu VR · Musée Fabre",
         "period": "2025 · 10 jours",
@@ -214,6 +215,7 @@
         "Methods & Quality"
       ],
       "status": "soon",
+      "hidden": true,
       "fr": {
         "title": "Conventions Blueprint",
         "period": "En cours",
@@ -300,6 +302,7 @@
         "Game Jam"
       ],
       "status": "soon",
+      "hidden": true,
       "fr": {
         "period": "2026 · 1 semaine",
         "team": "[Taille de l’équipe]",
@@ -324,6 +327,7 @@
         "Party game"
       ],
       "status": "soon",
+      "hidden": true,
       "fr": {
         "period": "2025 · 3 mois",
         "team": "[Taille de l’équipe]",
@@ -432,6 +436,7 @@
         "Teaching"
       ],
       "status": "soon",
+      "hidden": true,
       "fr": {
         "title": "Ateliers Blueprint à paliers",
         "period": "2025 – auj.",

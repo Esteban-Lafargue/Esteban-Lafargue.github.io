@@ -14,8 +14,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="../css/style.css?v=61">
-  <link rel="stylesheet" href="../css/case.css?v=61">
+  <link rel="stylesheet" href="../css/style.css?v=62">
+  <link rel="stylesheet" href="../css/case.css?v=62">
   <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -62,7 +62,7 @@
     <div class="node__head"><span class="node__icon" aria-hidden="true">⇉</span><h2 id="glance-title" style="margin:0;font-size:inherit">At a glance</h2></div>
     <ul class="glance">
       <li><b>4 systems</b><span>Inventory, crafting, interaction and equipment, rebuilt and documented</span></li>
-      <li><b>0 bugs</b><span>The rebuilt systems stay stable, whatever the Designers throw at them</span></li>
+      <li data-wip hidden><b>0 bugs</b><span>The rebuilt systems stay stable, whatever the Designers throw at them</span></li>
       <li><b>&lt; 1 minute</b><span>To create a new item, or a new interaction text, without a programmer</span></li>
       <li><b>Action Objects</b><span>Item effects Designers configure without code, on a C++ base</span></li>
       <li><b>4 enemy AIs</b><span>30+ custom nodes, modular sub-trees, and 5 debug tools used daily by Designers</span></li>
@@ -84,10 +84,10 @@
           <div><dt>What I did</dt><dd>
             <p>I repaired the existing systems so the game kept working, marked the old code as <mark class="hl">DEPRECATED</mark>, then designed and rebuilt a <mark class="hl">scalable architecture</mark> for every new system and item.</p>
             <p><b>Interaction driven by data.</b> Each item carries <mark class="hl">Gameplay Tags</mark> describing what can be done with it. When a player interacts, the tag tells the system which interaction to run, and a <mark class="hl">Data Table</mark> provides the text to display for that type. A new item or a new interaction is a data entry, not new code.</p>
-            <p><b>Clean ownership, ready for several players.</b> Every system knows who created what and who owns it, through proper references rather than shortcuts like <code>Get Player Character</code> with index 0 or unsafe casts. Today it runs in local split-screen, with one widget per player and the right Owning Player; networking was handled by my mentor, and I worked closely with him, producing test builds to catch programming and multiplayer issues early.</p>
+            <p><b>Clean ownership, ready for several players.</b> Every system knows who created what and who owns it, through proper references rather than shortcuts like <code>Get Player Character</code> with index 0 or unsafe casts. <span data-wip hidden>Today it runs in local split-screen, with one widget per player and the right Owning Player; networking</span><span data-wip-alt>Networking</span> was handled by my mentor, and I worked closely with him, producing test builds to catch programming and multiplayer issues early.</p>
           </dd></div>
           <div class="pm__next"><dt>Impact</dt><dd>
-            <p><b>No more bugs:</b> the systems stay stable whatever tests the Designers run.</p>
+            <p data-wip hidden><b>No more bugs:</b> the systems stay stable whatever tests the Designers run.</p>
             <p><b>New item in under a minute:</b> duplicate an item’s <mark class="hl">Data Asset</mark>, fill in its data, place the item in the world with that Data Asset in its Details. Done.</p>
             <p><b>New interaction text in about a minute:</b> add a line for the tag in the interactions Data Table, or create a new tag if needed.</p>
             <p><b>Easy to extend:</b> new requests became simple to add, such as item-specific interactions in the inventory: hold to consume for some items, a single click for others.</p>
@@ -177,7 +177,7 @@ TArray&lt;TObjectPtr&lt;UActionObject&gt;&gt; Actions;</code></pre>
         <div class="node__head"><span class="n">03</span>Enemy AI &amp; Designer tools<span class="meta">Gameplay Programmer intern</span></div>
         <dl class="pm__rows">
           <div><dt>Scope</dt><dd>The AI was my largest area on the project: <mark class="hl">4 enemy types</mark>, plus the tools that let Designers and Level Designers shape their behaviour themselves, live during sprint reviews.</dd></div>
-          <div><dt>Enemies</dt><dd>
+          <div data-wip hidden><dt>Enemies</dt><dd>
             <ul class="enemies">
               <li><b>Melee duelist</b>Built for close combat: dodges hits, picks different attacks depending on how the player behaves, kicks, draws its sword, jump attacks. Strong anticipation and feedback so the player can read every action.</li>
               <li><b>Archer</b>Always keeps the right distance from the player while shooting, and moves through vertical spaces. Clear anticipation before each shot.</li>
@@ -243,7 +243,7 @@ TArray&lt;TObjectPtr&lt;UActionObject&gt;&gt; Actions;</code></pre>
         <dl class="pm__rows">
           <div><dt>Health</dt><dd>
             <p>A <mark class="hl">plug &amp; play health component</mark>: added to any actor, it hooks into Unreal’s native damage system and notifies the other systems through dispatchers.</p>
-            <p>Enemies show a <mark class="hl">health bar above their head</mark>, the player doesn’t. I built it as a dedicated Widget Component class that <mark class="hl">initialises itself</mark>, so nobody has to wire it by hand, and handled the split-screen constraint: a Widget Component in Screen space only renders in player 1’s viewport. It works with several players.</p>
+            <p>Enemies show a <mark class="hl">health bar above their head</mark>, the player doesn’t. I built it as a dedicated Widget Component class that <mark class="hl">initialises itself</mark>, so nobody has to wire it by hand<span data-wip hidden>, and handled the split-screen constraint: a Widget Component in Screen space only renders in player 1’s viewport. It works with several players</span>.</p>
           </dd></div>
           <div><dt>XP curve</dt><dd>
             <p>Level thresholds follow a <mark class="hl">quadratic formula</mark> (coefficient × level² + base) with named parameters Designers can tune. Large XP gains are processed in a loop, so <mark class="hl">several level-ups</mark> can happen at once, and the threshold of a level is kept separate from the remaining XP.</p>
@@ -331,6 +331,6 @@ TArray&lt;TObjectPtr&lt;UActionObject&gt;&gt; Actions;</code></pre>
   </footer>
 </main>
 
-<script src="../js/main.js?v=61" defer></script>
+<script src="../js/main.js?v=62" defer></script>
 </body>
 </html>
