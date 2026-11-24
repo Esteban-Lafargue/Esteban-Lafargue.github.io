@@ -364,6 +364,15 @@
 .depth__bar { grid-column: 1 / -1; height: 2px; border-radius: 2px; background: #ffffff14; overflow: hidden; }
 .depth__bar i { display: block; height: 100%; width: calc(var(--depth, 0) * 100%); background: var(--pc); box-shadow: 0 0 6px var(--pc); }
 @media (max-width: 640px) { .depth { right: 10px; bottom: 10px; padding: 6px 10px; } }
+.depth__codex { grid-column: 1 / -1; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-faint); } /* Abyss scan codex (WIP, main.js §24) */
+.depth__codex b { color: var(--pc); font-weight: 500; }
+.depth__codex.is-new b { display: inline-block; animation: codex-pop .7s cubic-bezier(.3, 1.8, .5, 1); color: #fff; }
+@keyframes codex-pop { 0% { transform: scale(1); } 35% { transform: scale(1.8); text-shadow: 0 0 10px var(--pc); } 100% { transform: scale(1); } }
+.scan-tag { position: fixed; z-index: 60; display: grid; justify-items: center; gap: 2px; padding: 5px 10px; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); border-radius: 6px; background: #050510d9; backdrop-filter: blur(4px); font-family: var(--mono); color: var(--c); pointer-events: none; white-space: nowrap; animation: scan-tag 2.6s ease-out forwards; }
+.scan-tag b { font-size: 12px; font-weight: 600; }
+.scan-tag small { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; opacity: .7; }
+@keyframes scan-tag { 0% { opacity: 0; transform: translateY(6px) scale(.9); } 10% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .scan-tag { animation-name: scan-tag-soft; } @keyframes scan-tag-soft { 0%, 100% { opacity: 0; } 10%, 80% { opacity: 1; } } }
 
 .air { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; } /* Immersion (WIP, main.js §18) */
 .is-wip .depth { bottom: 64px; } /* above the ambience toggle (style.css §20) */

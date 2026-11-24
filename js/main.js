@@ -1413,7 +1413,8 @@
        Near the top: a xenobiologist scan (reticle, sweep, bright chirp) and nearby fish scatter.
        Deep down: a low, slow sonar ping in red. And something small lives there: a shape you can never quite see,
        a pair of eyes that watches from the dark, drifts around you, backs off when the mouse comes close,
-       and only shows its outline for a moment when the sonar touches it. */
+       and only shows its outline for a moment when the sonar touches it.
+       The scan has a purpose: a small codex in the depth gauge (fish school, jellyfish, unknown signal). */
 (() => {
   const root = document.documentElement;
   if (!root.classList.contains('is-wip') || root.dataset.theme !== 'abyss') return;
@@ -1435,6 +1436,35 @@
   const size = () => { const dpr = Math.min(2, devicePixelRatio || 1); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
   size(); addEventListener('resize', size);
   schools = [school(true), school(false)]; schools[0].x = w * .2; schools[1].x = w * .75;
+  // jellyfish: two of them, drifting up slowly in the middle of the dive
+  const jelly = () => ({ x: w * (.1 + R() * .8), y: h * (.3 + R() * .8), r: 13 + R() * 8, p: R() * 6.28 });
+  let jellies = [jelly(), jelly()];
+  // codex: the scan is looking for something. Three entries to find, kept for the visit
+  const FR = (root.lang || '').startsWith('fr');
+  const T = FR ? { fish: 'Banc de poissons', jelly: 'Méduse', unknown: 'Signal inconnu · ???', none: 'Rien ici', nocontact: 'Aucun contact', fresh: 'Nouvelle entrée', logged: 'déjà au codex', done: 'Codex complet' }
+    : { fish: 'Fish school', jelly: 'Jellyfish', unknown: 'Unknown signal · ???', none: 'Nothing here', nocontact: 'No contact', fresh: 'New entry', logged: 'already logged', done: 'Codex complete' };
+  let codex = []; try { codex = JSON.parse(sessionStorage.getItem('abyss-codex') || '[]'); } catch (err) { codex = []; }
+  const gauge = document.querySelector('.depth');
+  const cdx = document.createElement('span'); cdx.className = 'depth__codex';
+  const showCodex = () => { cdx.innerHTML = `Codex <b>${codex.length}</b>/3`; };
+  if (gauge) { showCodex(); gauge.append(cdx); }
+  const label = (x, y, text, col, sub) => { // what the scan found, in the scanner's own voice (above the page, readable)
+    const el = document.createElement('div'); el.className = 'scan-tag'; el.setAttribute('aria-hidden', 'true'); el.style.setProperty('--c', `rgb(${col})`);
+    el.innerHTML = `<b></b>${sub ? '<small></small>' : ''}`; el.firstChild.textContent = text; if (sub) el.lastChild.textContent = sub;
+    document.body.append(el);
+    const bw = el.offsetWidth, bh = el.offsetHeight;
+    el.style.left = `${Math.min(innerWidth - bw - 8, Math.max(8, x - bw / 2))}px`; el.style.top = `${Math.min(innerHeight - bh - 8, Math.max(76, y - bh))}px`;
+    setTimeout(() => el.remove(), 2600);
+  };
+  const found = (id, x, y) => {
+    const fresh = !codex.includes(id);
+    if (fresh) {
+      codex.push(id); try { sessionStorage.setItem('abyss-codex', JSON.stringify(codex)); } catch (err) {}
+      showCodex(); cdx.classList.remove('is-new'); void cdx.offsetWidth; cdx.classList.add('is-new');
+      ping(988, 988, .25, .03, 0, 'triangle'); ping(1319, 1319, .35, .03, .12, 'triangle'); if (codex.length === 3) ping(1760, 1760, .5, .025, .26, 'triangle');
+    }
+    label(x, y, T[id], id === 'unknown' ? '255,95,109' : id === 'jelly' ? '255,155,224' : '111,227,255', fresh ? (codex.length === 3 ? `${T.fresh} · ${T.done}` : T.fresh) : T.logged);
+  };
   const audio = () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; } catch (err) { return null; } };
   const ping = (f0, f1, dur, vol, delay = 0, type = 'sine', cut = 2400) => {
     const a = audio(); if (!a) return; const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain(), lp = a.createBiquadFilter();
@@ -1531,15 +1561,25 @@
       for (let i = 0; i < 2; i++) fx.push({ k: 'sonar', x, y, t: -i * .5, life: 3 });
       if (ps.a > .05 && !ps.gone) { // the ring reaches it: a short outline, a low answer, then it slips away
         const dd = Math.hypot(ps.x - x, ps.y - y), when = Math.max(0, (dd - 10) / 520 * 3);
-        if (dd < 540) setTimeout(() => { ps.reveal = 1; ping(70, 46, 2.4, .08, 0, 'sawtooth', 320); setTimeout(() => vanish(4 + R() * 4), 900); }, when * 1000);
-      }
+        if (dd < 540) setTimeout(() => { ps.reveal = 1; ping(70, 46, 2.4, .08, 0, 'sawtooth', 320); found('unknown', ps.x, ps.y - 60); setTimeout(() => vanish(4 + R() * 4), 900); }, when * 1000);
+        else setTimeout(() => label(x, y - 40, T.nocontact, '160,160,180'), 1600);
+      } else setTimeout(() => label(x, y - 40, T.nocontact, '160,160,180'), 1600);
     } else {
       ping(700, 1500, .45, .035); ping(1500, 1500, .08, .02, .4, 'triangle');
       fx.push({ k: 'scan', x, y, t: 0, life: 1.3 });
+      const near = { fish: 1e9, jelly: 1e9 };
       for (const sc of schools) for (const f of sc.fish) { // fish nearby scatter away from the scan
         const fx0 = sc.x + f.ox + f.dx, fy0 = sc.y + f.oy + f.dy, dx = fx0 - x, dy = fy0 - y, d = Math.hypot(dx, dy);
         if (d < 220) { const k = (1 - d / 220) * 320; f.vx += (dx / (d || 1)) * k; f.vy += (dy / (d || 1)) * k; }
+        if (d < near.fish) near.fish = d;
       }
+      for (const j of jellies) near.jelly = Math.min(near.jelly, Math.hypot(j.x - x, j.y - y));
+      const dp = depth(), fishVis = Math.max(0, 1 - dp * 1.9), jv = Math.max(0, 1 - Math.abs(dp - .42) / .26);
+      setTimeout(() => {
+        if (near.jelly < 75 && jv > .15) found('jelly', x, y - 40);
+        else if (near.fish < 90 && fishVis > .15) found('fish', x, y - 40);
+        else label(x, y - 40, T.none, '160,160,180');
+      }, 450);
     }
   });
   let prev = performance.now();
@@ -1564,6 +1604,24 @@
         ctx.beginPath(); ctx.moveTo(-4.5, 0); ctx.lineTo(-8, -2.4 + tail); ctx.lineTo(-8, 2.4 + tail); ctx.closePath(); ctx.fill();
         ctx.restore();
       }
+    }
+    ctx.globalAlpha = 1;
+    // jellyfish: a soft pink bell that pulses and rises, tentacles trailing
+    const jv = Math.max(0, 1 - Math.abs(depth() - .42) / .26);
+    for (const j of jellies) {
+      j.p += dt * 1.6; const pulse = Math.max(0, Math.sin(j.p)), sq = 1 + pulse * .18;
+      if (!calm) { j.y -= (5 + pulse * 14) * dt; j.x += Math.sin(j.p * .2) * 4 * dt; }
+      if (j.y < -80) Object.assign(j, jelly(), { y: h + 60 });
+      if (!jv) continue;
+      ctx.save(); ctx.translate(j.x, j.y); ctx.globalAlpha = jv;
+      ctx.strokeStyle = 'rgba(255,170,230,.28)'; ctx.lineWidth = 1;
+      for (let i = 0; i < 5; i++) { const tx = (i - 2) * j.r * .35; ctx.beginPath(); ctx.moveTo(tx, 0); for (let k = 1; k <= 6; k++) ctx.lineTo(tx + Math.sin(j.p * 1.3 - k * .7 + i) * 3, k * j.r * .45); ctx.stroke(); }
+      const g = ctx.createRadialGradient(0, -j.r * .3, 0, 0, -j.r * .3, j.r * 1.2);
+      g.addColorStop(0, 'rgba(255,190,240,.45)'); g.addColorStop(1, 'rgba(255,155,224,0)');
+      ctx.fillStyle = g; ctx.shadowColor = '#ff9be0'; ctx.shadowBlur = 16;
+      ctx.beginPath(); ctx.ellipse(0, 0, j.r * sq, j.r * .8 / sq, 0, Math.PI, 0); ctx.closePath(); ctx.fill();
+      ctx.shadowBlur = 0; ctx.strokeStyle = 'rgba(255,200,240,.4)'; ctx.stroke();
+      ctx.restore();
     }
     ctx.globalAlpha = 1;
     const tn = tension(); drawPresence(dt, tn); drawPeeks(dt, tn);
