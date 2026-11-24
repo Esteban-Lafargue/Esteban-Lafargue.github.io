@@ -372,10 +372,10 @@
 /* Abyss dive (WIP, main.js §16): tension at the bottom of the page (--tension 0 → 1) */
 .dive__threat { opacity: var(--tension, 0); background: radial-gradient(120% 90% at 50% 50%, transparent 45%, #6a0c2488 80%, #34001acc 100%); animation: dive-throb 3.2s ease-in-out infinite; }
 @keyframes dive-throb { 0%, 100% { filter: brightness(.7); } 12% { filter: brightness(1.25); } 24% { filter: brightness(.85); } 34% { filter: brightness(1.1); } }
-.dive__shadow { position: absolute; left: 0; right: auto; bottom: auto; top: var(--sy, 40vh); width: 110vw; height: 22vh; opacity: 0; fill: #01010a; stroke: #ff9be0; stroke-opacity: .35; stroke-width: 1.2; filter: blur(3px) drop-shadow(0 0 14px #ff9be040); transform: translateX(-120vw); }
+.dive__shadow { position: absolute; left: 0; right: auto; bottom: auto; top: var(--sy, 40vh); width: 110vw; height: 22vh; opacity: 0; fill: #01010a; stroke: #ff9be0; stroke-opacity: .16; stroke-width: 1; filter: blur(5px) drop-shadow(0 0 12px #ff9be026); transform: translateX(-120vw); }
 .dive__shadow.is-passing { animation: dive-pass 13s cubic-bezier(.45, .05, .55, .95) forwards; }
 .dive__shadow.is-flip { scale: -1 1; }
-@keyframes dive-pass { 0% { opacity: 0; transform: translateX(-120vw) translateY(0); } 15% { opacity: calc(var(--tension, 0) * .75); } 50% { transform: translateX(-5vw) translateY(-3vh); } 85% { opacity: calc(var(--tension, 0) * .75); } 100% { opacity: 0; transform: translateX(110vw) translateY(2vh); } }
+@keyframes dive-pass { 0% { opacity: 0; transform: translateX(-120vw) translateY(0); } 15% { opacity: calc(var(--tension, 0) * .32); } 50% { transform: translateX(-5vw) translateY(-3vh); } 85% { opacity: calc(var(--tension, 0) * .32); } 100% { opacity: 0; transform: translateX(110vw) translateY(2vh); } }
 .depth.is-danger { border-color: #ff5f6d80; }
 .depth.is-danger .depth__val { color: #ff5f6d; animation: depth-warn 1.6s steps(2) infinite; }
 .depth.is-danger .depth__bar i { background: #ff5f6d; box-shadow: 0 0 6px #ff5f6d; }

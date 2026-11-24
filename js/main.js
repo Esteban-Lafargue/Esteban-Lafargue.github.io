@@ -888,6 +888,11 @@
     setTimeout(pass, 6000 + Math.random() * 9000);
   };
   setTimeout(pass, 3000);
+  addEventListener('abyss:summon', () => { // a deep click can wake it up (§24)
+    if (shadow.classList.contains('is-passing')) return;
+    shadow.style.setProperty('--sy', `${25 + Math.random() * 45}vh`); shadow.classList.toggle('is-flip', Math.random() < .5);
+    shadow.classList.add('is-passing'); setTimeout(() => shadow.classList.remove('is-passing'), 13000);
+  });
 
   // marine snow: tiny pale specks drifting down, slower and dimmer as you go deeper
   const cv = dive.querySelector('canvas'), ctx = cv.getContext('2d');
@@ -1115,7 +1120,7 @@
 (() => {
   const root = document.documentElement;
   const theme = root.dataset.theme;
-  if (!root.classList.contains('is-wip') || !['abyss', 'klappen', 'wolfpeak'].includes(theme)) return; // Flying AI: §23
+  if (!root.classList.contains('is-wip') || !['klappen', 'wolfpeak'].includes(theme)) return; // Flying AI: §23, Abyss: §24
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
   const cv = document.createElement('canvas');
@@ -1357,6 +1362,101 @@
       ctx.setLineDash([3, 5]); ctx.strokeStyle = 'rgba(77,200,255,.35)'; ctx.lineWidth = 1; ctx.beginPath();
       d.trail.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.setLineDash([]);
       drawDrone(d);
+    }
+    if (!document.hidden) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(frame); } });
+})();
+
+/* 24. Abyss art direction (WIP, only with ?wip): fish schools near the surface, and a click that changes with depth.
+       Near the top: a xenobiologist scan (reticle, sweep, bright chirp) and nearby fish scatter.
+       Deep down: a low, slow sonar ping in red, and sometimes the shadow answers. */
+(() => {
+  const root = document.documentElement;
+  if (!root.classList.contains('is-wip') || root.dataset.theme !== 'abyss') return;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
+  const cv = document.createElement('canvas');
+  cv.className = 'da-fx'; cv.setAttribute('aria-hidden', 'true');
+  document.body.prepend(cv);
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+  const R = Math.random;
+  let w = 0, h = 0, schools = [], fx = [], actx = null;
+  const depth = () => parseFloat(root.style.getPropertyValue('--depth')) || 0;
+  const tension = () => parseFloat(root.style.getPropertyValue('--tension')) || 0;
+  const school = (fromLeft) => {
+    const n = 10 + (R() * 16 | 0), dir = fromLeft ? 1 : -1;
+    return { x: fromLeft ? -120 : w + 120, y: 80 + R() * (h * .7), dir, sp: 22 + R() * 26, p: R() * 6, fish: Array.from({ length: n }, () => ({ ox: (R() - .5) * 110, oy: (R() - .5) * 50, ph: R() * 6, vx: 0, vy: 0, dx: 0, dy: 0, s: .7 + R() * .6 })) };
+  };
+  const size = () => { const dpr = Math.min(2, devicePixelRatio || 1); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  size(); addEventListener('resize', size);
+  schools = [school(true), school(false)]; schools[0].x = w * .2; schools[1].x = w * .75;
+  const audio = () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; } catch (err) { return null; } };
+  const ping = (f0, f1, dur, vol, delay = 0, type = 'sine') => {
+    const a = audio(); if (!a) return; const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain(), lp = a.createBiquadFilter();
+    o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur * .6); lp.type = 'lowpass'; lp.frequency.value = 2400;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(lp).connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+  };
+  addEventListener('click', (e) => {
+    if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
+    const x = e.clientX, y = e.clientY, deep = tension() > .45;
+    if (deep) {
+      ping(260, 240, 2.2, .07); ping(260, 240, 1.6, .025, .55); ping(260, 240, 1.2, .01, 1.1);
+      for (let i = 0; i < 2; i++) fx.push({ k: 'sonar', x, y, t: -i * .5, life: 2.6 });
+      if (R() < .4) setTimeout(() => dispatchEvent(new Event('abyss:summon')), 900);
+    } else {
+      ping(700, 1500, .45, .035); ping(1500, 1500, .08, .02, .4, 'triangle');
+      fx.push({ k: 'scan', x, y, t: 0, life: 1.3 });
+      for (const sc of schools) for (const f of sc.fish) { // fish nearby scatter away from the scan
+        const fx0 = sc.x + f.ox + f.dx, fy0 = sc.y + f.oy + f.dy, dx = fx0 - x, dy = fy0 - y, d = Math.hypot(dx, dy);
+        if (d < 220) { const k = (1 - d / 220) * 320; f.vx += (dx / (d || 1)) * k; f.vy += (dy / (d || 1)) * k; }
+      }
+    }
+  });
+  let prev = performance.now();
+  const frame = (now) => {
+    const dt = Math.min(.05, (now - prev) / 1000); prev = now;
+    ctx.clearRect(0, 0, w, h);
+    const vis = Math.max(0, 1 - depth() * 1.9);
+    // fish schools: visible near the surface only
+    for (const sc of schools) {
+      if (!calm) { sc.x += sc.dir * sc.sp * dt; sc.p += dt * .5; }
+      const cy = sc.y + Math.sin(sc.p) * 30;
+      if ((sc.dir > 0 && sc.x > w + 160) || (sc.dir < 0 && sc.x < -160)) Object.assign(sc, school(R() < .5));
+      if (!vis) continue;
+      for (const f of sc.fish) {
+        if (!calm) { f.ph += dt * 6; f.dx += f.vx * dt; f.dy += f.vy * dt; f.vx *= .94; f.vy *= .94; f.dx *= .985; f.dy *= .985; }
+        const fx0 = sc.x + f.ox + f.dx + Math.sin(f.ph * .3) * 4, fy0 = cy + f.oy + f.dy + Math.cos(f.ph * .25) * 3;
+        const ang = Math.atan2(f.vy * .02, sc.dir + f.vx * .01);
+        ctx.save(); ctx.translate(fx0, fy0); ctx.rotate(ang); ctx.scale(f.s * (sc.dir > 0 ? 1 : -1) * (Math.abs(f.vx) > 30 ? 1 : 1), f.s);
+        ctx.globalAlpha = .24 * vis; ctx.fillStyle = '#a8e6ff';
+        const tail = Math.sin(f.ph) * 1.6;
+        ctx.beginPath(); ctx.moveTo(6, 0); ctx.quadraticCurveTo(0, -2.6, -5, 0); ctx.quadraticCurveTo(0, 2.6, 6, 0); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(-4.5, 0); ctx.lineTo(-8, -2.4 + tail); ctx.lineTo(-8, 2.4 + tail); ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+    }
+    ctx.globalAlpha = 1;
+    // click effects
+    fx = fx.filter((f) => (f.t += dt) < f.life);
+    for (const f of fx) {
+      if (f.t < 0) continue;
+      const k = f.t / f.life, a = 1 - k;
+      if (f.k === 'scan') {
+        const r = 34 - Math.min(1, k * 4) * 10;
+        ctx.strokeStyle = `rgba(111,227,255,${.8 * a})`; ctx.lineWidth = 1.4;
+        for (let i = 0; i < 4; i++) { const a0 = i * 1.5708 + .35; ctx.beginPath(); ctx.arc(f.x, f.y, r, a0, a0 + .9); ctx.stroke(); }
+        ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, r * 2.4, k * 6.283 - .5, k * 6.283); ctx.closePath();
+        ctx.fillStyle = `rgba(111,227,255,${.12 * a})`; ctx.fill();
+        ctx.fillStyle = `rgba(255,155,224,${.9 * a})`; ctx.beginPath(); ctx.arc(f.x, f.y, 2.2, 0, 6.283); ctx.fill();
+        for (let i = 0; i < 12; i++) { const an = i * .5236; ctx.beginPath(); ctx.moveTo(f.x + Math.cos(an) * (r * 2.4 - 4), f.y + Math.sin(an) * (r * 2.4 - 4)); ctx.lineTo(f.x + Math.cos(an) * r * 2.4, f.y + Math.sin(an) * r * 2.4); ctx.strokeStyle = `rgba(111,227,255,${.35 * a})`; ctx.stroke(); }
+      } else if (f.k === 'sonar') {
+        ctx.strokeStyle = `rgba(255,95,109,${.45 * a})`; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.arc(f.x, f.y, 10 + k * 320, 0, 6.283); ctx.stroke();
+      }
     }
     if (!document.hidden) requestAnimationFrame(frame);
   };
