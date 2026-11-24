@@ -63,6 +63,7 @@ Portfolio gelé jusqu'à la candidature Unknown Worlds (15 mars 2027) : pas de n
 - Projets (`data/projects.json`, `hidden`) : VR Musée Fabre, Blueprint Conventions, Interim-14, Splashdown, Tiered Blueprint workshops (cartes « coming soon », sans image).
 - WolfPeak : tuile « 0 bugs » et paragraphe « No more bugs » (surestimation) ; liste détaillée des ennemis (NDA) ; 2 mentions de l'écran partagé local (NDA).
 - **Chantier « niveau gerlogu »** (construit en caché, 24 nov. 2026, à valider par Esteban) : accueil, frise « Career path » (`#path`, un node par étape sur le rail) ; Kläppen, WolfPeak, Flying AI : bloc « Project details » (`#details`) ; Kläppen : rôles séparés Technical design / Gameplay-UX design (`.roles--split`, l'ancien bloc porte `data-wip-alt`).
+- **Immersion** (effets actifs seulement en mode WIP, gardés par `html.is-wip`, 24 nov. 2026, à valider) : `js/main.js` §16 plongée d'Abyss (eau qui s'assombrit, reflets, neige marine, jauge « Depth ») ; §17 en-tête façon viewport Unreal (barre d'outils, coins, gizmo, FPS mesuré) ; §18 ambiance par projet (lucioles Kläppen, nuages Flying AI, neige WolfPeak) ; §19 grille lointaine en parallaxe ; §20 son d'ambiance synthétisé, coupé par défaut. Publier = retirer le test `is-wip` du bloc.
 - Conservés volontairement : liens katarn34.itch.io (compte itch toujours actif), système de cartes de compétences WolfPeak.
 
 ## En attente (à demander à Esteban)
