@@ -4,9 +4,9 @@
    each project page gets its own world instead.
    ========================================================================== */
 
-/* ---------- Common: no grid, no pulses, no far grid ---------- */
+/* ---------- Common: no grid, no pulses ---------- */
 html.da body { background-image: none; background-attachment: fixed; }
-html.da .bg-live, html.da .far { display: none; }
+html.da .bg-live { display: none; }
 html.da .node { transition: border-color .3s, box-shadow .3s, background .3s; }
 html.da .stitle__tag, html.da h1, html.da h2, html.da h3, html.da .node__head { font-family: var(--da-font, var(--font)); }
 html.da .da-layer { position: fixed; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none; }
