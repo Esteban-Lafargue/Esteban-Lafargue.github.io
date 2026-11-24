@@ -288,6 +288,9 @@
     else poly(x, y, r * 1.2, 5, rot, 0.5);
   };
   let overFree = false, aiming = false;
+  const WAVES = document.documentElement.classList.contains('is-wip');
+  const WAVE_KINDS = ['sweep', 'ring', 'diamond', 'scan'];
+  let wave = null, waveIdx = (Math.random() * 4) | 0, nextWave = performance.now() + 2500;
   let w = 0, h = 0, pulses = [], mx = -1e4, my = -1e4, gx = -1e4, gy = -1e4, prev = 0, nextSpawn = 0;
 
   const size = () => {
@@ -402,6 +405,51 @@
     const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
     ctx.clearRect(0, 0, w, h);
     const sy = scrollY;
+
+    // grid waves (WIP, shown with ?wip): every few seconds a soft wave travels across the grid lines,
+    // each time with another pattern (sweep, ripple, diamond, glitch scan). Low contrast, behind everything.
+    if (WAVES) {
+      if (!wave && now > nextWave) {
+        const kind = WAVE_KINDS[waveIdx++ % WAVE_KINDS.length];
+        const ox = Math.random() * w, oy = sy + Math.random() * h, a = ((Math.random() * 8) | 0) * 0.785;
+        const reach = kind === 'sweep' || kind === 'scan' ? Math.abs(w * Math.cos(a)) + Math.abs(h * Math.sin(a)) : Math.hypot(w, h) * (kind === 'diamond' ? 1.4 : 1);
+        wave = { kind, ox, oy, ca: Math.cos(a), sa: Math.sin(a), t: 0, speed: (kind === 'scan' ? 520 : 380) * (calm ? 0.5 : 1), reach: reach + 200, c: hex2rgb(COLORS[(Math.random() * COLORS.length) | 0]) };
+        if (kind === 'sweep' || kind === 'scan') { // start from the side the wave comes from
+          const cx = w / 2, cy = sy + h / 2;
+          wave.ox = cx - wave.ca * (reach / 2 + 100); wave.oy = cy - wave.sa * (reach / 2 + 100);
+        }
+      }
+      if (wave) {
+        wave.t += dt;
+        const front = wave.t * wave.speed, BAND = wave.kind === 'scan' ? 50 : 110;
+        if (front > wave.reach + BAND) { wave = null; nextWave = now + (calm ? 14000 : 7000) + Math.random() * 6000; }
+        else {
+          const buckets = [[], [], [], []];
+          const off = -(sy % G);
+          for (let x = 0; x <= w + G; x += G) for (let y = off; y <= h + G; y += G) {
+            const yp = y + sy, dx = x - wave.ox, dy = yp - wave.oy;
+            let d;
+            if (wave.kind === 'ring') d = Math.hypot(dx, dy);
+            else if (wave.kind === 'diamond') d = Math.abs(dx) + Math.abs(dy);
+            else d = dx * wave.ca + dy * wave.sa;
+            if (wave.kind === 'scan') d += (((x * 7 + yp * 13) / G) % 5) * 22; // ragged, like a glitch
+            const k = 1 - Math.abs(d - front) / BAND;
+            if (k <= 0) continue;
+            buckets[Math.min(3, (k * k * 4) | 0)].push(x + 0.5, y + 0.5);
+          }
+          buckets.forEach((pts, i) => {
+            if (!pts.length) return;
+            ctx.strokeStyle = `rgba(${wave.c},${0.07 + i * 0.07})`; ctx.lineWidth = 1; ctx.beginPath();
+            for (let j = 0; j < pts.length; j += 2) {
+              const x = pts[j], y = pts[j + 1];
+              ctx.moveTo(x - G / 2, y); ctx.lineTo(x + G / 2, y); ctx.moveTo(x, y - G / 2); ctx.lineTo(x, y + G / 2);
+            }
+            ctx.stroke();
+            if (i >= 2) { ctx.fillStyle = `rgba(${wave.c},${0.2 + (i - 2) * 0.15})`; for (let j = 0; j < pts.length; j += 2) ctx.fillRect(pts[j] - 1, pts[j + 1] - 1, 2, 2); }
+          });
+        }
+      }
+    }
 
     // grid glow under the cursor
     if (fine && mx > -1e3) {
