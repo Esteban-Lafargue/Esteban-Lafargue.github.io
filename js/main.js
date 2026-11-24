@@ -939,14 +939,16 @@
   let w = 0, h = 0, items = [];
   const R = Math.random;
   const make = () => {
-    if (theme === 'klappen') return { x: R() * w, y: R() * h, vx: 0, vy: 0, p: R() * 6.28, sp: .6 + R() * 1.2, r: 1.2 + R() * 1.6 };
+    if (theme === 'klappen') return R() < .6
+      ? { leaf: true, x: R() * w, y: R() * h, s: 14 + R() * 22, p: R() * 6.28, sw: .6 + R() * .9, rot: R() * 6.28, vr: (R() - .5) * 2.4, r: 5 + R() * 6, c: ['#e8893a', '#d9622b', '#f2b24a', '#b8461f', '#e9a03c'][(R() * 5) | 0], a: .35 + R() * .35 }
+      : { x: R() * w, y: R() * h, vx: 0, vy: 0, p: R() * 6.28, sp: .6 + R() * 1.2, r: 1.2 + R() * 1.6 };
     if (theme === 'flying') return { x: R() * w, y: R() * h, s: 6 + R() * 14, r: 120 + R() * 220, a: .045 + R() * .05, k: .45 + R() * .3 };
     return { x: R() * w, y: R() * h, s: 12 + R() * 30, r: .6 + R() * 1.8, p: R() * 6.28, a: .2 + R() * .45 };
   };
   const size = () => {
     const dpr = Math.min(2, devicePixelRatio || 1);
     w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const per = theme === 'flying' ? 160000 : theme === 'klappen' ? 38000 : 16000;
+    const per = theme === 'flying' ? 160000 : theme === 'klappen' ? 26000 : 16000;
     items = Array.from({ length: Math.max(4, Math.round(w * h / per)) }, make);
   };
   size(); addEventListener('resize', size);
@@ -955,12 +957,20 @@
     const dt = calm ? 0 : Math.min(.05, (now - prev) / 1000); prev = now;
     ctx.clearRect(0, 0, w, h);
     for (const o of items) {
-      if (theme === 'klappen') {
+      if (theme === 'klappen' && o.leaf) {
+        o.y += o.s * dt; o.p += dt * o.sw; o.x += Math.sin(o.p) * dt * 26; o.rot += o.vr * dt;
+        if (o.y > h + 12) { o.y = -12; o.x = R() * w; }
+        ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot); ctx.scale(1, .45 + .55 * Math.abs(Math.cos(o.p * 1.3)));
+        ctx.globalAlpha = o.a; ctx.fillStyle = o.c;
+        ctx.beginPath(); ctx.moveTo(-o.r, 0); ctx.quadraticCurveTo(0, -o.r * .7, o.r, 0); ctx.quadraticCurveTo(0, o.r * .7, -o.r, 0); ctx.fill();
+        ctx.globalAlpha = o.a * .6; ctx.strokeStyle = '#5a2a12'; ctx.lineWidth = .6; ctx.beginPath(); ctx.moveTo(-o.r, 0); ctx.lineTo(o.r, 0); ctx.stroke();
+        ctx.restore(); ctx.globalAlpha = 1;
+      } else if (theme === 'klappen') {
         o.p += dt * o.sp; o.vx += (R() - .5) * 18 * dt; o.vy += (R() - .5) * 18 * dt; o.vx *= .98; o.vy *= .98;
         o.x = (o.x + o.vx * dt * 6 + w) % w; o.y = (o.y + o.vy * dt * 6 + h) % h;
         const a = calm ? .5 : Math.max(0, Math.sin(o.p)) ** 2;
         const g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r * 7);
-        g.addColorStop(0, `rgba(230,255,170,${.75 * a})`); g.addColorStop(.25, `rgba(160,240,140,${.25 * a})`); g.addColorStop(1, 'rgba(143,230,176,0)');
+        g.addColorStop(0, `rgba(255,226,150,${.8 * a})`); g.addColorStop(.25, `rgba(255,170,80,${.25 * a})`); g.addColorStop(1, 'rgba(255,150,60,0)');
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(o.x, o.y, o.r * 7, 0, 6.283); ctx.fill();
       } else if (theme === 'flying') {
         o.x += o.s * dt; if (o.x - o.r > w) { o.x = -o.r; o.y = R() * h; }
@@ -1073,24 +1083,4 @@
   const font = document.createElement('link');
   font.rel = 'stylesheet'; font.href = `https://fonts.googleapis.com/css2?family=${FONTS[theme]}&display=swap`;
   document.head.append(font, css);
-  // silhouettes at the bottom of the screen, behind the content: pines for Kläppen, generic mountains for WolfPeak
-  const ridge = (n, base, amp, seed, sharp) => {
-    let s = seed; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
-    let d = `M0 100 L0 ${base}`;
-    for (let i = 0; i <= n; i++) {
-      const x = (i / n) * 1000;
-      if (sharp) { const h = base - amp * (.35 + r() * .65); d += ` L${(x - 500 / n).toFixed(0)} ${base - amp * .1 * r()} L${x.toFixed(0)} ${h.toFixed(1)}`; }
-      else d += ` L${x.toFixed(0)} ${(base - amp * r()).toFixed(1)}`;
-    }
-    return d + ' L1000 100 Z';
-  };
-  let svg = '';
-  if (theme === 'klappen') svg = `<path d="${ridge(46, 70, 52, 7, true)}" fill="#13261b" opacity=".55"/><path d="${ridge(30, 86, 46, 3, true)}" fill="#0a150f" opacity=".9"/>`;
-  if (theme === 'wolfpeak') svg = `<path d="${ridge(9, 80, 70, 11, false)}" fill="#1a2840" opacity=".5"/><path d="${ridge(6, 92, 55, 5, false)}" fill="#0f1a2b" opacity=".85"/>`;
-  if (svg) {
-    const layer = document.createElement('div');
-    layer.className = 'da-layer'; layer.setAttribute('aria-hidden', 'true');
-    layer.innerHTML = `<svg viewBox="0 0 1000 100" preserveAspectRatio="none">${svg}</svg>`;
-    document.body.prepend(layer);
-  }
 })();

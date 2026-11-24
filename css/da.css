@@ -30,30 +30,29 @@ html.da-abyss .facts div { background: #071222b3; }
 html.da-abyss h1 { font-weight: 300; letter-spacing: -.01em; text-shadow: 0 0 40px #6fe3ff33; }
 html.da-abyss .stitle__tag { border-radius: 30px; }
 
-/* ---------- Kläppen: a cozy forest at dusk, warm light, pine silhouettes, soft rounded shapes ---------- */
-html.da-klappen { --da-font: 'Fredoka', var(--font); }
+/* ---------- Kläppen: end of the day in the forest, warm golden light, falling leaves (main.js §18), soft rounded shapes ---------- */
+html.da-klappen { --da-font: 'Fredoka', var(--font); --pc: #ffc27a; }
 html.da-klappen body { background:
-  radial-gradient(70% 45% at 78% -5%, #e8b86a22, transparent 70%),
-  radial-gradient(50% 40% at 10% 30%, #2f5a3a26, transparent 70%),
-  linear-gradient(180deg, #0f1d15 0%, #0b1610 55%, #070e0a 100%) fixed; }
-html.da-klappen body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .8 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
-html.da-klappen .da-layer { height: 26vh; }
-html.da-klappen .node { background: #101d16; border-color: #8fe6b030; border-radius: 22px; }
-html.da-klappen .node.is-live { border-color: #8fe6b055; box-shadow: 0 18px 50px #00000070, 0 0 34px #e8b86a12; }
-html.da-klappen .node__head { background: linear-gradient(90deg, #8fe6b036, #e8b86a12 65%, transparent); font-weight: 500; }
-html.da-klappen .facts { border-radius: 22px; background: #8fe6b026; border-color: #8fe6b030; }
-html.da-klappen .facts div { background: #101d16; }
-html.da-klappen h1 { font-weight: 600; letter-spacing: -.01em; }
+  radial-gradient(75% 55% at 85% -5%, #ff9a4a33, transparent 70%),
+  radial-gradient(60% 45% at 5% 20%, #c8642a1c, transparent 70%),
+  radial-gradient(90% 40% at 50% 110%, #5a2a1233, transparent 70%),
+  linear-gradient(180deg, #1e140d 0%, #160f0a 55%, #0d0906 100%) fixed; }
+html.da-klappen body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .55;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .85 0 0 0 0 .6 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+html.da-klappen .node { background: #1a120c; border-color: #ffc27a2e; border-radius: 22px; }
+html.da-klappen .node.is-live { border-color: #ffc27a55; box-shadow: 0 18px 50px #00000070, 0 0 36px #ff9a4a14; }
+html.da-klappen .node__head { background: linear-gradient(90deg, #ffb06a3a, #ff7a3a10 65%, transparent); font-weight: 500; }
+html.da-klappen .facts { border-radius: 22px; background: #ffc27a26; border-color: #ffc27a2e; }
+html.da-klappen .facts div { background: #1a120c; }
+html.da-klappen h1 { font-weight: 600; letter-spacing: -.01em; text-shadow: 0 0 50px #ff9a4a33; }
 html.da-klappen .stitle__tag { border-radius: 30px; font-weight: 600; letter-spacing: .06em; }
 html.da-klappen .chip, html.da-klappen .btn { border-radius: 30px; }
 html.da-klappen .hero-media { border-radius: 26px; }
+html.da-klappen .hero-media::after { background: linear-gradient(90deg, #120c08f0 0%, #120c08c8 45%, #120c0866 100%), linear-gradient(0deg, #120c08d8 0%, transparent 45%), radial-gradient(120% 90% at 85% 20%, #ff9a4a22, transparent 60%); }
 
 /* ---------- Flying AI: dusk sky, a glowing horizon, cockpit-like HUD panels ---------- */
 html.da-flying { --da-font: 'Rajdhani', var(--font); }
-html.da-flying body { background: linear-gradient(180deg, #060812 0%, #0a0f22 40%, #1a1428 70%, #3a1c1e 88%, #6a3214 100%) fixed; }
-html.da-flying body::after { content: ""; position: fixed; left: 0; right: 0; bottom: 14vh; height: 1px; z-index: -1; pointer-events: none;
-  background: linear-gradient(90deg, transparent, #ffb48a88 30%, #ffd9b8 50%, #ffb48a88 70%, transparent); box-shadow: 0 0 24px 6px #ff8a4c33; }
+html.da-flying body { background: radial-gradient(90% 35% at 50% 105%, #ff8a4c2e, transparent 70%), linear-gradient(180deg, #060812 0%, #0a0f22 40%, #17132a 72%, #2a1820 90%, #3e1f16 100%) fixed; }
 html.da-flying .node { border-radius: 4px; background: #080c18e6; border-color: #ffb48a2a;
   clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); }
 html.da-flying .node.is-live { border-color: #ffb48a55; }
@@ -64,12 +63,12 @@ html.da-flying h1 { font-weight: 700; letter-spacing: .01em; text-transform: upp
 html.da-flying .stitle__tag { border-radius: 2px; letter-spacing: .14em; }
 html.da-flying .hero-media { border-radius: 4px; }
 
-/* ---------- WolfPeak: glacier light, frosted glass, distant mountains (generic illustration) ---------- */
+/* ---------- WolfPeak: glacier light, frosted glass, cold mist at the bottom ---------- */
 html.da-wolfpeak { --da-font: 'Barlow Condensed', var(--font); }
 html.da-wolfpeak body { background:
   radial-gradient(60% 40% at 50% -10%, #9cc3ff1f, transparent 70%),
   linear-gradient(180deg, #0c1424 0%, #0e1a2c 50%, #0a111d 100%) fixed; }
-html.da-wolfpeak .da-layer { height: 30vh; }
+html.da-wolfpeak body::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 38vh; z-index: -1; pointer-events: none; background: linear-gradient(0deg, #9cc3ff14, transparent); }
 html.da-wolfpeak .node { background: #111b2c99; border-color: #d6e4f526; border-radius: 10px; -webkit-backdrop-filter: blur(8px) saturate(1.2); backdrop-filter: blur(8px) saturate(1.2); }
 html.da-wolfpeak .node.is-live { border-color: #d6e4f550; box-shadow: 0 20px 60px #00000070, inset 0 1px 0 #ffffff14; }
 html.da-wolfpeak .node__head { background: linear-gradient(90deg, #d6e4f526, transparent 70%); letter-spacing: .04em; font-weight: 600; font-size: 18px; }
