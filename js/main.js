@@ -778,8 +778,15 @@
   document.querySelectorAll('.hero-media').forEach((box) => {
     const v = box.querySelector('video[data-src]');
     if (!v || box.hidden || box.offsetParent === null) return;
-    const ready = () => box.classList.add('is-ready');
+    // juice: the screen powers on once the page is visible (after the arrival fade), not while it is covered
+    let loaded = document.readyState === 'complete', want = false;
+    const on = () => setTimeout(() => box.classList.add('is-ready'), 300);
+    if (!loaded) addEventListener('load', () => { loaded = true; if (want) on(); }, { once: true });
+    const ready = () => { if (want) return; want = true; if (loaded) on(); };
     if (v.dataset.poster) { v.poster = v.dataset.poster; ready(); }
+    // juice: the loop dims as the hero scrolls away (reading comes first)
+    const dim = () => { const r = box.getBoundingClientRect(); box.style.setProperty('--dim', Math.min(1, Math.max(0, -r.top / Math.max(1, r.height * .8))).toFixed(3)); };
+    addEventListener('scroll', () => requestAnimationFrame(dim), { passive: true }); dim();
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     v.addEventListener('playing', ready, { once: true });
     v.src = v.dataset.src;

@@ -326,3 +326,23 @@
   .case-hero:has(> .hero-media:not([hidden])) h1 { font-size: clamp(40px, 11.5vw, 104px); overflow-wrap: break-word; }
   .hero-media::after { background: linear-gradient(0deg, color-mix(in srgb, var(--bg) 92%, transparent) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 100%); }
 }
+
+/* Juice (WIP): the hero loop powers on like a screen (thin bright line → full frame, short flicker),
+   then dims as the page scrolls past it (--dim set by main.js §15). Soft mode: fade + dimming only. */
+.hero-media video { filter: brightness(calc(1 - var(--dim, 0) * .7)) saturate(calc(1 - var(--dim, 0) * .4)); }
+.hero-media::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; z-index: 1; pointer-events: none; opacity: 0;
+  background: linear-gradient(90deg, transparent, #fff 20%, #fff 80%, transparent); box-shadow: 0 0 18px var(--pc, var(--ac)), 0 0 4px #fff; }
+.hero-media::after { z-index: 2; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-media.is-ready video { animation: screen-on .9s cubic-bezier(.2, .8, .2, 1) backwards; }
+  .hero-media.is-ready::before { animation: screen-line .9s ease-out both; }
+}
+@keyframes screen-on {
+  0% { opacity: 1; transform: scale(.55, .004); filter: brightness(5); }
+  28% { opacity: 1; transform: scale(1, .004); filter: brightness(5); }
+  55% { transform: scale(1, 1.03); filter: brightness(1.9); }
+  68% { filter: brightness(.7); }
+  76% { filter: brightness(1.3); }
+  100% { opacity: 1; transform: none; filter: brightness(1); }
+}
+@keyframes screen-line { 0% { opacity: 0; transform: scaleX(.3); } 15% { opacity: 1; } 30% { opacity: 1; transform: scaleX(1); } 55% { opacity: 0; transform: scaleX(1) scaleY(6); } 100% { opacity: 0; } }
