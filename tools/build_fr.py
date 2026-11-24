@@ -99,7 +99,7 @@ def build(page):
                 m["content"] = v
     # resource paths
     for el in soup.find_all(True):
-        for a in ("href", "src", "poster", "data-full"):
+        for a in ("href", "src", "poster", "data-full", "data-src", "data-poster"):
             if el.has_attr(a) and RES.match(el[a]):
                 el[a] = "../" + el[a]
         if el.has_attr("data-base"):

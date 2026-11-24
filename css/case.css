@@ -311,3 +311,18 @@
 .role-side__list strong { color: var(--text-strong); font-weight: 600; }
 .role-side__links { margin-top: auto; }
 @media (max-width: 520px) { .roles--split .node__head .meta { display: none; } }
+
+/* ---------- Case-study hero with a gameplay loop behind it (WIP) ---------- */
+.case-hero:has(> .hero-media:not([hidden])) { position: relative; isolation: isolate; margin-top: 24px; padding: 40px 40px 36px; }
+.hero-media { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--pc, var(--ac)) 30%, var(--line)); background: var(--node); }
+.hero-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; }
+.hero-media.is-ready video { opacity: 1; }
+.hero-media::after { content: ""; position: absolute; inset: 0; background:
+  linear-gradient(90deg, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 78%, transparent) 45%, color-mix(in srgb, var(--bg) 40%, transparent) 100%),
+  linear-gradient(0deg, color-mix(in srgb, var(--bg) 85%, transparent) 0%, transparent 45%),
+  radial-gradient(120% 90% at 85% 20%, color-mix(in srgb, var(--pc, var(--ac)) 14%, transparent), transparent 60%); }
+@media (max-width: 640px) {
+  .case-hero:has(> .hero-media:not([hidden])) { padding: 24px 18px 20px; }
+  .case-hero:has(> .hero-media:not([hidden])) h1 { font-size: clamp(40px, 11.5vw, 104px); overflow-wrap: break-word; }
+  .hero-media::after { background: linear-gradient(0deg, color-mix(in srgb, var(--bg) 92%, transparent) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 100%); }
+}

@@ -771,3 +771,20 @@
     showToast(r);
   });
 })();
+
+/* 15. Case-study hero: a gameplay loop as a darkened background (WIP, data-wip hidden).
+       Nothing is downloaded while the box is hidden; soft mode keeps the still frame only. */
+(() => {
+  document.querySelectorAll('.hero-media').forEach((box) => {
+    const v = box.querySelector('video[data-src]');
+    if (!v || box.hidden || box.offsetParent === null) return;
+    const ready = () => box.classList.add('is-ready');
+    if (v.dataset.poster) { v.poster = v.dataset.poster; ready(); }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    v.addEventListener('playing', ready, { once: true });
+    v.src = v.dataset.src;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }).observe(box);
+    } else v.play().catch(() => {});
+  });
+})();
