@@ -575,3 +575,28 @@ html.is-aiming, html.is-aiming body, html.is-aiming body *:not(a):not(button) { 
 @keyframes amb-bar { from { height: 3px; } to { height: 10px; } }
 @media (prefers-reduced-motion: reduce) { .amb.is-on .amb__bars i { animation: none; height: 7px; } }
 @media (max-width: 640px) { .amb { right: 10px; bottom: 10px; padding: 6px 10px; } }
+
+/* Entrance (WIP, js §23): boot screen once per session, first-screen cascade, weightier scroll reveals */
+html.fx-pre main { opacity: 0; animation: fx-safety .3s ease 1.6s forwards; } /* set by the head script; fades in by itself if JS never runs */
+html.fx-preboot::after { content: ""; position: fixed; inset: 0; z-index: 10001; background: var(--bg); animation: fx-safety-out .3s ease 1.6s forwards; }
+@keyframes fx-safety { to { opacity: 1; } }
+@keyframes fx-safety-out { to { opacity: 0; visibility: hidden; } }
+.fx-entry .fx-in { opacity: 0; transform: translateY(18px); filter: blur(5px); }
+.fx-entry .fx-in.fx-go { opacity: 1; transform: none; filter: none; transition: opacity .55s ease var(--fx-d, 0ms), transform .7s cubic-bezier(.2, .9, .3, 1.2) var(--fx-d, 0ms), filter .5s ease var(--fx-d, 0ms); }
+.fx-entry .reveal { transform: translateY(26px) scale(.97); filter: blur(6px); transition: opacity .6s ease var(--fx-s, 0ms), transform .8s cubic-bezier(.2, .9, .3, 1.15) var(--fx-s, 0ms), filter .6s ease var(--fx-s, 0ms); }
+.fx-entry .reveal.is-live { transform: none; filter: none; }
+.fx-boot { position: fixed; inset: 0; z-index: 10001; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--bg); transition: opacity .5s ease, clip-path .55s cubic-bezier(.7, 0, .2, 1); clip-path: inset(0 0 0 0); }
+.fx-boot.is-out { opacity: 0; clip-path: inset(50% 0 50% 0); }
+.fx-boot__mark { font: 700 44px var(--sans, Poppins, sans-serif); color: var(--text-strong); letter-spacing: -.02em; animation: fx-mark .5s cubic-bezier(.34, 1.8, .64, 1) both; }
+.fx-boot__mark span { color: var(--ac); }
+.fx-boot__wire { width: min(260px, 60vw); height: 2px; background: #ffffff12; border-radius: 2px; overflow: hidden; }
+.fx-boot__wire i { display: block; height: 100%; width: 100%; background: var(--ac); box-shadow: 0 0 10px var(--ac); transform: scaleX(0); transform-origin: left; animation: fx-wire .6s cubic-bezier(.6, 0, .2, 1) .15s forwards; }
+.fx-boot__txt { font: 500 11px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint, #8a8a8a); animation: fx-txt .4s ease .3s both; }
+@keyframes fx-mark { from { transform: scale(.6); opacity: 0; } }
+@keyframes fx-wire { to { transform: scaleX(1); } }
+@keyframes fx-txt { from { opacity: 0; transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) {
+  html.fx-preboot::after { display: none; }
+  .fx-entry .fx-in { transform: none; filter: none; }
+  .fx-entry .reveal { transform: none; filter: none; }
+}

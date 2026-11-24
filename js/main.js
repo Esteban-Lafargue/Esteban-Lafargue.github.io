@@ -1211,3 +1211,54 @@
     if (fx.length) requestAnimationFrame(draw); else { running = false; ctx.clearRect(0, 0, w, h); }
   };
 })();
+
+/* 23. Entrance (WIP, only with ?wip): the site "boots" on the first visit of the session (a wire draws out of the
+   logo, then the screen opens), the first screen of every page arrives in a cascade, and content revealed on
+   scroll lands with a little weight (rise, unblur, slight overshoot), staggered when several items come in together. */
+(() => {
+  const root = document.documentElement;
+  if (!root.classList.contains('is-wip')) return;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  root.classList.add('fx-entry');
+
+  // first screen: cascade, in document order
+  const SEL = 'main .crumbs, main .eyebrow, main h1, main .case-hero__pitch, main .hero2__pitch, main .hero2__sub, main section:first-of-type > div > p, main .hero__actions > *, main .hero__side > *, main .case-hero .node, main .hero-media';
+  const first = [...document.querySelectorAll(SEL)].filter((el, i, a) => a.indexOf(el) === i && el.getBoundingClientRect().top < innerHeight && !el.closest('[hidden]')).slice(0, 14);
+  let booted = false;
+  try { booted = sessionStorage.getItem('booted') === '1'; sessionStorage.setItem('booted', '1'); } catch (err) { booted = true; }
+  const arriving = root.classList.contains('is-arriving') || document.querySelector('.wipe.is-covered, .wipe.is-in');
+  const startDelay = !booted && !calm && !arriving ? 900 : 120;
+  first.forEach((el, i) => { el.classList.add('fx-in'); el.style.setProperty('--fx-d', `${startDelay + i * 65}ms`); });
+  root.classList.remove('fx-pre'); // the head script hid the first screen until now (no flash)
+  requestAnimationFrame(() => requestAnimationFrame(() => first.forEach((el) => el.classList.add('fx-go'))));
+  setTimeout(() => first.forEach((el) => el.classList.remove('fx-in', 'fx-go')), startDelay + first.length * 65 + 1000);
+
+  // boot screen, once per session: logo, a wire drawing out of it, then the screen opens
+  if (!booted && !calm && !arriving) {
+    const boot = document.createElement('div');
+    boot.className = 'fx-boot'; boot.setAttribute('aria-hidden', 'true');
+    boot.innerHTML = '<div class="fx-boot__mark">EL<span>.</span></div><div class="fx-boot__wire"><i></i></div><div class="fx-boot__txt">Event BeginPlay</div>';
+    document.body.appendChild(boot);
+    root.classList.remove('fx-preboot');
+    const end = () => { boot.classList.add('is-out'); setTimeout(() => boot.remove(), 600); };
+    const t = setTimeout(end, 820);
+    boot.addEventListener('click', () => { clearTimeout(t); end(); });
+    addEventListener('keydown', () => { clearTimeout(t); end(); }, { once: true });
+  }
+
+  root.classList.remove('fx-preboot');
+  // scroll reveals: items entering together get a small stagger
+  if ('IntersectionObserver' in window) {
+    let batch = 0, batchT = 0;
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        if (first.includes(e.target)) return;
+        e.target.style.setProperty('--fx-s', `${Math.min(batch, 5) * 80}ms`);
+        batch++; clearTimeout(batchT); batchT = setTimeout(() => { batch = 0; }, 120);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  }
+})();
