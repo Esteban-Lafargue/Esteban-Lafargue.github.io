@@ -127,7 +127,7 @@
       c.addEventListener('mouseenter', play); c.addEventListener('focus', play);
       c.addEventListener('mouseleave', () => v.pause()); c.addEventListener('blur', () => v.pause());
     });
-    root.querySelectorAll('.reveal').forEach((el) => el.classList.add('is-live'));
+    root.querySelectorAll('.reveal').forEach((el) => (window.fxReveal ? window.fxReveal(el) : el.classList.add('is-live'))); // WIP: reveal on scroll
   }
 
   hosts.forEach(async (host) => {

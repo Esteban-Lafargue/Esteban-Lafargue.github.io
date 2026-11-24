@@ -1297,17 +1297,27 @@
   root.classList.remove('fx-preboot');
   // scroll reveals: items entering together get a small stagger
   if ('IntersectionObserver' in window) {
-    let batch = 0, batchT = 0;
+    let batch = 0, batchT = 0, early = 0;
+    const t0 = performance.now();
     const io = new IntersectionObserver((es) => {
       es.forEach((e) => {
         if (!e.isIntersecting) return;
         io.unobserve(e.target);
         if (first.includes(e.target)) return;
-        e.target.style.setProperty('--fx-s', `${Math.min(batch, 5) * 110}ms`);
+        // already on screen when the page opens (e.g. the demo reel on a tall screen): it joins the end of the
+        // first-screen cascade instead of appearing at once, before the title
+        const s = performance.now() - t0 < 700 ? d + early++ * GAP : Math.min(batch, 5) * 110;
+        e.target.style.setProperty('--fx-s', `${s}ms`);
+        e.target.classList.add('is-live');
+        // once landed, back to its own hover transitions (tilt etc.)
+        const el = e.target, done = () => el.classList.add('fx-done');
+        el.addEventListener('transitionend', (ev) => { if (ev.target === el && ev.propertyName === 'transform') done(); });
+        setTimeout(done, s + 3000);
         batch++; clearTimeout(batchT); batchT = setTimeout(() => { batch = 0; }, 120);
       });
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
     document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    window.fxReveal = (el) => io.observe(el); // project cards are built later by projects.js
   }
 })();
 

@@ -592,8 +592,8 @@ html.fx-preboot::after { content: ""; position: fixed; inset: 0; z-index: 10001;
 .dot .fx-wi { animation-name: fx-dot; }
 @keyframes fx-word { from { transform: translateY(130%) rotate(4deg); opacity: 0; } 40% { opacity: 1; } to { transform: none; opacity: 1; } }
 @keyframes fx-dot { from { transform: scale(0); opacity: 0; } 60% { transform: scale(1.6); opacity: 1; } to { transform: none; opacity: 1; } }
-.fx-entry .reveal { transform: translateY(48px) scale(.95); filter: blur(8px); transition: opacity .7s ease var(--fx-s, 0ms), transform .95s cubic-bezier(.2, .9, .25, 1.12) var(--fx-s, 0ms), filter .7s ease var(--fx-s, 0ms); }
-.fx-entry .reveal.is-live { transform: none; filter: none; }
+.fx-entry .reveal:not(.fx-done) { transform: translateY(48px) scale(.95); filter: blur(8px); transition: opacity .7s ease var(--fx-s, 0ms), transform .95s cubic-bezier(.2, .9, .25, 1.12) var(--fx-s, 0ms), filter .7s ease var(--fx-s, 0ms); }
+.fx-entry .reveal.is-live:not(.fx-done) { transform: none; filter: none; }
 .fx-boot { position: fixed; inset: 0; z-index: 10001; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--bg); transition: opacity .5s ease, clip-path .55s cubic-bezier(.7, 0, .2, 1); clip-path: inset(0 0 0 0); }
 .fx-boot.is-out { opacity: 0; clip-path: inset(50% 0 50% 0); }
 .fx-boot__mark { font: 700 44px var(--sans, Poppins, sans-serif); color: var(--text-strong); letter-spacing: -.02em; animation: fx-mark .5s cubic-bezier(.34, 1.8, .64, 1) both; }
@@ -608,7 +608,7 @@ html.fx-preboot::after { content: ""; position: fixed; inset: 0; z-index: 10001;
   html.fx-preboot::after { display: none; }
   .fx-entry .fx-in { transform: none; filter: none; }
   .fx-wi { animation-name: fx-fade; } @keyframes fx-fade { from { opacity: 0; } }
-  .fx-entry .reveal { transform: none; filter: none; }
+  .fx-entry .reveal:not(.fx-done) { transform: none; filter: none; }
 }
 
 /* art-direction canvases (css/da.css loads late, in WIP): fixed from the first paint so the page doesn't jump */
