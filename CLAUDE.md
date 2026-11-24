@@ -27,7 +27,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 
 ## Workflow obligatoire à chaque modification
 1. Modifier les pages **anglaises** (et `data/*.json` si besoin).
-2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=81' --include=*.html . | xargs sed -i 's/v=81/v=82/g'`). Version actuelle : **v=81**.
+2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=82' --include=*.html . | xargs sed -i 's/v=82/v=83/g'`). Version actuelle : **v=82**.
 3. Traductions : `python3 tools/build_fr.py` (nécessite `beautifulsoup4`). Il doit afficher **0 missing**. Sinon, ajouter les clés listées dans `tools/i18n/missing.json` dans un fichier `tools/i18n/fr-NN-sujet.json` (clé = HTML interne anglais, espaces normalisés ; valeur = HTML français), puis relancer.
    - Nouvelle page → l'ajouter à `PAGES` dans `tools/build_fr.py`.
 4. Vérifier visuellement (bureau 1440 px + mobile 390 px, pas de défilement horizontal) : `python3 -m http.server` puis capture Playwright ou navigateur.
@@ -63,7 +63,7 @@ Portfolio gelé jusqu'à la candidature Unknown Worlds (15 mars 2027) : pas de n
 - Projets (`data/projects.json`, `hidden`) : VR Musée Fabre, Blueprint Conventions, Interim-14, Splashdown, Tiered Blueprint workshops (cartes « coming soon », sans image).
 - WolfPeak : tuile « 0 bugs » et paragraphe « No more bugs » (surestimation) ; liste détaillée des ennemis (NDA) ; 2 mentions de l'écran partagé local (NDA).
 - **Chantier « niveau gerlogu »** (construit en caché, 24 nov. 2026, à valider par Esteban) : accueil, frise « Career path » (`#path`, un node par étape sur le rail) ; Kläppen, WolfPeak, Flying AI : bloc « Project details » (`#details`) ; Kläppen : rôles séparés Technical design / Gameplay-UX design (`.roles--split`, l'ancien bloc porte `data-wip-alt`).
-- **Immersion** (effets actifs seulement en mode WIP, gardés par `html.is-wip`, 24 nov. 2026, à valider) : `js/main.js` §16 plongée d'Abyss (eau qui s'assombrit, reflets, neige marine, jauge « Depth ») ; §17 en-tête façon viewport Unreal (barre d'outils, coins, gizmo, FPS mesuré) ; §18 ambiance par projet (lucioles Kläppen, nuages Flying AI, neige WolfPeak) ; §20 son d'ambiance synthétisé, coupé par défaut ; §21 direction artistique par projet (`css/da.css`, chargé seulement en WIP : Abyss eau profonde, Kläppen forêt cozy, Flying AI ciel HUD, WolfPeak glacier ; sans grille ni bugs sur ces pages). Publier = retirer le test `is-wip` du bloc.
+- **Immersion** (effets actifs seulement en mode WIP, gardés par `html.is-wip`, 24 nov. 2026, à valider) : `js/main.js` §16 plongée d'Abyss (eau qui s'assombrit, reflets, neige marine, jauge « Depth », tension au fond : pulsation rouge, ombre géante qui passe, son grave) ; §17 en-tête façon viewport Unreal (barre d'outils, coins, gizmo, FPS mesuré) ; §18 ambiance par projet (lucioles Kläppen, nuages Flying AI, neige WolfPeak) ; §20 son d'ambiance synthétisé, coupé par défaut ; §21-22 direction artistique par projet, clic propre à chaque page (`css/da.css`, chargé seulement en WIP : Abyss eau profonde, Kläppen forêt cozy, Flying AI ciel HUD, WolfPeak glacier ; sans grille ni bugs sur ces pages). Publier = retirer le test `is-wip` du bloc.
 - Conservés volontairement : liens katarn34.itch.io (compte itch toujours actif), système de cartes de compétences WolfPeak.
 
 ## En attente (à demander à Esteban)

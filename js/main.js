@@ -856,7 +856,8 @@
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const dive = document.createElement('div');
   dive.className = 'dive'; dive.setAttribute('aria-hidden', 'true');
-  dive.innerHTML = '<i class="dive__light"></i><i class="dive__dark"></i><canvas class="dive__snow"></canvas>';
+  dive.innerHTML = '<i class="dive__light"></i><i class="dive__dark"></i><i class="dive__threat"></i><canvas class="dive__snow"></canvas>'
+    + '<svg class="dive__shadow" viewBox="0 0 900 140" preserveAspectRatio="none"><path d="M0 70 C60 40 120 40 180 62 S300 100 360 78 S480 30 560 56 S700 104 780 74 C830 58 870 62 900 70 C870 80 830 86 780 90 S640 128 560 96 S420 60 360 98 S240 118 180 92 S60 92 0 70 Z"/></svg>';
   document.body.prepend(dive);
   const gauge = document.createElement('div');
   gauge.className = 'depth'; gauge.setAttribute('aria-hidden', 'true');
@@ -869,8 +870,24 @@
     t = Math.min(1, Math.max(0, scrollY / max));
     root.style.setProperty('--depth', t.toFixed(3));
     const d = Math.round(t * MAX); val.textContent = d ? `−${d} m` : `0 m`;
+    // the bottom of the page feels tense: a red pulse at the edges, the gauge turns to a warning, something big passes by
+    const k = Math.min(1, Math.max(0, (t - .62) / .33)), tension = k * k * (3 - 2 * k);
+    root.style.setProperty('--tension', tension.toFixed(3));
+    gauge.classList.toggle('is-danger', tension > .5);
   };
   addEventListener('scroll', () => requestAnimationFrame(depth), { passive: true }); depth();
+  const shadow = dive.querySelector('.dive__shadow');
+  const pass = () => {
+    const tn = parseFloat(root.style.getPropertyValue('--tension')) || 0;
+    if (tn > .25 && !shadow.classList.contains('is-passing') && !document.hidden) {
+      shadow.style.setProperty('--sy', `${20 + Math.random() * 55}vh`);
+      shadow.classList.toggle('is-flip', Math.random() < .5);
+      shadow.classList.add('is-passing');
+      setTimeout(() => shadow.classList.remove('is-passing'), 13000);
+    }
+    setTimeout(pass, 6000 + Math.random() * 9000);
+  };
+  setTimeout(pass, 3000);
 
   // marine snow: tiny pale specks drifting down, slower and dimmer as you go deeper
   const cv = dive.querySelector('canvas'), ctx = cv.getContext('2d');
@@ -1025,7 +1042,7 @@
     o.connect(g).connect(master); o.start(t); o.stop(t + dur + .05);
   };
   const every = (min, max, fn) => { const go = () => { timers.push(setTimeout(() => { if (on) fn(); go(); }, min + Math.random() * (max - min))); }; go(); };
-  let abyssFilter = null;
+  let abyssFilter = null, tens = null;
   const build = () => {
     ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
     if (theme === 'klappen') {
@@ -1039,6 +1056,16 @@
       n.connect(f).connect(g).connect(master); n.start();
       const hum = ctx.createOscillator(), hg = ctx.createGain(); hum.frequency.value = 55; hg.gain.value = .05; hum.connect(hg).connect(master); hum.start();
       every(1800, 6000, () => { const k = 2 + (Math.random() * 4 | 0); for (let i = 0; i < k; i++) setTimeout(() => { const b = 300 + Math.random() * 500; chirp(b, b * 2.2, .07, .035); }, i * (60 + Math.random() * 80)); });
+      // tension layer: two close low tones beat against each other, louder near the bottom of the page
+      tens = ctx.createGain(); tens.gain.value = 0; tens.connect(master);
+      [41, 41.8].forEach((hz) => { const o = ctx.createOscillator(), lp = ctx.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.value = hz; lp.type = 'lowpass'; lp.frequency.value = 160; o.connect(lp).connect(tens); o.start(); });
+      every(7000, 14000, () => { // a distant groan, only when deep
+        if (!tens || tens.gain.value < .15) return;
+        const o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter(), t = ctx.currentTime;
+        o.type = 'sawtooth'; o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(34, t + 3.5);
+        lp.type = 'lowpass'; lp.frequency.value = 220; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.35 * tens.gain.value, t + 1.2); g.gain.exponentialRampToValueAtTime(.0001, t + 4);
+        o.connect(lp).connect(g).connect(master); o.start(t); o.stop(t + 4.2);
+      });
     } else if (theme === 'flying' || theme === 'wolfpeak') {
       const n = noise(theme === 'flying' ? 'pink' : 'white'), f = ctx.createBiquadFilter(), g = ctx.createGain();
       f.type = 'bandpass'; f.Q.value = theme === 'flying' ? 1.2 : 3; lfo(f.frequency, .05, theme === 'flying' ? 350 : 700, theme === 'flying' ? 600 : 1600);
@@ -1063,6 +1090,7 @@
     if (!abyssFilter) return;
     const t = Math.min(1, scrollY / Math.max(1, root.scrollHeight - innerHeight));
     abyssFilter.frequency.setTargetAtTime(520 - t * 340, ctx.currentTime, .3); // deeper = more muffled
+    if (tens) { const k = Math.min(1, Math.max(0, (t - .62) / .33)); tens.gain.setTargetAtTime(k * k * (3 - 2 * k) * .9, ctx.currentTime, .8); }
   }, { passive: true });
   label(false);
   // keep it on across pages: browsers need a gesture first, so it resumes on the first click or key
