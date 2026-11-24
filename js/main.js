@@ -866,8 +866,7 @@
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const dive = document.createElement('div');
   dive.className = 'dive'; dive.setAttribute('aria-hidden', 'true');
-  dive.innerHTML = '<i class="dive__light"></i><i class="dive__dark"></i><i class="dive__threat"></i><canvas class="dive__snow"></canvas>'
-    + '<svg class="dive__shadow" viewBox="0 0 900 140" preserveAspectRatio="none"><path d="M0 70 C60 40 120 40 180 62 S300 100 360 78 S480 30 560 56 S700 104 780 74 C830 58 870 62 900 70 C870 80 830 86 780 90 S640 128 560 96 S420 60 360 98 S240 118 180 92 S60 92 0 70 Z"/></svg>';
+  dive.innerHTML = '<i class="dive__light"></i><i class="dive__dark"></i><i class="dive__threat"></i><canvas class="dive__snow"></canvas>';
   document.body.prepend(dive);
   const gauge = document.createElement('div');
   gauge.className = 'depth'; gauge.setAttribute('aria-hidden', 'true');
@@ -886,23 +885,7 @@
     gauge.classList.toggle('is-danger', tension > .5);
   };
   addEventListener('scroll', () => requestAnimationFrame(depth), { passive: true }); depth();
-  const shadow = dive.querySelector('.dive__shadow');
-  const pass = () => {
-    const tn = parseFloat(root.style.getPropertyValue('--tension')) || 0;
-    if (tn > .25 && !shadow.classList.contains('is-passing') && !document.hidden) {
-      shadow.style.setProperty('--sy', `${20 + Math.random() * 55}vh`);
-      shadow.classList.toggle('is-flip', Math.random() < .5);
-      shadow.classList.add('is-passing');
-      setTimeout(() => shadow.classList.remove('is-passing'), 13000);
-    }
-    setTimeout(pass, 6000 + Math.random() * 9000);
-  };
-  setTimeout(pass, 3000);
-  addEventListener('abyss:summon', () => { // a deep click can wake it up (§24)
-    if (shadow.classList.contains('is-passing')) return;
-    shadow.style.setProperty('--sy', `${25 + Math.random() * 45}vh`); shadow.classList.toggle('is-flip', Math.random() < .5);
-    shadow.classList.add('is-passing'); setTimeout(() => shadow.classList.remove('is-passing'), 13000);
-  });
+  // the bottom of the page is watched: §24 draws what lives there
 
   // marine snow: tiny pale specks drifting down, slower and dimmer as you go deeper
   const cv = dive.querySelector('canvas'), ctx = cv.getContext('2d');
@@ -1428,7 +1411,9 @@
 
 /* 24. Abyss art direction (WIP, only with ?wip): fish schools near the surface, and a click that changes with depth.
        Near the top: a xenobiologist scan (reticle, sweep, bright chirp) and nearby fish scatter.
-       Deep down: a low, slow sonar ping in red, and sometimes the shadow answers. */
+       Deep down: a low, slow sonar ping in red. And something small lives there: a shape you can never quite see,
+       a pair of eyes that watches from the dark, drifts around you, backs off when the mouse comes close,
+       and only shows its outline for a moment when the sonar touches it. */
 (() => {
   const root = document.documentElement;
   if (!root.classList.contains('is-wip') || root.dataset.theme !== 'abyss') return;
@@ -1436,7 +1421,7 @@
   const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
   const cv = document.createElement('canvas');
   cv.className = 'da-fx'; cv.setAttribute('aria-hidden', 'true');
-  document.body.prepend(cv);
+  const dv = document.querySelector(".dive"); if (dv) dv.after(cv); else document.body.prepend(cv); // above the dark water of §16
   const ctx = cv.getContext('2d');
   if (!ctx) return;
   const R = Math.random;
@@ -1451,19 +1436,103 @@
   size(); addEventListener('resize', size);
   schools = [school(true), school(false)]; schools[0].x = w * .2; schools[1].x = w * .75;
   const audio = () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; } catch (err) { return null; } };
-  const ping = (f0, f1, dur, vol, delay = 0, type = 'sine') => {
+  const ping = (f0, f1, dur, vol, delay = 0, type = 'sine', cut = 2400) => {
     const a = audio(); if (!a) return; const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain(), lp = a.createBiquadFilter();
-    o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur * .6); lp.type = 'lowpass'; lp.frequency.value = 2400;
+    o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur * .6); lp.type = 'lowpass'; lp.frequency.value = cut;
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .015); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
     o.connect(lp).connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+  };
+  // the presence: small (about 100 px), never a clear shape. It keeps to the edges, watches, and moves around you.
+  const mouse = { x: -999, y: -999 };
+  addEventListener('pointermove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+  const edgePoint = () => { // somewhere near an edge of the screen, away from the reading column when possible
+    const m = Math.min(110, w * .12), side = R() * 4 | 0;
+    if (side === 0) return { x: m * (.4 + R() * .6), y: h * (.15 + R() * .7) };
+    if (side === 1) return { x: w - m * (.4 + R() * .6), y: h * (.15 + R() * .7) };
+    return { x: w * (.08 + R() * .84), y: side === 2 ? h - m * (.5 + R() * .5) : m * (.6 + R() * .4) };
+  };
+  const ps = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, a: 0, gone: 1, t: 0, blink: 0, nextBlink: 2, reveal: 0, wait: 0, lx: 0, ly: 0,
+    pts: Array.from({ length: 9 }, () => ({ f: .4 + R() * .9, p: R() * 6.28, k: .12 + R() * .16 })),
+    arms: Array.from({ length: 4 }, (_, i) => ({ an: i * 1.57 + R() * .8, p: R() * 6.28, len: .9 + R() * .7 })) };
+  const relocate = () => { const a = edgePoint(), b = edgePoint(); Object.assign(ps, { x: a.x, y: a.y, tx: b.x, ty: b.y, vx: 0, vy: 0, gone: 0 }); };
+  relocate(); ps.gone = 1; ps.wait = 2;
+  const vanish = (after) => { ps.gone = 1; ps.wait = after; };
+  let peeks = [], nextPeek = 4;
+  const eyes = (x, y, s, a, open, lx = 0, ly = 0) => { // two small glowing eyes
+    if (open < .05 || a < .01) return;
+    ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#ffd9f2'; ctx.shadowColor = '#ff9be0'; ctx.shadowBlur = 10 * s;
+    for (const sx of [-1, 1]) { ctx.beginPath(); ctx.ellipse(x + sx * 6 * s + lx, y + ly, 1.9 * s, 1.9 * s * open, 0, 0, 6.283); ctx.fill(); }
+    ctx.restore();
+  };
+  const drawPresence = (dt, tn) => {
+    const want = Math.min(1, Math.max(0, (tn - .25) / .35));
+    ps.t += dt; ps.reveal = Math.max(0, ps.reveal - dt * .8);
+    if (ps.gone) { ps.a = Math.max(0, ps.a - dt * .9); if (ps.a === 0 && (ps.wait -= dt) <= 0 && want > 0 && !document.hidden) relocate(); }
+    else ps.a = Math.min(want, ps.a + dt * .35);
+    if (ps.a <= 0) return;
+    // drift toward a point near the edge; when it gets there, choose another, or slip away and come back elsewhere
+    const dx = ps.tx - ps.x, dy = ps.ty - ps.y, d = Math.hypot(dx, dy), sp = calm ? 10 : 26;
+    if (d < 20) { if (R() < .35) vanish(2 + R() * 4); else { const n = edgePoint(); ps.tx = n.x; ps.ty = n.y; } }
+    ps.vx += ((dx / (d || 1)) * sp - ps.vx) * dt * .6; ps.vy += ((dy / (d || 1)) * sp - ps.vy) * dt * .6;
+    // the mouse comes close: it backs off and closes its eyes
+    const mx = ps.x - mouse.x, my = ps.y - mouse.y, md = Math.hypot(mx, my);
+    if (md < 170 && !ps.gone) { ps.vx += (mx / (md || 1)) * 90 * dt; ps.vy += (my / (md || 1)) * 90 * dt; ps.blink = Math.max(ps.blink, .6); if (md < 90) vanish(3 + R() * 3); }
+    ps.x += ps.vx * dt; ps.y += ps.vy * dt;
+    const s = Math.min(w, 900) / 900 * .35 + .65, r = 46 * s, A = ps.a;
+    // body: a soft, shifting darkness, a little blacker than the water, with limbs that trail and curl
+    ctx.save(); ctx.translate(ps.x, ps.y);
+    const sway = Math.atan2(ps.vy, ps.vx);
+    const arm = (q) => { // one limb: a soft curve that trails and curls
+      const an = q.an + sway * .2 + Math.sin(q.p) * .25, L = r * 1.6 * q.len, bend = an + Math.sin(q.p * 1.3) * .6, tip = an + Math.sin(q.p) * .9;
+      ctx.beginPath(); ctx.moveTo(Math.cos(an) * r * .5, Math.sin(an) * r * .5);
+      ctx.quadraticCurveTo(Math.cos(bend) * L * .7, Math.sin(bend) * L * .7, Math.cos(tip) * L, Math.sin(tip) * L);
+    };
+    const outline = () => { // a closed blob that never holds the same shape
+      const P = ps.pts.map((q, i) => { const an = i / ps.pts.length * 6.283, rr = r * (1 + Math.sin(ps.t * q.f + q.p) * q.k); return [Math.cos(an) * rr, Math.sin(an) * rr * .8]; });
+      ctx.beginPath();
+      P.forEach((q, i) => { const n = P[(i + 1) % P.length], mx = (q[0] + n[0]) / 2, my = (q[1] + n[1]) / 2; if (!i) ctx.moveTo((P[P.length - 1][0] + q[0]) / 2, (P[P.length - 1][1] + q[1]) / 2); ctx.quadraticCurveTo(q[0], q[1], mx, my); });
+      ctx.closePath();
+    };
+    ctx.lineCap = 'round'; ctx.filter = 'blur(1.5px)';
+    for (const q of ps.arms) { q.p += dt * .9; ctx.globalAlpha = .85 * A; ctx.strokeStyle = '#010008'; ctx.lineWidth = 7 * s; arm(q); ctx.stroke(); ctx.globalAlpha = .07 * A; ctx.strokeStyle = '#ff9be0'; ctx.lineWidth = 9 * s; arm(q); ctx.stroke(); }
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, r * 1.15);
+    g.addColorStop(0, `rgba(1,0,8,${.95 * A})`); g.addColorStop(.6, `rgba(2,1,12,${.8 * A})`); g.addColorStop(1, 'rgba(2,1,12,0)');
+    ctx.globalAlpha = 1; ctx.fillStyle = g; outline(); ctx.fill();
+    ctx.strokeStyle = `rgba(255,155,224,${.06 * A})`; ctx.lineWidth = 3; outline(); ctx.stroke(); // barely backlit, never a clear edge
+    ctx.filter = 'none';
+    if (ps.reveal > 0) { // the sonar touched it: a dotted return traces its outline for a moment, then the dark takes it back
+      ctx.setLineDash([2, 5]); ctx.strokeStyle = `rgba(255,95,109,${.7 * ps.reveal})`; ctx.lineWidth = 1.4; ctx.shadowColor = '#ff5f6d'; ctx.shadowBlur = 10;
+      outline(); ctx.stroke(); for (const q of ps.arms) { arm(q); ctx.stroke(); }
+      ctx.setLineDash([]); ctx.shadowBlur = 0;
+    }
+    // faint photophores along its edge, like distant lights
+    for (let i = 0; i < 5; i++) { const q = ps.pts[i * 2 % ps.pts.length], an = i * 1.25 + ps.t * .07, f = .5 + .5 * Math.sin(ps.t * q.f * 2 + q.p); ctx.fillStyle = `rgba(111,227,255,${.25 * f * A})`; ctx.beginPath(); ctx.arc(Math.cos(an) * r * .75, Math.sin(an) * r * .6, 1.2 * s, 0, 6.283); ctx.fill(); }
+    ctx.restore();
+    // eyes: they look at the mouse, and blink now and then
+    if ((ps.nextBlink -= dt) <= 0) { ps.blink = .18; ps.nextBlink = 2.5 + R() * 5; }
+    ps.blink = Math.max(0, ps.blink - dt);
+    const open = ps.blink > 0 ? 0 : 1;
+    const la = Math.atan2(mouse.y - ps.y, mouse.x - ps.x); ps.lx += (Math.cos(la) * 2.5 - ps.lx) * dt * 3; ps.ly += (Math.sin(la) * 2.5 - ps.ly) * dt * 3;
+    eyes(ps.x + ps.lx * s, ps.y - r * .15 + ps.ly * s, s, A, open);
+  };
+  const drawPeeks = (dt, tn) => { // other eyes open in the periphery for a moment: are there more of them?
+    if (tn > .45 && !calm && (nextPeek -= dt) <= 0 && !document.hidden) { const p = edgePoint(); peeks.push({ x: p.x, y: p.y, t: 0, life: 3 + R() * 2, s: .5 + R() * .4 }); nextPeek = 5 + R() * 8; }
+    peeks = peeks.filter((p) => (p.t += dt) < p.life);
+    for (const p of peeks) {
+      const a = Math.min(1, p.t / 1.2, (p.life - p.t) / 1) * .6 * tn, mid = p.t > p.life * .5 && p.t < p.life * .5 + .16;
+      eyes(p.x, p.y, p.s, a, mid ? .1 : 1);
+    }
   };
   addEventListener('click', (e) => {
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
     const x = e.clientX, y = e.clientY, deep = tension() > .45;
     if (deep) {
       ping(260, 240, 2.2, .07); ping(260, 240, 1.6, .025, .55); ping(260, 240, 1.2, .01, 1.1);
-      for (let i = 0; i < 2; i++) fx.push({ k: 'sonar', x, y, t: -i * .5, life: 2.6 });
-      if (R() < .4) setTimeout(() => dispatchEvent(new Event('abyss:summon')), 900);
+      for (let i = 0; i < 2; i++) fx.push({ k: 'sonar', x, y, t: -i * .5, life: 3 });
+      if (ps.a > .05 && !ps.gone) { // the ring reaches it: a short outline, a low answer, then it slips away
+        const dd = Math.hypot(ps.x - x, ps.y - y), when = Math.max(0, (dd - 10) / 520 * 3);
+        if (dd < 540) setTimeout(() => { ps.reveal = 1; ping(70, 46, 2.4, .08, 0, 'sawtooth', 320); setTimeout(() => vanish(4 + R() * 4), 900); }, when * 1000);
+      }
     } else {
       ping(700, 1500, .45, .035); ping(1500, 1500, .08, .02, .4, 'triangle');
       fx.push({ k: 'scan', x, y, t: 0, life: 1.3 });
@@ -1497,6 +1566,7 @@
       }
     }
     ctx.globalAlpha = 1;
+    const tn = tension(); drawPresence(dt, tn); drawPeeks(dt, tn);
     // click effects
     fx = fx.filter((f) => (f.t += dt) < f.life);
     for (const f of fx) {
@@ -1512,7 +1582,7 @@
         for (let i = 0; i < 12; i++) { const an = i * .5236; ctx.beginPath(); ctx.moveTo(f.x + Math.cos(an) * (r * 2.4 - 4), f.y + Math.sin(an) * (r * 2.4 - 4)); ctx.lineTo(f.x + Math.cos(an) * r * 2.4, f.y + Math.sin(an) * r * 2.4); ctx.strokeStyle = `rgba(111,227,255,${.35 * a})`; ctx.stroke(); }
       } else if (f.k === 'sonar') {
         ctx.strokeStyle = `rgba(255,95,109,${.45 * a})`; ctx.lineWidth = 1.2;
-        ctx.beginPath(); ctx.arc(f.x, f.y, 10 + k * 320, 0, 6.283); ctx.stroke();
+        ctx.beginPath(); ctx.arc(f.x, f.y, 10 + k * 520, 0, 6.283); ctx.stroke();
       }
     }
     if (!document.hidden) requestAnimationFrame(frame);
