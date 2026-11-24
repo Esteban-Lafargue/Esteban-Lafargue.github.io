@@ -161,7 +161,7 @@
       if (c) s.style.setProperty('--c', c);
       s.style.setProperty('--w', `${Math.max(0, r.left - rLeft - 6)}px`);
       rail.append(s);
-      return { y, s };
+      return { y, s, el };
     });
     // the wire ends exactly on the last pin: reaching it is the payoff
     stops[stops.length - 1].s.classList.add('rail__stop--end');
@@ -190,6 +190,8 @@
       st.on = on;
       st.s.classList.toggle('is-on', on);
       if (on) hit(st.s); // juice: the pin pops when the wire reaches it
+      if (on && st.el.classList.contains('career__item')) hit(st.el); // juice: career step node pops with its pin
+      if (st.el.classList.contains('career__item')) st.el.classList.toggle('is-reached', on);
     });
     rail.classList.toggle('is-end', stops[stops.length - 1].on);
   };

@@ -146,3 +146,13 @@
 .career__more p { margin: 10px 0 0; font-size: 14px; color: var(--text-muted); }
 .career__link { display: inline-block; margin-top: 8px; font: 13px var(--mono); color: var(--c); }
 .career__about { margin-top: 24px; }
+
+/* Juice (WIP): when the rail reaches a career step, its node pops with the pin and its header lights up */
+.career__item .node__head { transition: filter .4s, box-shadow .4s; }
+.career__item.is-reached .node__head { box-shadow: inset 3px 0 0 var(--c); }
+.career__item.is-reached .node__icon { color: var(--c); text-shadow: 0 0 8px var(--c); }
+.career__item.is-hit { animation: career-pop .55s cubic-bezier(.34, 1.8, .64, 1) .08s; }
+.career__item.is-hit .node__head { animation: career-flash .7s ease-out .08s; }
+@keyframes career-pop { 0% { transform: none; } 35% { transform: translateX(6px) scale(1.015); } 100% { transform: none; } }
+@keyframes career-flash { 0% { filter: none; } 25% { filter: brightness(1.7); } 100% { filter: none; } }
+@media (prefers-reduced-motion: reduce) { .career__item.is-hit { animation: none; } }
