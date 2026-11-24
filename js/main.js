@@ -288,7 +288,7 @@
     else poly(x, y, r * 1.2, 5, rot, 0.5);
   };
   let overFree = false, aiming = false;
-  const WAVES = document.documentElement.classList.contains('is-wip');
+  const WAVES = true;
   const WAVE_KINDS = ['sweep', 'ring', 'diamond', 'scan'];
   let wave = null, waveIdx = (Math.random() * 4) | 0, nextWave = performance.now() + 2500;
   let w = 0, h = 0, pulses = [], mx = -1e4, my = -1e4, gx = -1e4, gy = -1e4, prev = 0, nextSpawn = 0;
@@ -406,7 +406,7 @@
     ctx.clearRect(0, 0, w, h);
     const sy = scrollY;
 
-    // grid waves (WIP, shown with ?wip): every few seconds a soft wave travels across the grid lines,
+    // grid waves: every few seconds a soft wave travels across the grid lines,
     // each time with another pattern (sweep, ripple, diamond, glitch scan). Low contrast, behind everything.
     if (WAVES) {
       if (!wave && now > nextWave) {
