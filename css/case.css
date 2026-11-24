@@ -380,3 +380,4 @@
 .vp__gizmo text { font: 600 7px var(--mono); fill: #bbb; stroke: none; }
 .case-hero:has(> .hero-media .vp) { padding-top: 56px; }
 @media (max-width: 640px) { .vp__pill:nth-child(n+3) { display: none; } .vp__gizmo { display: none; } .case-hero:has(> .hero-media .vp) { padding-top: 48px; } }
+.air { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; } /* Immersion (WIP, main.js §18) */
