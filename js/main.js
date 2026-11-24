@@ -898,3 +898,27 @@
   requestAnimationFrame(draw);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(draw); } });
 })();
+
+/* 17. Immersion (WIP, only with ?wip): the case-study hero reads like an Unreal viewport.
+       Toolbar pills, corner brackets, an axis gizmo and a real frame counter (measured, not invented). */
+(() => {
+  if (!document.documentElement.classList.contains('is-wip')) return;
+  const box = document.querySelector('.hero-media');
+  if (!box || box.offsetParent === null) return;
+  const vp = document.createElement('div');
+  vp.className = 'vp'; vp.setAttribute('aria-hidden', 'true');
+  vp.innerHTML = '<div class="vp__bar"><span class="vp__pill">☰</span><span class="vp__pill">Perspective</span><span class="vp__pill">Lit</span><span class="vp__pill">Show</span></div>'
+    + '<div class="vp__stat"><b class="vp__fps">--</b> FPS · Realtime</div>'
+    + '<i class="vp__c vp__c--tl"></i><i class="vp__c vp__c--tr"></i><i class="vp__c vp__c--bl"></i><i class="vp__c vp__c--br"></i>'
+    + '<svg class="vp__gizmo" viewBox="0 0 40 40"><line x1="12" y1="28" x2="30" y2="28" stroke="#ff4d4d"/><line x1="12" y1="28" x2="12" y2="10" stroke="#4d9bff"/><line x1="12" y1="28" x2="22" y2="20" stroke="#5be36b"/><text x="31" y="31">X</text><text x="9" y="8">Z</text><text x="23" y="18">Y</text></svg>';
+  box.append(vp);
+  const out = vp.querySelector('.vp__fps');
+  let frames = 0, t0 = performance.now();
+  const tick = (now) => {
+    frames++;
+    if (now - t0 >= 500) { out.textContent = Math.round(frames * 1000 / (now - t0)); frames = 0; t0 = now; }
+    if (box.getBoundingClientRect().bottom > 0 && !document.hidden) requestAnimationFrame(tick);
+    else setTimeout(() => { t0 = performance.now(); frames = 0; requestAnimationFrame(tick); }, 500);
+  };
+  requestAnimationFrame(tick);
+})();

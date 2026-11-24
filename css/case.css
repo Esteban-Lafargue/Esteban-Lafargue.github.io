@@ -364,3 +364,19 @@
 .depth__bar { grid-column: 1 / -1; height: 2px; border-radius: 2px; background: #ffffff14; overflow: hidden; }
 .depth__bar i { display: block; height: 100%; width: calc(var(--depth, 0) * 100%); background: var(--pc); box-shadow: 0 0 6px var(--pc); }
 @media (max-width: 640px) { .depth { right: 10px; bottom: 10px; padding: 6px 10px; } }
+
+/* ---------- Immersion (WIP, main.js §17): hero as an Unreal viewport ---------- */
+.vp { position: absolute; inset: 0; z-index: 3; pointer-events: none; font: 500 11px var(--mono); color: #d8d8d8; }
+.vp__bar { position: absolute; top: 10px; left: 12px; display: flex; gap: 4px; }
+.vp__pill { padding: 3px 8px; border-radius: 4px; background: #0d0d0dcc; border: 1px solid #ffffff1a; }
+.vp__stat { position: absolute; top: 12px; right: 14px; color: #9a9a9a; }
+.vp__fps { color: #5be36b; font-weight: 500; font-variant-numeric: tabular-nums; }
+.vp__c { position: absolute; width: 14px; height: 14px; border: 0 solid color-mix(in srgb, var(--pc, var(--ac)) 70%, #fff); opacity: .7; }
+.vp__c--tl { top: 40px; left: 12px; border-top-width: 2px; border-left-width: 2px; }
+.vp__c--tr { top: 40px; right: 12px; border-top-width: 2px; border-right-width: 2px; }
+.vp__c--bl { bottom: 12px; left: 12px; border-bottom-width: 2px; border-left-width: 2px; }
+.vp__c--br { bottom: 12px; right: 12px; border-bottom-width: 2px; border-right-width: 2px; }
+.vp__gizmo { position: absolute; right: 34px; top: 48px; width: 40px; height: 40px; stroke-width: 2; stroke-linecap: round; }
+.vp__gizmo text { font: 600 7px var(--mono); fill: #bbb; stroke: none; }
+.case-hero:has(> .hero-media .vp) { padding-top: 56px; }
+@media (max-width: 640px) { .vp__pill:nth-child(n+3) { display: none; } .vp__gizmo { display: none; } .case-hero:has(> .hero-media .vp) { padding-top: 48px; } }
