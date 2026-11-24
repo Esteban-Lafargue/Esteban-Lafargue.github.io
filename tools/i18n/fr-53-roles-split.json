@@ -1,0 +1,14 @@
+{
+  "<span aria-hidden=\"true\" class=\"node__icon\">⚙</span>Technical design<span class=\"meta\">Systems · UI logic</span>": "<span aria-hidden=\"true\" class=\"node__icon\">⚙</span>Technical design<span class=\"meta\">Systèmes · logique d’UI</span>",
+  "Core gameplay systems and mechanics, starting with the <strong>building system</strong>: design intentions turned into robust, scalable technical solutions.": "Les systèmes et mécaniques de gameplay principaux, à commencer par le <strong>système de construction</strong> : des intentions de design traduites en solutions techniques robustes et évolutives.",
+  "19 building pieces in one <strong>Data Table</strong>, editable by Designers.": "19 pièces de construction dans une seule <strong>Data Table</strong>, modifiables par les Designers.",
+  "Snapping points with a <strong>virtual math grid</strong> as fallback, and actors converted to <strong>HISM</strong> beyond 2,000 units.": "Des points d’accroche, avec une <strong>grille mathématique virtuelle</strong> en secours, et des acteurs convertis en <strong>HISM</strong> au-delà de 2 000 unités.",
+  "UI logic structure, and its integration with gameplay systems such as the <strong>Inventory Menu</strong>.": "La structure de la logique d’UI, et son intégration aux systèmes de gameplay comme l’<strong>Inventory Menu</strong>.",
+  "Technical design contributions ▷": "Contributions en technical design ▷",
+  "<span aria-hidden=\"true\" class=\"node__icon\">◎</span>Gameplay / UX design<span class=\"meta\">Player · playtests</span>": "<span aria-hidden=\"true\" class=\"node__icon\">◎</span>Gameplay / UX design<span class=\"meta\">Joueur · playtests</span>",
+  "Game Design decisions: prototyping features, iterating on mechanics, keeping every player interaction in line with the project’s vision and tone.": "Les décisions de Game Design : prototyper des fonctionnalités, itérer sur les mécaniques, garder chaque interaction du joueur fidèle à la vision et au ton du projet.",
+  "Interfaces designed for <strong>clarity, accessibility and player comfort</strong>, refined through playtesting.": "Des interfaces pensées pour la <strong>clarté, l’accessibilité et le confort du joueur</strong>, affinées par les playtests.",
+  "Rotation limited to <strong>90° steps on one axis</strong> after playtests, with preset variants to keep visual diversity.": "La rotation limitée à des <strong>pas de 90° sur un seul axe</strong> après les playtests, avec des variantes prédéfinies pour garder de la diversité visuelle.",
+  "Close work with the Designers and Artists, balancing technical constraints, design goals and player experience.": "Un travail étroit avec les Designers et les Artistes, entre contraintes techniques, objectifs de design et expérience du joueur.",
+  "Gameplay / UX design contributions ▷": "Contributions en gameplay / UX design ▷"
+}

@@ -301,3 +301,13 @@
   .pd__grid { grid-template-columns: minmax(0, 1fr); }
   .pd__row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
 }
+
+/* ---------- Roles split (WIP): Technical design | Gameplay / UX design ---------- */
+.roles--split .node { display: flex; flex-direction: column; }
+.roles--split .node__body { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+.role-side__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.role-side__list li { position: relative; padding-left: 20px; font-size: 15px; line-height: 1.55; }
+.role-side__list li::before { content: ""; position: absolute; left: 0; top: .55em; width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--c); }
+.role-side__list strong { color: var(--text-strong); font-weight: 600; }
+.role-side__links { margin-top: auto; }
+@media (max-width: 520px) { .roles--split .node__head .meta { display: none; } }

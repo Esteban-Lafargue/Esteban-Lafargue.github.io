@@ -15,8 +15,8 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../../css/style.css?v=64" rel="stylesheet"/>
-<link href="../../css/case.css?v=64" rel="stylesheet"/>
+<link href="../../css/style.css?v=65" rel="stylesheet"/>
+<link href="../../css/case.css?v=65" rel="stylesheet"/>
 <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}</script>
 </head>
 <body>
@@ -70,7 +70,38 @@
 <span class="chip" style="--c:var(--pc)">UX Designer</span>
 <span class="chip" style="--c:var(--pc)">Game Designer</span>
 </div>
-<div class="roles">
+<!-- WIP: the same role, split into Technical design and Gameplay / UX design (replaces the block below in ?wip mode) -->
+<div class="roles roles--split" data-wip="" hidden="">
+<div class="node reveal role-side" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">⚙</span>Technical design<span class="meta">Systèmes · logique d’UI</span></div>
+<div class="node__body">
+<ul class="role-side__list">
+<li>Les systèmes et mécaniques de gameplay principaux, à commencer par le <strong>système de construction</strong> : des intentions de design traduites en solutions techniques robustes et évolutives.</li>
+<li>19 pièces de construction dans une seule <strong>Data Table</strong>, modifiables par les Designers.</li>
+<li>Des points d’accroche, avec une <strong>grille mathématique virtuelle</strong> en secours, et des acteurs convertis en <strong>HISM</strong> au-delà de 2 000 unités.</li>
+<li>La structure de la logique d’UI, et son intégration aux systèmes de gameplay comme l’<strong>Inventory Menu</strong>.</li>
+</ul>
+<div class="role-side__links">
+<a class="btn btn--ghost" href="building/#step-2">Contributions en technical design ▷</a>
+</div>
+</div>
+</div>
+<div class="node reveal role-side" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">◎</span>Gameplay / UX design<span class="meta">Joueur · playtests</span></div>
+<div class="node__body">
+<ul class="role-side__list">
+<li>Les décisions de Game Design : prototyper des fonctionnalités, itérer sur les mécaniques, garder chaque interaction du joueur fidèle à la vision et au ton du projet.</li>
+<li>Des interfaces pensées pour la <strong>clarté, l’accessibilité et le confort du joueur</strong>, affinées par les playtests.</li>
+<li>La rotation limitée à des <strong>pas de 90° sur un seul axe</strong> après les playtests, avec des variantes prédéfinies pour garder de la diversité visuelle.</li>
+<li>Un travail étroit avec les Designers et les Artistes, entre contraintes techniques, objectifs de design et expérience du joueur.</li>
+</ul>
+<div class="role-side__links">
+<a class="btn btn--ghost" href="building/#step-4">Contributions en gameplay / UX design ▷</a>
+</div>
+</div>
+</div>
+</div>
+<div class="roles" data-wip-alt="">
 <div class="node reveal" style="--c:var(--pc)">
 <div class="node__head"><span aria-hidden="true" class="pin"></span>Gameplay &amp; Technical Design</div>
 <div class="node__body">
@@ -193,6 +224,6 @@
 <span>Fait main · sans framework · hébergé sur GitHub Pages</span>
 </footer>
 </main>
-<script defer="" src="../../js/main.js?v=64"></script>
+<script defer="" src="../../js/main.js?v=65"></script>
 </body>
 </html>
