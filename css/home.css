@@ -128,7 +128,7 @@
 @media (max-width: 640px) { .hero__contact { display: inline-flex; } }
 
 /* ---------- Career path (WIP): one node per step, each one a stop on the exec rail ---------- */
-.career__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; max-width: 820px; }
+.career__list { list-style: none; margin: 0 auto; padding: 0; display: grid; gap: 18px; max-width: 820px; }
 .career__item .node__head { flex-wrap: wrap; row-gap: 2px; }
 .career__role { min-width: 0; }
 .career__item .node__body { padding: 14px 20px 16px; }
@@ -145,7 +145,7 @@
 .career__more summary:hover, .career__more summary:focus-visible { background: color-mix(in srgb, var(--c) 14%, transparent); border-color: var(--c); }
 .career__more p { margin: 10px 0 0; font-size: 14px; color: var(--text-muted); }
 .career__link { display: inline-block; margin-top: 8px; font: 13px var(--mono); color: var(--c); }
-.career__about { margin-top: 24px; }
+.career__about { display: flex; width: fit-content; margin: 24px auto 0; }
 
 /* Juice (WIP): when the rail reaches a career step, its node pops with the pin and its header lights up */
 .career__item .node__head { transition: filter .4s, box-shadow .4s; }
