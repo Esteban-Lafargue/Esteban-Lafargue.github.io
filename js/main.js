@@ -1001,3 +1001,82 @@
   if (matchMedia('(pointer: fine)').matches) addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; kick(); }, { passive: true });
   apply();
 })();
+
+/* 20. Immersion (WIP, only with ?wip): optional ambient sound, off by default, made by the browser (no audio file).
+       Kläppen forest (leaves + birds), Flying AI wind, Abyss underwater (muffled, deeper as you scroll, bubbles),
+       WolfPeak cold wind, other pages a soft pad. The choice follows you from page to page in the tab. */
+(() => {
+  const root = document.documentElement;
+  if (!root.classList.contains('is-wip')) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  const fr = root.lang === 'fr';
+  const theme = root.dataset.theme || 'home';
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'amb';
+  const label = (on) => { btn.innerHTML = `<span class="amb__ico" aria-hidden="true">${on ? '🔊' : '🔈'}</span>${fr ? 'Ambiance' : 'Ambience'}<span class="amb__bars" aria-hidden="true"><i></i><i></i><i></i></span>`; btn.setAttribute('aria-pressed', on); btn.classList.toggle('is-on', on); };
+  document.body.append(btn);
+  let ctx = null, master = null, on = false, timers = [];
+  const noise = (kind) => { // white, pink-ish or brown noise buffer, looped
+    const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+    let last = 0, b = [0, 0, 0];
+    for (let i = 0; i < len; i++) {
+      const wht = Math.random() * 2 - 1;
+      if (kind === 'brown') { last = (last + .02 * wht) / 1.02; d[i] = last * 3.5; }
+      else if (kind === 'pink') { b[0] = .997 * b[0] + wht * .029; b[1] = .985 * b[1] + wht * .032; b[2] = .95 * b[2] + wht * .048; d[i] = (b[0] + b[1] + b[2] + wht * .02) * 1.6; }
+      else d[i] = wht;
+    }
+    const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; return s;
+  };
+  const lfo = (target, rate, depth, base) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = rate; g.gain.value = depth; o.connect(g).connect(target); target.value = base; o.start(); };
+  const chirp = (f0, f1, dur, vol) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+    o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g).connect(master); o.start(t); o.stop(t + dur + .05);
+  };
+  const every = (min, max, fn) => { const go = () => { timers.push(setTimeout(() => { if (on) fn(); go(); }, min + Math.random() * (max - min))); }; go(); };
+  let abyssFilter = null;
+  const build = () => {
+    ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+    if (theme === 'klappen') {
+      const n = noise('pink'), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      f.type = 'bandpass'; f.Q.value = .6; lfo(f.frequency, .07, 500, 1400); lfo(g.gain, .11, .25, .55);
+      n.connect(f).connect(g).connect(master); n.start();
+      every(2500, 7000, () => { const b = 2400 + Math.random() * 1600, k = 1 + (Math.random() * 3 | 0); for (let i = 0; i < k; i++) setTimeout(() => chirp(b, b * 1.35, .09, .05), i * 130); });
+    } else if (theme === 'abyss') {
+      const n = noise('brown'), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      f.type = 'lowpass'; f.Q.value = 1.5; f.frequency.value = 520; abyssFilter = f; lfo(g.gain, .06, .3, .9);
+      n.connect(f).connect(g).connect(master); n.start();
+      const hum = ctx.createOscillator(), hg = ctx.createGain(); hum.frequency.value = 55; hg.gain.value = .05; hum.connect(hg).connect(master); hum.start();
+      every(1800, 6000, () => { const k = 2 + (Math.random() * 4 | 0); for (let i = 0; i < k; i++) setTimeout(() => { const b = 300 + Math.random() * 500; chirp(b, b * 2.2, .07, .035); }, i * (60 + Math.random() * 80)); });
+    } else if (theme === 'flying' || theme === 'wolfpeak') {
+      const n = noise(theme === 'flying' ? 'pink' : 'white'), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      f.type = 'bandpass'; f.Q.value = theme === 'flying' ? 1.2 : 3; lfo(f.frequency, .05, theme === 'flying' ? 350 : 700, theme === 'flying' ? 600 : 1600);
+      lfo(g.gain, .09, .3, theme === 'flying' ? .6 : .25);
+      n.connect(f).connect(g).connect(master); n.start();
+    } else {
+      const f = ctx.createBiquadFilter(); f.type = 'lowpass'; lfo(f.frequency, .04, 250, 700); f.connect(master);
+      [110, 164.8, 220.5, 277.2].forEach((hz, i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = i % 2 ? 'triangle' : 'sine'; o.frequency.value = hz; o.detune.value = (Math.random() - .5) * 12; lfo(g.gain, .03 + i * .017, .05, .07); o.connect(g).connect(f); o.start(); });
+    }
+  };
+  const VOL = { home: .05, klappen: .07, abyss: .09, flying: .06, wolfpeak: .05 };
+  const set = (v) => {
+    on = v; label(on);
+    try { v ? sessionStorage.setItem('amb', '1') : sessionStorage.removeItem('amb'); } catch (err) { /* private mode */ }
+    if (on && !ctx) build();
+    if (!ctx) return;
+    ctx.resume();
+    master.gain.setTargetAtTime(on ? (VOL[theme] || .05) : 0, ctx.currentTime, .6);
+  };
+  btn.addEventListener('click', () => set(!on));
+  if (abyssFilter === null) addEventListener('scroll', () => {
+    if (!abyssFilter) return;
+    const t = Math.min(1, scrollY / Math.max(1, root.scrollHeight - innerHeight));
+    abyssFilter.frequency.setTargetAtTime(520 - t * 340, ctx.currentTime, .3); // deeper = more muffled
+  }, { passive: true });
+  label(false);
+  // keep it on across pages: browsers need a gesture first, so it resumes on the first click or key
+  let was = false; try { was = sessionStorage.getItem('amb') === '1'; } catch (err) { /* private mode */ }
+  if (was) { btn.classList.add('is-armed'); const go = () => { if (!on) set(true); btn.classList.remove('is-armed'); }; addEventListener('pointerdown', go, { once: true }); addEventListener('keydown', go, { once: true }); }
+})();

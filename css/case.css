@@ -381,3 +381,5 @@
 .case-hero:has(> .hero-media .vp) { padding-top: 56px; }
 @media (max-width: 640px) { .vp__pill:nth-child(n+3) { display: none; } .vp__gizmo { display: none; } .case-hero:has(> .hero-media .vp) { padding-top: 48px; } }
 .air { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; } /* Immersion (WIP, main.js §18) */
+.is-wip .depth { bottom: 64px; } /* above the ambience toggle (style.css §20) */
+@media (max-width: 640px) { .is-wip .depth { bottom: 52px; } }
