@@ -753,9 +753,18 @@
       setTimeout(() => { wipe.classList.remove('is-in'); if (main) main.classList.remove('is-entering'); }, 600);
     }));
   }
-  addEventListener('pageshow', (e) => { if (e.persisted) wipe.className = 'wipe'; });
+  addEventListener('pageshow', (e) => { if (e.persisted) { wipe.className = 'wipe'; root.classList.remove('fx-leaving'); } });
 
+  // WIP: the browser itself animates between pages (cross-document View Transitions, see the head script and
+  // css "Page transitions v2"). We navigate at once, so the next page loads while the current one slides away:
+  // no frozen page. A wire runs along the top while the next page loads.
+  const vt = root.classList.contains('fx-vt');
   const go = (href) => {
+    if (vt) {
+      wipe.className = 'wipe is-load'; root.classList.add('fx-leaving');
+      location.href = href;
+      return;
+    }
     try { sessionStorage.setItem('wipe', '1'); } catch (err) { /* private mode: no arrival sweep */ }
     wipe.className = 'wipe is-out';
     setTimeout(() => { location.href = href; }, 400);
@@ -768,6 +777,7 @@
     if (a.target === '_blank' || a.hasAttribute('download') || a.origin !== location.origin) return;
     if (/\.(pdf|mp4|jpg|png|zip)$/i.test(a.pathname)) return;
     if (a.pathname === location.pathname && a.search === location.search) return; // same page / anchor
+    if (vt) { wipe.className = 'wipe is-load'; root.classList.add('fx-leaving'); return; } // native navigation
     e.preventDefault();
     go(a.href);
   });
@@ -1222,17 +1232,54 @@
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.classList.add('fx-entry');
 
-  // first screen: cascade, in document order
-  const SEL = 'main .crumbs, main .eyebrow, main h1, main .case-hero__pitch, main .hero2__pitch, main .hero2__sub, main section:first-of-type > div > p, main .hero__actions > *, main .hero__side > *, main .case-hero .node, main .hero-media';
-  const first = [...document.querySelectorAll(SEL)].filter((el, i, a) => a.indexOf(el) === i && el.getBoundingClientRect().top < innerHeight && !el.closest('[hidden]')).slice(0, 14);
+  // first screen: cascade, in document order (measured from the top of main: a stylesheet still loading can push it down)
+  const mainEl = document.querySelector('main'), mainTop = mainEl ? mainEl.getBoundingClientRect().top : 0;
+  const SEL = 'main .case-hero .back, main .case-hero .skills-row, main .case-hero__row > *, main .case-hero .facts > div, main .crumbs, main .eyebrow, main h1, main .case-hero__pitch, main .hero2__pitch, main .hero2__sub, main section:first-of-type > div > p, main .hero__actions > *, main .hero__side > *, main .case-hero .node, main .hero-media';
+  const first = [...document.querySelectorAll(SEL)].filter((el, i, a) => a.indexOf(el) === i && el.getBoundingClientRect().top - mainTop < innerHeight - 70 && !el.closest('[hidden]')).slice(0, 14);
   let booted = false;
   try { booted = sessionStorage.getItem('booted') === '1'; sessionStorage.setItem('booted', '1'); } catch (err) { booted = true; }
   const arriving = root.classList.contains('is-arriving') || document.querySelector('.wipe.is-covered, .wipe.is-in');
-  const startDelay = !booted && !calm && !arriving ? 900 : 120;
-  first.forEach((el, i) => { el.classList.add('fx-in'); el.style.setProperty('--fx-d', `${startDelay + i * 65}ms`); });
+  const startDelay = !booted && !calm && !arriving ? 900 : root.classList.contains('fx-vt') ? 160 : 120;
+  const GAP = 95, WGAP = 55; // ms between blocks, between words of the title
+  // the title rises word by word out of a mask; each block after it waits for the title to be well underway
+  const split = (h) => {
+    const words = [];
+    const walk = (n) => [...n.childNodes].forEach((c) => {
+      if (c.nodeType === 1) { walk(c); return; }
+      if (c.nodeType !== 3 || !c.textContent.trim()) return;
+      const frag = document.createDocumentFragment();
+      c.textContent.split(/(\s+)/).forEach((w) => {
+        if (!w) return;
+        if (/^\s+$/.test(w)) { frag.appendChild(document.createTextNode(w)); return; }
+        const o = document.createElement('span'), i = document.createElement('span');
+        o.className = 'fx-w'; i.className = 'fx-wi'; i.textContent = w;
+        o.appendChild(i); frag.appendChild(o); words.push(i);
+      });
+      c.replaceWith(frag);
+    });
+    walk(h);
+    return words;
+  };
+  let d = startDelay, words = [];
+  first.forEach((el) => {
+    if (el.tagName === 'H1' && !calm) {
+      const ws = split(el);
+      ws.forEach((w, k) => w.style.setProperty('--fx-d', `${d + k * WGAP}ms`));
+      words = words.concat(ws);
+      d += Math.min(ws.length, 6) * WGAP + 120;
+      return;
+    }
+    el.classList.add('fx-in'); el.style.setProperty('--fx-d', `${d}ms`);
+    d += GAP;
+  });
   root.classList.remove('fx-pre'); // the head script hid the first screen until now (no flash)
   requestAnimationFrame(() => requestAnimationFrame(() => first.forEach((el) => el.classList.add('fx-go'))));
-  setTimeout(() => first.forEach((el) => el.classList.remove('fx-in', 'fx-go')), startDelay + first.length * 65 + 1000);
+  setTimeout(() => {
+    first.forEach((el) => el.classList.remove('fx-in', 'fx-go'));
+    // put the title back as plain text (keeps the DOM clean for copy and screen readers)
+    words.forEach((w) => { const o = w.parentNode; if (o && o.parentNode) o.replaceWith(document.createTextNode(w.textContent)); });
+    first.forEach((el) => { if (el.tagName === 'H1') el.normalize(); });
+  }, d + 1400);
 
   // boot screen, once per session: logo, a wire drawing out of it, then the screen opens
   if (!booted && !calm && !arriving) {
@@ -1256,7 +1303,7 @@
         if (!e.isIntersecting) return;
         io.unobserve(e.target);
         if (first.includes(e.target)) return;
-        e.target.style.setProperty('--fx-s', `${Math.min(batch, 5) * 80}ms`);
+        e.target.style.setProperty('--fx-s', `${Math.min(batch, 5) * 110}ms`);
         batch++; clearTimeout(batchT); batchT = setTimeout(() => { batch = 0; }, 120);
       });
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });

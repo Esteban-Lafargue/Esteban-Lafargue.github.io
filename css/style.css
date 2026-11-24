@@ -581,9 +581,18 @@ html.fx-pre main { opacity: 0; animation: fx-safety .3s ease 1.6s forwards; } /*
 html.fx-preboot::after { content: ""; position: fixed; inset: 0; z-index: 10001; background: var(--bg); animation: fx-safety-out .3s ease 1.6s forwards; }
 @keyframes fx-safety { to { opacity: 1; } }
 @keyframes fx-safety-out { to { opacity: 0; visibility: hidden; } }
-.fx-entry .fx-in { opacity: 0; transform: translateY(18px); filter: blur(5px); }
-.fx-entry .fx-in.fx-go { opacity: 1; transform: none; filter: none; transition: opacity .55s ease var(--fx-d, 0ms), transform .7s cubic-bezier(.2, .9, .3, 1.2) var(--fx-d, 0ms), filter .5s ease var(--fx-d, 0ms); }
-.fx-entry .reveal { transform: translateY(26px) scale(.97); filter: blur(6px); transition: opacity .6s ease var(--fx-s, 0ms), transform .8s cubic-bezier(.2, .9, .3, 1.15) var(--fx-s, 0ms), filter .6s ease var(--fx-s, 0ms); }
+.fx-entry .fx-in { opacity: 0; transform: translateY(38px) scale(.98); filter: blur(8px); }
+.fx-entry .fx-in.fx-go { opacity: 1; transform: none; filter: none; transition: opacity .6s ease var(--fx-d, 0ms), transform .85s cubic-bezier(.2, .9, .25, 1.15) var(--fx-d, 0ms), filter .6s ease var(--fx-d, 0ms); }
+.fx-entry .case-hero .node.fx-in { transform: translateY(30px) scale(.9); }
+.fx-entry .case-hero .node.fx-go { animation: fx-node-glow 1.1s ease calc(var(--fx-d, 0ms) + .35s); }
+@keyframes fx-node-glow { 35% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 70%, transparent), 0 0 34px color-mix(in srgb, var(--ac) 45%, transparent); } }
+/* the page title rises word by word out of a mask (JS wraps each word, then unwraps when done) */
+.fx-w { display: inline-block; overflow: hidden; vertical-align: top; padding: .15em .35em .3em; margin: -.15em -.35em -.3em; }
+.fx-wi { display: inline-block; animation: fx-word .9s cubic-bezier(.2, .9, .25, 1.08) var(--fx-d, 0ms) both; }
+.dot .fx-wi { animation-name: fx-dot; }
+@keyframes fx-word { from { transform: translateY(130%) rotate(4deg); opacity: 0; } 40% { opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes fx-dot { from { transform: scale(0); opacity: 0; } 60% { transform: scale(1.6); opacity: 1; } to { transform: none; opacity: 1; } }
+.fx-entry .reveal { transform: translateY(48px) scale(.95); filter: blur(8px); transition: opacity .7s ease var(--fx-s, 0ms), transform .95s cubic-bezier(.2, .9, .25, 1.12) var(--fx-s, 0ms), filter .7s ease var(--fx-s, 0ms); }
 .fx-entry .reveal.is-live { transform: none; filter: none; }
 .fx-boot { position: fixed; inset: 0; z-index: 10001; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--bg); transition: opacity .5s ease, clip-path .55s cubic-bezier(.7, 0, .2, 1); clip-path: inset(0 0 0 0); }
 .fx-boot.is-out { opacity: 0; clip-path: inset(50% 0 50% 0); }
@@ -598,5 +607,30 @@ html.fx-preboot::after { content: ""; position: fixed; inset: 0; z-index: 10001;
 @media (prefers-reduced-motion: reduce) {
   html.fx-preboot::after { display: none; }
   .fx-entry .fx-in { transform: none; filter: none; }
+  .fx-wi { animation-name: fx-fade; } @keyframes fx-fade { from { opacity: 0; } }
   .fx-entry .reveal { transform: none; filter: none; }
+}
+
+/* art-direction canvases (css/da.css loads late, in WIP): fixed from the first paint so the page doesn't jump */
+.da-fx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+
+/* Page transitions v2 (WIP, html.fx-vt set by the head script when the browser supports cross-document
+   View Transitions). The next page loads while the current one slides up and fades; then the new page
+   rises in. The menu and the grid stay put. A wire runs along the top while the next page loads. */
+.fx-vt .nav { view-transition-name: fx-nav; }
+.fx-vt .bg-live { view-transition-name: fx-bg; }
+html.fx-leaving main { opacity: .3; transform: translateY(-14px); filter: blur(3px); transition: opacity .35s ease, transform .4s cubic-bezier(.4, 0, .6, 1), filter .35s ease; }
+.wipe.is-load { opacity: 1; background: transparent; }
+.wipe.is-load .wipe__wire { animation: fx-load 1.6s cubic-bezier(.1, .7, .3, 1) forwards; }
+@keyframes fx-load { from { width: 0; } 30% { width: 55%; } to { width: 92%; } }
+::view-transition-old(root) { animation: fx-vt-out .32s cubic-bezier(.4, 0, 1, 1) both; }
+::view-transition-new(root) { animation: fx-vt-in .6s cubic-bezier(.1, .8, .25, 1) .06s both; }
+::view-transition-group(fx-nav), ::view-transition-group(fx-bg) { animation-duration: .4s; }
+@keyframes fx-vt-out { to { opacity: 0; transform: translateY(-24px) scale(.985); filter: blur(4px); } }
+@keyframes fx-vt-in { from { opacity: 0; transform: translateY(46px); } }
+@media (prefers-reduced-motion: reduce) {
+  html.fx-leaving main { transform: none; filter: none; }
+  ::view-transition-old(root) { animation: fx-fade-out .3s ease both; }
+  ::view-transition-new(root) { animation: fx-fade .4s ease both; }
+  @keyframes fx-fade-out { to { opacity: 0; } }
 }
