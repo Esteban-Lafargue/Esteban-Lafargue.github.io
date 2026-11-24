@@ -281,3 +281,23 @@
 .tuto__meta div { display: flex; flex-wrap: wrap; gap: 4px 16px; }
 .tuto__meta dt { flex: 0 0 90px; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); padding-top: 3px; }
 .tuto__meta dd { flex: 1 1 300px; margin: 0; color: var(--text-strong); font-size: 14px; }
+
+/* ---------- Project details (WIP): a Details panel, the same on every case study ---------- */
+.pd__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line-soft); }
+.pd__cat { background: var(--node); padding-bottom: 14px; min-width: 0; }
+.pd__cat--wide { grid-column: 1 / -1; }
+.pd__bar { display: flex; align-items: center; gap: 8px; margin: 0; padding: 8px 18px; background: #ffffff08; border-bottom: 1px solid var(--line-soft); font: 500 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-strong); }
+.pd__bar span { color: var(--c); font-size: 11px; }
+.pd__rows { margin: 0; padding: 6px 18px 0; }
+.pd__row { display: grid; grid-template-columns: minmax(110px, 38%) minmax(0, 1fr); gap: 4px 16px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); }
+.pd__row:last-child { border-bottom: 0; }
+.pd__row dt { font: 12px var(--mono); color: var(--text-faint); padding-top: 2px; }
+.pd__row dd { margin: 0; font-size: 14px; color: var(--text-strong); }
+.pd__row dd a { color: var(--c); border-bottom: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
+.pd__chips { padding: 14px 18px 0; }
+.pd__chips .chip { --c: var(--pc, var(--ac)); }
+.pd__links { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px 18px 0; }
+@media (max-width: 720px) {
+  .pd__grid { grid-template-columns: minmax(0, 1fr); }
+  .pd__row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
