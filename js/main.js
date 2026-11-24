@@ -1053,25 +1053,45 @@
     }
   };
   const VOL = { home: .05, klappen: .07, abyss: .09, flying: .06, wolfpeak: .05 };
-  const set = (v) => {
-    on = v; label(on);
-    try { v ? sessionStorage.setItem('amb', '1') : sessionStorage.removeItem('amb'); } catch (err) { /* private mode */ }
-    if (on && !ctx) build();
-    if (!ctx) return;
-    ctx.resume();
-    master.gain.setTargetAtTime(on ? (VOL[theme] || .05) : 0, ctx.currentTime, .6);
-  };
-  btn.addEventListener('click', () => set(!on));
-  if (abyssFilter === null) addEventListener('scroll', () => {
-    if (!abyssFilter) return;
+  // the choice is remembered (localStorage) until the visitor turns it off, on every page and visit
+  const store = (v) => { try { v ? localStorage.setItem('amb', '1') : localStorage.removeItem('amb'); sessionStorage.removeItem('amb'); } catch (err) { /* private mode */ } };
+  const depthMix = () => {
+    if (!abyssFilter || !ctx) return;
     const t = Math.min(1, scrollY / Math.max(1, root.scrollHeight - innerHeight));
     abyssFilter.frequency.setTargetAtTime(520 - t * 340, ctx.currentTime, .3); // deeper = more muffled
     if (tens) { const k = Math.min(1, Math.max(0, (t - .62) / .33)); tens.gain.setTargetAtTime(k * k * (3 - 2 * k) * .9, ctx.currentTime, .8); }
-  }, { passive: true });
+  };
+  const fadeIn = () => { if (ctx && on && ctx.state === 'running') { depthMix(); master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(VOL[theme] || .05, ctx.currentTime, .9); btn.classList.remove('is-armed'); } };
+  const set = (v) => {
+    on = v; label(on); store(on);
+    if (on && !ctx) build();
+    if (!ctx) return;
+    if (on) ctx.resume().then(fadeIn); else master.gain.setTargetAtTime(0, ctx.currentTime, .4);
+  };
+  btn.addEventListener('click', () => set(!on));
+  addEventListener('scroll', depthMix, { passive: true });
+  // leaving the page: a short fade instead of a hard cut (the page transition leaves ~0.4 s)
+  const fadeOut = () => { if (ctx && on) master.gain.setTargetAtTime(0, ctx.currentTime, .09); };
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[href]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank' || a.hasAttribute('download')) return;
+    const u = new URL(a.href, location.href);
+    if (u.origin === location.origin && !(u.pathname === location.pathname && u.hash)) fadeOut();
+  }, true);
+  addEventListener('pagehide', fadeOut);
+  addEventListener('pageshow', (e) => { if (e.persisted && on && ctx) ctx.resume().then(fadeIn); });
+  // still on from a previous page: start right away if the browser allows it, otherwise on the first click, tap or key
+  let was = false; try { was = localStorage.getItem('amb') === '1' || sessionStorage.getItem('amb') === '1'; } catch (err) { /* private mode */ }
   label(false);
-  // keep it on across pages: browsers need a gesture first, so it resumes on the first click or key
-  let was = false; try { was = sessionStorage.getItem('amb') === '1'; } catch (err) { /* private mode */ }
-  if (was) { btn.classList.add('is-armed'); const go = () => { if (!on) set(true); btn.classList.remove('is-armed'); }; addEventListener('pointerdown', go, { once: true }); addEventListener('keydown', go, { once: true }); }
+  if (was) {
+    on = true; label(true); store(true); build();
+    ctx.resume().then(fadeIn).catch(() => {});
+    if (ctx.state !== 'running') {
+      btn.classList.add('is-armed');
+      const go = (e) => { if (e && e.target && e.target.closest && e.target.closest('.amb')) return; ['pointerdown', 'keydown', 'touchstart'].forEach((t) => removeEventListener(t, go, true)); if (on) ctx.resume().then(fadeIn); };
+      ['pointerdown', 'keydown', 'touchstart'].forEach((t) => addEventListener(t, go, true));
+    }
+  }
 })();
 
 /* 21. Art direction per project (WIP, only with ?wip): each project page gets its own world (css/da.css,
