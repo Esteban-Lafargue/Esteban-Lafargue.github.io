@@ -1,0 +1,81 @@
+/* ==========================================================================
+   Per-project art direction (WIP: loaded by js/main.js §21 only with ?wip, visitors never download it).
+   html.da + html.da-<project>. The shared Blueprint grid, its pulses and the bug hunt are switched off here:
+   each project page gets its own world instead.
+   ========================================================================== */
+
+/* ---------- Common: no grid, no pulses, no far grid ---------- */
+html.da body { background-image: none; background-attachment: fixed; }
+html.da .bg-live, html.da .far { display: none; }
+html.da .node { transition: border-color .3s, box-shadow .3s, background .3s; }
+html.da .stitle__tag, html.da h1, html.da h2, html.da h3, html.da .node__head { font-family: var(--da-font, var(--font)); }
+html.da .da-layer { position: fixed; left: 0; right: 0; bottom: 0; z-index: -1; pointer-events: none; }
+html.da .da-layer svg { display: block; width: 100%; height: 100%; }
+
+/* ---------- Abyss: deep water, light shafts, glass and bioluminescence ---------- */
+html.da-abyss { --da-font: 'Exo 2', var(--font); }
+html.da-abyss body { background: linear-gradient(180deg, #0b3346 0%, #08243a 18%, #071528 45%, #050817 75%, #030209 100%) fixed; }
+html.da-abyss .dive__light { background: none; animation: none; opacity: calc(1 - var(--depth, 0) * 1.8); }
+html.da-abyss .dive__light::before, html.da-abyss .dive__light::after { content: ""; position: absolute; top: -10%; height: 90%; width: 70%; left: 15%;
+  background: repeating-linear-gradient(100deg, transparent 0 7%, #8fe4ff14 9%, transparent 12%, transparent 19%, #8fe4ff0c 21%, transparent 25%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 85%); mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+  transform-origin: 50% 0; animation: da-shafts 14s ease-in-out infinite alternate; }
+html.da-abyss .dive__light::after { left: 35%; width: 55%; opacity: .7; animation-duration: 19s; animation-direction: alternate-reverse; }
+@keyframes da-shafts { from { transform: skewX(-8deg) translateX(-3%); } to { transform: skewX(6deg) translateX(3%); } }
+html.da-abyss .node { background: #07122299; border-color: #ff9be02e; border-radius: 18px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+html.da-abyss .node.is-live { border-color: #ff9be055; box-shadow: 0 20px 60px #00000080, 0 0 30px #ff9be014, inset 0 1px 0 #ffffff0d; }
+html.da-abyss .node__head { background: linear-gradient(90deg, #ff9be02e, #6fe3ff0d 60%, transparent); }
+html.da-abyss .facts { background: #ff9be01f; border-color: #ff9be02e; border-radius: 18px; }
+html.da-abyss .facts div { background: #071222b3; }
+html.da-abyss h1 { font-weight: 300; letter-spacing: -.01em; text-shadow: 0 0 40px #6fe3ff33; }
+html.da-abyss .stitle__tag { border-radius: 30px; }
+
+/* ---------- Kläppen: a cozy forest at dusk, warm light, pine silhouettes, soft rounded shapes ---------- */
+html.da-klappen { --da-font: 'Fredoka', var(--font); }
+html.da-klappen body { background:
+  radial-gradient(70% 45% at 78% -5%, #e8b86a22, transparent 70%),
+  radial-gradient(50% 40% at 10% 30%, #2f5a3a26, transparent 70%),
+  linear-gradient(180deg, #0f1d15 0%, #0b1610 55%, #070e0a 100%) fixed; }
+html.da-klappen body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .95 0 0 0 0 .8 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+html.da-klappen .da-layer { height: 26vh; }
+html.da-klappen .node { background: #101d16; border-color: #8fe6b030; border-radius: 22px; }
+html.da-klappen .node.is-live { border-color: #8fe6b055; box-shadow: 0 18px 50px #00000070, 0 0 34px #e8b86a12; }
+html.da-klappen .node__head { background: linear-gradient(90deg, #8fe6b036, #e8b86a12 65%, transparent); font-weight: 500; }
+html.da-klappen .facts { border-radius: 22px; background: #8fe6b026; border-color: #8fe6b030; }
+html.da-klappen .facts div { background: #101d16; }
+html.da-klappen h1 { font-weight: 600; letter-spacing: -.01em; }
+html.da-klappen .stitle__tag { border-radius: 30px; font-weight: 600; letter-spacing: .06em; }
+html.da-klappen .chip, html.da-klappen .btn { border-radius: 30px; }
+html.da-klappen .hero-media { border-radius: 26px; }
+
+/* ---------- Flying AI: dusk sky, a glowing horizon, cockpit-like HUD panels ---------- */
+html.da-flying { --da-font: 'Rajdhani', var(--font); }
+html.da-flying body { background: linear-gradient(180deg, #060812 0%, #0a0f22 40%, #1a1428 70%, #3a1c1e 88%, #6a3214 100%) fixed; }
+html.da-flying body::after { content: ""; position: fixed; left: 0; right: 0; bottom: 14vh; height: 1px; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, transparent, #ffb48a88 30%, #ffd9b8 50%, #ffb48a88 70%, transparent); box-shadow: 0 0 24px 6px #ff8a4c33; }
+html.da-flying .node { border-radius: 4px; background: #080c18e6; border-color: #ffb48a2a;
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); }
+html.da-flying .node.is-live { border-color: #ffb48a55; }
+html.da-flying .node__head { background: linear-gradient(90deg, #ffb48a30, transparent 70%); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; font-size: 15px; }
+html.da-flying .facts { border-radius: 2px; background: #ffb48a22; border-color: #ffb48a2a; }
+html.da-flying .facts div { background: #080c18e6; }
+html.da-flying h1 { font-weight: 700; letter-spacing: .01em; text-transform: uppercase; }
+html.da-flying .stitle__tag { border-radius: 2px; letter-spacing: .14em; }
+html.da-flying .hero-media { border-radius: 4px; }
+
+/* ---------- WolfPeak: glacier light, frosted glass, distant mountains (generic illustration) ---------- */
+html.da-wolfpeak { --da-font: 'Barlow Condensed', var(--font); }
+html.da-wolfpeak body { background:
+  radial-gradient(60% 40% at 50% -10%, #9cc3ff1f, transparent 70%),
+  linear-gradient(180deg, #0c1424 0%, #0e1a2c 50%, #0a111d 100%) fixed; }
+html.da-wolfpeak .da-layer { height: 30vh; }
+html.da-wolfpeak .node { background: #111b2c99; border-color: #d6e4f526; border-radius: 10px; -webkit-backdrop-filter: blur(8px) saturate(1.2); backdrop-filter: blur(8px) saturate(1.2); }
+html.da-wolfpeak .node.is-live { border-color: #d6e4f550; box-shadow: 0 20px 60px #00000070, inset 0 1px 0 #ffffff14; }
+html.da-wolfpeak .node__head { background: linear-gradient(90deg, #d6e4f526, transparent 70%); letter-spacing: .04em; font-weight: 600; font-size: 18px; }
+html.da-wolfpeak .facts { border-radius: 10px; background: #d6e4f51f; border-color: #d6e4f526; }
+html.da-wolfpeak .facts div { background: #111b2cb3; }
+html.da-wolfpeak h1 { font-weight: 700; letter-spacing: .01em; text-transform: uppercase; }
+html.da-wolfpeak .stitle__tag { letter-spacing: .12em; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) { html.da-abyss .dive__light::before, html.da-abyss .dive__light::after { animation-duration: 60s; } }

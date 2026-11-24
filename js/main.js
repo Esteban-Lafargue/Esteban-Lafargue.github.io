@@ -1081,3 +1081,39 @@
   let was = false; try { was = sessionStorage.getItem('amb') === '1'; } catch (err) { /* private mode */ }
   if (was) { btn.classList.add('is-armed'); const go = () => { if (!on) set(true); btn.classList.remove('is-armed'); }; addEventListener('pointerdown', go, { once: true }); addEventListener('keydown', go, { once: true }); }
 })();
+
+/* 21. Art direction per project (WIP, only with ?wip): each project page gets its own world (css/da.css,
+       downloaded only in WIP mode). The shared grid, its pulses and the bug hunt are off on those pages. */
+(() => {
+  const root = document.documentElement;
+  const theme = root.dataset.theme;
+  const FONTS = { abyss: 'Exo+2:wght@300;500;600', klappen: 'Fredoka:wght@400;500;600', flying: 'Rajdhani:wght@500;600;700', wolfpeak: 'Barlow+Condensed:wght@500;600;700' };
+  if (!root.classList.contains('is-wip') || !FONTS[theme]) return;
+  const me = document.querySelector('script[src*="js/main.js"]');
+  const css = document.createElement('link');
+  css.rel = 'stylesheet'; css.href = new URL('../css/da.css' + (me ? new URL(me.src).search : ''), me ? me.src : location.href).href;
+  css.onload = () => root.classList.add('da', 'da-' + theme);
+  const font = document.createElement('link');
+  font.rel = 'stylesheet'; font.href = `https://fonts.googleapis.com/css2?family=${FONTS[theme]}&display=swap`;
+  document.head.append(font, css);
+  // silhouettes at the bottom of the screen, behind the content: pines for Kläppen, generic mountains for WolfPeak
+  const ridge = (n, base, amp, seed, sharp) => {
+    let s = seed; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    let d = `M0 100 L0 ${base}`;
+    for (let i = 0; i <= n; i++) {
+      const x = (i / n) * 1000;
+      if (sharp) { const h = base - amp * (.35 + r() * .65); d += ` L${(x - 500 / n).toFixed(0)} ${base - amp * .1 * r()} L${x.toFixed(0)} ${h.toFixed(1)}`; }
+      else d += ` L${x.toFixed(0)} ${(base - amp * r()).toFixed(1)}`;
+    }
+    return d + ' L1000 100 Z';
+  };
+  let svg = '';
+  if (theme === 'klappen') svg = `<path d="${ridge(46, 70, 52, 7, true)}" fill="#13261b" opacity=".55"/><path d="${ridge(30, 86, 46, 3, true)}" fill="#0a150f" opacity=".9"/>`;
+  if (theme === 'wolfpeak') svg = `<path d="${ridge(9, 80, 70, 11, false)}" fill="#1a2840" opacity=".5"/><path d="${ridge(6, 92, 55, 5, false)}" fill="#0f1a2b" opacity=".85"/>`;
+  if (svg) {
+    const layer = document.createElement('div');
+    layer.className = 'da-layer'; layer.setAttribute('aria-hidden', 'true');
+    layer.innerHTML = `<svg viewBox="0 0 1000 100" preserveAspectRatio="none">${svg}</svg>`;
+    document.body.prepend(layer);
+  }
+})();
