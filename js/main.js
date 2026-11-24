@@ -411,11 +411,11 @@
     if (WAVES) {
       if (!wave && now > nextWave) {
         const kind = WAVE_KINDS[waveIdx++ % WAVE_KINDS.length];
-        const ox = Math.random() * w, oy = sy + Math.random() * h, a = ((Math.random() * 8) | 0) * 0.785;
+        const ox = Math.random() * w, oy = Math.random() * h, a = ((Math.random() * 8) | 0) * 0.785;
         const reach = kind === 'sweep' || kind === 'scan' ? Math.abs(w * Math.cos(a)) + Math.abs(h * Math.sin(a)) : Math.hypot(w, h) * (kind === 'diamond' ? 1.4 : 1);
         wave = { kind, ox, oy, ca: Math.cos(a), sa: Math.sin(a), t: 0, speed: (kind === 'scan' ? 520 : 380) * (calm ? 0.5 : 1), reach: reach + 200, c: hex2rgb(COLORS[(Math.random() * COLORS.length) | 0]) };
         if (kind === 'sweep' || kind === 'scan') { // start from the side the wave comes from
-          const cx = w / 2, cy = sy + h / 2;
+          const cx = w / 2, cy = h / 2;
           wave.ox = cx - wave.ca * (reach / 2 + 100); wave.oy = cy - wave.sa * (reach / 2 + 100);
         }
       }
@@ -427,7 +427,8 @@
           const buckets = [[], [], [], []];
           const off = -(sy % G);
           for (let x = 0; x <= w + G; x += G) for (let y = off; y <= h + G; y += G) {
-            const yp = y + sy, dx = x - wave.ox, dy = yp - wave.oy;
+            // the wave lives in screen space, so scrolling never pushes it out of view
+            const yp = y + sy, dx = x - wave.ox, dy = y - wave.oy;
             let d;
             if (wave.kind === 'ring') d = Math.hypot(dx, dy);
             else if (wave.kind === 'diamond') d = Math.abs(dx) + Math.abs(dy);
