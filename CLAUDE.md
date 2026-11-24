@@ -27,7 +27,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 
 ## Workflow obligatoire à chaque modification
 1. Modifier les pages **anglaises** (et `data/*.json` si besoin).
-2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=86' --include=*.html . | xargs sed -i 's/v=86/v=87/g'`). Version actuelle : **v=86**.
+2. Si un CSS/JS change : incrémenter `?v=N` dans **toutes** les pages (`grep -rl 'v=87' --include=*.html . | xargs sed -i 's/v=87/v=88/g'`). Version actuelle : **v=87**.
 3. Traductions : `python3 tools/build_fr.py` (nécessite `beautifulsoup4`). Il doit afficher **0 missing**. Sinon, ajouter les clés listées dans `tools/i18n/missing.json` dans un fichier `tools/i18n/fr-NN-sujet.json` (clé = HTML interne anglais, espaces normalisés ; valeur = HTML français), puis relancer.
    - Nouvelle page → l'ajouter à `PAGES` dans `tools/build_fr.py`.
 4. Vérifier visuellement (bureau 1440 px + mobile 390 px, pas de défilement horizontal) : `python3 -m http.server` puis capture Playwright ou navigateur.

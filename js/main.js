@@ -1115,7 +1115,7 @@
 (() => {
   const root = document.documentElement;
   const theme = root.dataset.theme;
-  if (!root.classList.contains('is-wip') || !['abyss', 'klappen', 'flying', 'wolfpeak'].includes(theme)) return;
+  if (!root.classList.contains('is-wip') || !['abyss', 'klappen', 'wolfpeak'].includes(theme)) return; // Flying AI: §23
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
   const cv = document.createElement('canvas');
@@ -1257,4 +1257,109 @@
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
     document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   }
+})();
+
+/* 23. Flying AI art direction (WIP, only with ?wip): a living sky. Air currents drift by, and now and then a small drone
+       weaves across, leaving its dashed trajectory. Click on empty space = an EQS query: points pop around the click,
+       scored green to red, the best one is picked and a drone flies in to it, hovers, then leaves. */
+(() => {
+  const root = document.documentElement;
+  if (!root.classList.contains('is-wip') || root.dataset.theme !== 'flying') return;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb';
+  const cv = document.createElement('canvas');
+  cv.className = 'da-fx'; cv.setAttribute('aria-hidden', 'true');
+  document.body.prepend(cv);
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+  const R = Math.random;
+  let w = 0, h = 0, wind = [], drones = [], queries = [], actx = null, nextDrone = performance.now() + 2500;
+  const size = () => {
+    const dpr = Math.min(2, devicePixelRatio || 1); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    wind = Array.from({ length: Math.round(w * h / 45000) }, () => ({ x: R() * w, y: R() * h, len: 40 + R() * 120, s: 60 + R() * 140, a: .05 + R() * .1, p: R() * 6 }));
+  };
+  size(); addEventListener('resize', size);
+  const audio = () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; } catch (err) { return null; } };
+  const beep = (f, delay, dur = .09, vol = .035) => { const a = audio(); if (!a) return; const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain(); o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05); };
+  const whoosh = () => {
+    const a = audio(); if (!a) return; const t = a.currentTime, len = a.sampleRate * .5, buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = R() * 2 - 1;
+    const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); src.buffer = buf; f.type = 'bandpass'; f.Q.value = 2.5;
+    f.frequency.setValueAtTime(500, t); f.frequency.exponentialRampToValueAtTime(1800, t + .25); f.frequency.exponentialRampToValueAtTime(700, t + .5);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.05, t + .15); g.gain.exponentialRampToValueAtTime(.0001, t + .5);
+    src.connect(f).connect(g).connect(a.destination); src.start(t);
+  };
+  // a drone: seek a target with arrival, or cruise across while weaving
+  const spawn = (target) => {
+    const left = target ? target.x > w / 2 : R() < .5;
+    const x = left ? w + 30 : -30, y = target ? Math.max(40, Math.min(h - 40, target.y + (R() - .5) * 300)) : 80 + R() * (h - 160);
+    drones.push({ x, y, vx: left ? -140 : 140, vy: 0, target, state: target ? 'seek' : 'cruise', t: 0, p: R() * 6, trail: [], dir: left ? -1 : 1, hover: 0 });
+  };
+  const drawDrone = (d) => {
+    const ang = Math.atan2(d.vy, d.vx) * .3;
+    ctx.save(); ctx.translate(d.x, d.y); ctx.rotate(ang);
+    ctx.strokeStyle = '#ffd9b8'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-6, -6); ctx.lineTo(6, 6); ctx.moveTo(6, -6); ctx.lineTo(-6, 6); ctx.stroke();
+    ctx.fillStyle = '#ffb48a'; for (const [a, b] of [[-6, -6], [6, 6], [6, -6], [-6, 6]]) { ctx.beginPath(); ctx.arc(a, b, 2.2, 0, 6.283); ctx.fill(); }
+    ctx.shadowColor = '#ff8a4c'; ctx.shadowBlur = 10; ctx.fillStyle = '#fff1e6'; ctx.beginPath(); ctx.arc(0, 0, 1.8, 0, 6.283); ctx.fill();
+    ctx.restore();
+  };
+  addEventListener('click', (e) => {
+    if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
+    const cx = e.clientX, cy = e.clientY, pts = [];
+    for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) {
+      const x = cx + i * 26 + (R() - .5) * 6, y = cy + j * 26 + (R() - .5) * 6;
+      const sc = Math.max(0, 1 - Math.hypot(i, j) / 3.2) * .7 + R() * .3; pts.push({ x, y, sc, d: (Math.abs(i) + Math.abs(j)) * .03 });
+    }
+    const best = pts.reduce((m, p) => (p.sc > m.sc ? p : m));
+    queries.push({ pts, best, t: 0, life: 2.6 });
+    beep(1320, 0); beep(1760, .09);
+    if (!calm) setTimeout(() => { spawn({ x: best.x, y: best.y }); }, 350);
+  });
+  let prev = performance.now();
+  const frame = (now) => {
+    const dt = Math.min(.05, (now - prev) / 1000); prev = now;
+    ctx.clearRect(0, 0, w, h);
+    // air currents
+    for (const s of wind) {
+      if (!calm) { s.x += s.s * dt; s.p += dt; } if (s.x - s.len > w) { s.x = -s.len; s.y = R() * h; }
+      const y = s.y + Math.sin(s.p + s.x * .01) * 3;
+      const g = ctx.createLinearGradient(s.x - s.len, 0, s.x, 0); g.addColorStop(0, 'rgba(255,214,184,0)'); g.addColorStop(1, `rgba(255,214,184,${s.a})`);
+      ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(s.x - s.len, y); ctx.lineTo(s.x, y); ctx.stroke();
+    }
+    // cruising drones now and then
+    if (!calm && now > nextDrone && drones.filter((d) => d.state === 'cruise').length < 2) { spawn(null); nextDrone = now + 5000 + R() * 7000; }
+    // EQS queries
+    queries = queries.filter((q) => (q.t += dt) < q.life);
+    for (const q of queries) {
+      const fade = Math.min(1, (q.life - q.t) / .6);
+      for (const p of q.pts) {
+        const k = Math.min(1, Math.max(0, (q.t - p.d) / .18)); if (!k) continue;
+        const r = Math.round(255 * (1 - p.sc)), gg = Math.round(90 + 165 * p.sc);
+        ctx.fillStyle = `rgba(${r},${gg},90,${.85 * fade})`; ctx.beginPath(); ctx.arc(p.x, p.y, (2 + p.sc * 2.5) * (k < 1 ? 1 + (1 - k) * .8 : 1), 0, 6.283); ctx.fill();
+      }
+      if (q.t > .45) { const k = Math.min(1, (q.t - .45) / .25); ctx.strokeStyle = `rgba(120,255,160,${.9 * fade})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(q.best.x, q.best.y, 14 - k * 5, 0, 6.283); ctx.stroke(); }
+    }
+    // drones
+    drones = drones.filter((d) => d.x > -60 && d.x < w + 60 && d.t < 20);
+    for (const d of drones) {
+      d.t += dt; d.p += dt * 3;
+      if (d.state === 'seek') {
+        const dx = d.target.x - d.x, dy = d.target.y - d.y, dist = Math.hypot(dx, dy), sp = Math.min(320, dist * 2.2);
+        d.vx += ((dx / (dist || 1)) * sp - d.vx) * 3 * dt; d.vy += ((dy / (dist || 1)) * sp - d.vy) * 3 * dt;
+        if (dist < 10) { d.state = 'hover'; whoosh(); }
+      } else if (d.state === 'hover') {
+        d.hover += dt; d.vx = Math.cos(d.p) * 30; d.vy = Math.sin(d.p) * 30;
+        if (d.hover > .9) { d.state = 'leave'; d.vx = d.dir * -60; d.vy = -40; }
+      } else if (d.state === 'leave') { d.vx += -d.dir * 380 * dt; d.vy *= .98; }
+      else { d.vx = d.dir * 140; d.vy = Math.cos(d.p * .7) * 45; }
+      d.x += d.vx * dt; d.y += d.vy * dt;
+      d.trail.push([d.x, d.y]); if (d.trail.length > 70) d.trail.shift();
+      ctx.setLineDash([3, 5]); ctx.strokeStyle = 'rgba(77,200,255,.35)'; ctx.lineWidth = 1; ctx.beginPath();
+      d.trail.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.setLineDash([]);
+      drawDrone(d);
+    }
+    if (!document.hidden) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(frame); } });
 })();
