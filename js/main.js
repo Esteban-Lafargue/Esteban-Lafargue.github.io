@@ -197,6 +197,8 @@
   let raf = 0;
   addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });
   addEventListener('resize', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(layout); });
+  // career path: opening "Details" pushes the next stops down, so the pins follow
+  main.addEventListener('toggle', (e) => { if (e.target.closest('.career')) { cancelAnimationFrame(raf); raf = requestAnimationFrame(layout); } }, true);
   addEventListener('load', layout);
   document.addEventListener('layout:changed', () => requestAnimationFrame(layout));
   document.querySelectorAll('details').forEach((d) => d.addEventListener('toggle', () => requestAnimationFrame(layout)));

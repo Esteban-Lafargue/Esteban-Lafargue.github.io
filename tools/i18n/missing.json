@@ -1,4 +1,24 @@
 {
- "<b>Clean ownership, ready for several players.</b> Every system knows who created what and who owns it, through proper references rather than shortcuts like <code>Get Player Character</code> with index 0 or unsafe casts. <span data-wip=\"\" hidden=\"\">Today it runs in local split-screen, with one widget per player and the right Owning Player; networking</span><span data-wip-alt=\"\">Networking</span> was handled by my mentor, and I worked closely with him, producing test builds to catch programming and multiplayer issues early.": "wolfpeak/",
- "Enemies show a <mark class=\"hl\">health bar above their head</mark>, the player doesn’t. I built it as a dedicated Widget Component class that <mark class=\"hl\">initialises itself</mark>, so nobody has to wire it by hand<span data-wip=\"\" hidden=\"\">, and handled the split-screen constraint: a Widget Component in Screen space only renders in player 1’s viewport. It works with several players</span>.": "wolfpeak/"
+ "Career path": "",
+ "Unreal Engine Instructor": "",
+ "Brassart Montpellier": "",
+ "Lead technical instructor in Game Design, 60+ students.": "",
+ "Technical supervision of final-year projects and mid-term jury · tiered Blueprint workshops, VR workshops, production standards.": "",
+ "Technical Designer (volunteer)": "",
+ "[NDA]": "",
+ "Inventory, crafting, interaction and equipment refactored.": "",
+ "Action Objects, effects without code · health, XP and a CommonUI skill card system · team training.": "",
+ "Read the case study ▷": "",
+ "Gameplay Programmer (intern)": "",
+ "AI for 4 enemy types, 30+ custom BT / EQS nodes.": "",
+ "5 visual debug tools, tuning applied live in sprint reviews.": "",
+ "Bachelor’s in Game Design": "",
+ "Graduation project: <a href=\"klappen/\">Kläppen</a>, a cozy building game made by a team of 3.": "",
+ "Mythspawn": "",
+ "Refactoring on <em>Fairy Tag</em> with my mentor.": "",
+ "Broken Blueprints and game modes repaired, Gameplay Framework learned, project folders reorganised · Android mobile build.": "",
+ "QA Tester (intern)": "",
+ "Pixel Reef": "",
+ "Daily bug log, bug reports to the tech team.": "",
+ "Full profile on About ▷": ""
 }

@@ -126,3 +126,23 @@
 /* Mobile: a Contact shortcut in the hero (the contact block sits at the very bottom) */
 .hero__contact { display: none; }
 @media (max-width: 640px) { .hero__contact { display: inline-flex; } }
+
+/* ---------- Career path (WIP): one node per step, each one a stop on the exec rail ---------- */
+.career__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; max-width: 820px; }
+.career__item .node__head { flex-wrap: wrap; row-gap: 2px; }
+.career__role { min-width: 0; }
+.career__item .node__body { padding: 14px 20px 16px; }
+.career__org { margin: 0; font: 500 13px var(--mono); color: var(--c); }
+.career__org a { color: inherit; border-bottom: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
+.career__org a:hover { border-bottom-color: var(--c); }
+.career__line { margin: 6px 0 0; color: var(--text); font-size: 15px; }
+.career__line a { color: var(--text-strong); border-bottom: 1px solid var(--line); }
+.career__more { margin-top: 10px; }
+.career__more summary { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border: 1px solid color-mix(in srgb, var(--c) 45%, var(--line)); border-radius: 20px; font: 500 12px var(--mono); color: var(--c); cursor: pointer; list-style: none; user-select: none; transition: background .2s, border-color .2s; }
+.career__more summary::-webkit-details-marker { display: none; }
+.career__more summary::after { content: "▷"; transition: transform .2s; }
+.career__more[open] summary::after { transform: rotate(90deg); }
+.career__more summary:hover, .career__more summary:focus-visible { background: color-mix(in srgb, var(--c) 14%, transparent); border-color: var(--c); }
+.career__more p { margin: 10px 0 0; font-size: 14px; color: var(--text-muted); }
+.career__link { display: inline-block; margin-top: 8px; font: 13px var(--mono); color: var(--c); }
+.career__about { margin-top: 24px; }
