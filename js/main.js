@@ -650,6 +650,7 @@
   };
   addEventListener('click', (e) => {
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
+    if (document.documentElement.classList.contains('da')) return; // project art direction (WIP): its own click, main.js §22
     const x = Math.round(e.clientX / G) * G, yPage = Math.round((e.clientY + scrollY) / G) * G;
     const c = COLORS[(Math.random() * COLORS.length) | 0];
     const kind = SHAPES[(Math.random() * SHAPES.length) | 0];
@@ -1083,4 +1084,102 @@
   const font = document.createElement('link');
   font.rel = 'stylesheet'; font.href = `https://fonts.googleapis.com/css2?family=${FONTS[theme]}&display=swap`;
   document.head.append(font, css);
+})();
+
+/* 22. Art direction (WIP, only with ?wip): a click on empty space has its own effect and sound on each project page.
+       Abyss: sonar ping + bubbles. Kläppen: a burst of leaves. Flying AI: wind streaks. WolfPeak: an ice crystal + snow puff. */
+(() => {
+  const root = document.documentElement;
+  const theme = root.dataset.theme;
+  if (!root.classList.contains('is-wip') || !['abyss', 'klappen', 'flying', 'wolfpeak'].includes(theme)) return;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
+  const cv = document.createElement('canvas');
+  cv.className = 'da-fx'; cv.setAttribute('aria-hidden', 'true');
+  document.body.prepend(cv);
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+  let w = 0, h = 0, fx = [], running = false, actx = null;
+  const size = () => { const dpr = Math.min(2, devicePixelRatio || 1); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  size(); addEventListener('resize', size);
+  const R = Math.random;
+  const audio = () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; } catch (err) { return null; } };
+  const noiseBurst = (a, dur, f0, f1, q, vol) => {
+    const t = a.currentTime, len = Math.ceil(a.sampleRate * dur), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = R() * 2 - 1;
+    const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    src.buffer = buf; f.type = 'bandpass'; f.Q.value = q; f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + dur * .2); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    src.connect(f).connect(g).connect(a.destination); src.start(t);
+  };
+  const tone = (a, f, dur, vol, type = 'sine', delay = 0) => {
+    const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * .96, t + dur);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .05);
+  };
+  const sound = () => {
+    const a = audio(); if (!a) return;
+    if (theme === 'abyss') { tone(a, 1180 + R() * 120, 1.4, .05); tone(a, 1180, .9, .018, 'sine', .32); tone(a, 1180, .7, .008, 'sine', .64); }
+    else if (theme === 'klappen') noiseBurst(a, .22, 2600, 1400, 1.4, .06);
+    else if (theme === 'flying') noiseBurst(a, .4, 380, 1700, 1.8, .07);
+    else { const b = [2093, 2349, 2637, 3136][(R() * 4) | 0]; tone(a, b, .5, .03); tone(a, b * 1.5, .35, .015, 'sine', .05); }
+  };
+  addEventListener('click', (e) => {
+    if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
+    const x = e.clientX, y = e.clientY;
+    sound();
+    if (theme === 'abyss') {
+      for (let i = 0; i < 3; i++) fx.push({ k: 'ring', x, y, t: -i * .18, life: 1.6 });
+      if (!calm) for (let i = 0; i < 9; i++) fx.push({ k: 'bubble', x: x + (R() - .5) * 20, y, vy: -(30 + R() * 60), p: R() * 6, r: 1.5 + R() * 3.5, t: 0, life: 1.6 + R() });
+    } else if (theme === 'klappen') {
+      const n = calm ? 4 : 9;
+      for (let i = 0; i < n; i++) { const a = R() * 6.28, sp = calm ? 0 : 80 + R() * 120; fx.push({ k: 'leaf', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 60, rot: R() * 6, vr: (R() - .5) * 8, r: 5 + R() * 5, c: ['#e8893a', '#d9622b', '#f2b24a', '#b8461f'][(R() * 4) | 0], t: 0, life: 1.6 + R() * .6 }); }
+      fx.push({ k: 'glow', x, y, t: 0, life: .7 });
+    } else if (theme === 'flying') {
+      const dir = R() < .5 ? -1 : 1;
+      for (let i = 0; i < 5; i++) fx.push({ k: 'streak', x, y: y + (i - 2) * (8 + R() * 6), dir, len: 60 + R() * 90, sp: calm ? 0 : 500 + R() * 300, t: -i * .03, life: .7 });
+    } else {
+      fx.push({ k: 'flake', x, y, rot: R() * 1, t: 0, life: 1.4 });
+      if (!calm) for (let i = 0; i < 12; i++) { const a = R() * 6.28, sp = 30 + R() * 70; fx.push({ k: 'snow', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, r: .8 + R() * 1.6, t: 0, life: 1 + R() * .6 }); }
+    }
+    if (!running) { running = true; prev = performance.now(); requestAnimationFrame(draw); }
+  });
+  let prev = 0;
+  const draw = (now) => {
+    const dt = Math.min(.05, (now - prev) / 1000); prev = now;
+    ctx.clearRect(0, 0, w, h);
+    fx = fx.filter((f) => (f.t += dt) < f.life);
+    for (const f of fx) {
+      if (f.t < 0) continue;
+      const k = f.t / f.life, a = 1 - k;
+      if (f.k === 'ring') {
+        ctx.strokeStyle = `rgba(${k < .5 ? '111,227,255' : '255,155,224'},${.55 * a})`; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(f.x, f.y, 8 + k * 160, 0, 6.283); ctx.stroke();
+      } else if (f.k === 'bubble') {
+        f.y += f.vy * dt; f.p += dt * 5; const bx = f.x + Math.sin(f.p) * 4;
+        ctx.strokeStyle = `rgba(190,240,255,${.7 * a})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(bx, f.y, f.r, 0, 6.283); ctx.stroke();
+      } else if (f.k === 'leaf') {
+        f.vy += 160 * dt; f.vx *= .97; f.x += f.vx * dt; f.y += f.vy * dt; f.rot += f.vr * dt;
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot); ctx.globalAlpha = Math.min(1, a * 1.4); ctx.fillStyle = f.c;
+        ctx.beginPath(); ctx.moveTo(-f.r, 0); ctx.quadraticCurveTo(0, -f.r * .7, f.r, 0); ctx.quadraticCurveTo(0, f.r * .7, -f.r, 0); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1;
+      } else if (f.k === 'glow') {
+        const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, 40 + k * 30); g.addColorStop(0, `rgba(255,200,120,${.35 * a})`); g.addColorStop(1, 'rgba(255,160,80,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(f.x, f.y, 70, 0, 6.283); ctx.fill();
+      } else if (f.k === 'streak') {
+        const head = f.x + f.dir * (f.sp * f.t + (f.sp ? 0 : 40 * k)), tail = head - f.dir * f.len;
+        const g = ctx.createLinearGradient(tail, 0, head, 0); g.addColorStop(f.dir > 0 ? 0 : 1, 'rgba(255,214,184,0)'); g.addColorStop(f.dir > 0 ? 1 : 0, `rgba(255,214,184,${.6 * a})`);
+        ctx.strokeStyle = g; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(tail, f.y); ctx.lineTo(head, f.y); ctx.stroke();
+      } else if (f.k === 'flake') {
+        const r = 6 + Math.min(1, k * 3) * 22;
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot + k * .6); ctx.strokeStyle = `rgba(214,228,245,${.8 * a})`; ctx.lineWidth = 1.3; ctx.beginPath();
+        for (let i = 0; i < 6; i++) { ctx.rotate(1.0472); ctx.moveTo(0, 0); ctx.lineTo(0, -r); ctx.moveTo(0, -r * .55); ctx.lineTo(r * .22, -r * .75); ctx.moveTo(0, -r * .55); ctx.lineTo(-r * .22, -r * .75); }
+        ctx.stroke(); ctx.restore();
+      } else if (f.k === 'snow') {
+        f.vx *= .95; f.vy = f.vy * .95 + 20 * dt; f.x += f.vx * dt; f.y += f.vy * dt;
+        ctx.globalAlpha = a; ctx.fillStyle = '#e8f1ff'; ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283); ctx.fill(); ctx.globalAlpha = 1;
+      }
+    }
+    if (fx.length) requestAnimationFrame(draw); else { running = false; ctx.clearRect(0, 0, w, h); }
+  };
 })();

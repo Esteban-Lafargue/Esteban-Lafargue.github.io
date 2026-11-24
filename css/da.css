@@ -78,3 +78,4 @@ html.da-wolfpeak h1 { font-weight: 700; letter-spacing: .01em; text-transform: u
 html.da-wolfpeak .stitle__tag { letter-spacing: .12em; font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) { html.da-abyss .dive__light::before, html.da-abyss .dive__light::after { animation-duration: 60s; } }
+.da-fx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; } /* main.js §22 */
