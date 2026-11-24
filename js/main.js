@@ -845,3 +845,56 @@
     } else v.play().catch(() => {});
   });
 })();
+
+/* 16. Immersion (WIP, only with ?wip): Abyss page = a dive. The deeper you scroll, the darker and bluer the water,
+       light ripples fade at the surface, marine snow drifts, and a depth gauge counts down. Never over the text. */
+(() => {
+  const root = document.documentElement;
+  if (!root.classList.contains('is-wip') || root.dataset.theme !== 'abyss') return;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dive = document.createElement('div');
+  dive.className = 'dive'; dive.setAttribute('aria-hidden', 'true');
+  dive.innerHTML = '<i class="dive__light"></i><i class="dive__dark"></i><canvas class="dive__snow"></canvas>';
+  document.body.prepend(dive);
+  const gauge = document.createElement('div');
+  gauge.className = 'depth'; gauge.setAttribute('aria-hidden', 'true');
+  gauge.innerHTML = '<span class="depth__lbl">Depth</span><b class="depth__val">0 m</b><span class="depth__bar"><i></i></span>';
+  document.body.append(gauge);
+  const val = gauge.querySelector('.depth__val'), MAX = 120;
+  let t = 0;
+  const depth = () => {
+    const max = Math.max(1, root.scrollHeight - innerHeight);
+    t = Math.min(1, Math.max(0, scrollY / max));
+    root.style.setProperty('--depth', t.toFixed(3));
+    const d = Math.round(t * MAX); val.textContent = d ? `−${d} m` : `0 m`;
+  };
+  addEventListener('scroll', () => requestAnimationFrame(depth), { passive: true }); depth();
+
+  // marine snow: tiny pale specks drifting down, slower and dimmer as you go deeper
+  const cv = dive.querySelector('canvas'), ctx = cv.getContext('2d');
+  if (!ctx) return;
+  let w = 0, h = 0, flakes = [];
+  const size = () => {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const n = Math.round(w * h / (calm ? 26000 : 14000));
+    flakes = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, r: .5 + Math.random() * 1.6, s: 4 + Math.random() * 14, p: Math.random() * 6.28, a: .15 + Math.random() * .35 }));
+  };
+  size(); addEventListener('resize', size);
+  let prev = performance.now(), lastY = scrollY;
+  const draw = (now) => {
+    const dt = Math.min(.05, (now - prev) / 1000); prev = now;
+    const dy = scrollY - lastY; lastY = scrollY;
+    ctx.clearRect(0, 0, w, h);
+    for (const f of flakes) {
+      if (!calm) { f.y += f.s * dt - dy * f.r * .08; f.p += dt * .8; f.x += Math.sin(f.p) * dt * 4; }
+      if (f.y > h + 4) { f.y = -4; f.x = Math.random() * w; } else if (f.y < -4) { f.y = h + 4; f.x = Math.random() * w; }
+      ctx.globalAlpha = f.a * (1 - t * .5);
+      ctx.fillStyle = t > .6 ? '#ffc2ee' : '#cfe8ff';
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.283); ctx.fill();
+    }
+    if (!document.hidden) requestAnimationFrame(draw);
+  };
+  requestAnimationFrame(draw);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(draw); } });
+})();
