@@ -978,3 +978,26 @@
   requestAnimationFrame(draw);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(draw); } });
 })();
+
+/* 19. Immersion (WIP, only with ?wip): depth. A far, sparse grid sits behind the usual one,
+       scrolls slower than the page and leans a little toward the cursor, so the background reads as layers.
+       The usual grid, pulses and bugs are untouched. Soft mode: the far grid stays still. */
+(() => {
+  if (!document.documentElement.classList.contains('is-wip')) return;
+  const far = document.createElement('div');
+  far.className = 'far'; far.setAttribute('aria-hidden', 'true');
+  document.body.prepend(far);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let mx = 0, my = 0, tx = 0, ty = 0, raf = 0;
+  const apply = () => {
+    raf = 0;
+    tx += (mx - tx) * .08; ty += (my - ty) * .08;
+    const y = -(scrollY * .35) % 128;
+    far.style.transform = `translate3d(${(tx * 14).toFixed(1)}px, ${(y + ty * 14).toFixed(1)}px, 0)`;
+    if (Math.abs(mx - tx) > .002 || Math.abs(my - ty) > .002) raf = requestAnimationFrame(apply);
+  };
+  const kick = () => { if (!raf) raf = requestAnimationFrame(apply); };
+  addEventListener('scroll', kick, { passive: true });
+  if (matchMedia('(pointer: fine)').matches) addEventListener('pointermove', (e) => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; kick(); }, { passive: true });
+  apply();
+})();
