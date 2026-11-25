@@ -650,7 +650,7 @@
   };
   addEventListener('click', (e) => {
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
-    if (document.documentElement.classList.contains('da')) return; // project art direction (WIP): its own click, main.js §22
+    if (document.documentElement.classList.contains('da')) return; // project art direction: its own click, main.js §22
     const x = Math.round(e.clientX / G) * G, yPage = Math.round((e.clientY + scrollY) / G) * G;
     const c = COLORS[(Math.random() * COLORS.length) | 0];
     const kind = SHAPES[(Math.random() * SHAPES.length) | 0];
@@ -834,7 +834,7 @@
   });
 })();
 
-/* 15. Case-study hero: a gameplay loop as a darkened background (WIP, data-wip hidden).
+/* 15. Case-study hero: a gameplay loop as a darkened background (published).
        Nothing is downloaded while the box is hidden; soft mode keeps the still frame only. */
 (() => {
   document.querySelectorAll('.hero-media').forEach((box) => {
@@ -858,11 +858,11 @@
   });
 })();
 
-/* 16. Immersion (WIP, only with ?wip): Abyss page = a dive. The deeper you scroll, the darker and bluer the water,
+/* 16. Immersion (published 25 Nov 2026): Abyss page = a dive. The deeper you scroll, the darker and bluer the water,
        light ripples fade at the surface, marine snow drifts, and a depth gauge counts down. Never over the text. */
 (() => {
   const root = document.documentElement;
-  if (!root.classList.contains('is-wip') || root.dataset.theme !== 'abyss') return;
+  if (root.dataset.theme !== 'abyss') return;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const dive = document.createElement('div');
   dive.className = 'dive'; dive.setAttribute('aria-hidden', 'true');
@@ -916,12 +916,12 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(draw); } });
 })();
 
-/* 18. Immersion (WIP, only with ?wip): each project page has its own air, behind the content only.
+/* 18. Immersion (published 25 Nov 2026): each project page has its own air, behind the content only.
        Kläppen: fireflies that wander and blink. Flying AI: soft clouds drifting by. WolfPeak: light snow. */
 (() => {
   const root = document.documentElement;
   const theme = root.dataset.theme;
-  if (!root.classList.contains('is-wip') || !['klappen', 'flying', 'wolfpeak'].includes(theme)) return;
+  if (!['klappen', 'flying', 'wolfpeak'].includes(theme)) return;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const cv = document.createElement('canvas');
   cv.className = 'air'; cv.setAttribute('aria-hidden', 'true');
@@ -982,12 +982,11 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(draw); } });
 })();
 
-/* 20. Immersion (WIP, only with ?wip): optional ambient sound, off by default, made by the browser (no audio file).
+/* 20. Immersion (published 25 Nov 2026): optional ambient sound, off by default, made by the browser (no audio file).
        Kläppen forest (leaves + birds), Flying AI wind, Abyss underwater (muffled, deeper as you scroll, bubbles),
        WolfPeak cold wind, other pages a soft pad. The choice follows you from page to page in the tab. */
 (() => {
   const root = document.documentElement;
-  if (!root.classList.contains('is-wip')) return;
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return;
   const fr = root.lang === 'fr';
@@ -1092,13 +1091,13 @@
   }
 })();
 
-/* 21. Art direction per project (WIP, only with ?wip): each project page gets its own world (css/da.css,
-       downloaded only in WIP mode). The shared grid, its pulses and the bug hunt are off on those pages. */
+/* 21. Art direction per project (published 25 Nov 2026): each project page gets its own world (css/da.css,
+       downloaded only on project pages). The shared grid, its pulses and the bug hunt are off on those pages. */
 (() => {
   const root = document.documentElement;
   const theme = root.dataset.theme;
   const FONTS = { abyss: 'Exo+2:wght@300;500;600', klappen: 'Fredoka:wght@400;500;600', flying: 'Rajdhani:wght@500;600;700', wolfpeak: 'Barlow+Condensed:wght@500;600;700' };
-  if (!root.classList.contains('is-wip') || !FONTS[theme]) return;
+  if (!FONTS[theme]) return;
   const me = document.querySelector('script[src*="js/main.js"]');
   const css = document.createElement('link');
   css.rel = 'stylesheet'; css.href = new URL('../css/da.css' + (me ? new URL(me.src).search : ''), me ? me.src : location.href).href;
@@ -1108,12 +1107,12 @@
   document.head.append(font, css);
 })();
 
-/* 22. Art direction (WIP, only with ?wip): a click on empty space has its own effect and sound on each project page.
+/* 22. Art direction (published 25 Nov 2026): a click on empty space has its own effect and sound on each project page.
        Abyss: sonar ping + bubbles. Kläppen: a burst of leaves. Flying AI: wind streaks. WolfPeak: an ice crystal + snow puff. */
 (() => {
   const root = document.documentElement;
   const theme = root.dataset.theme;
-  if (!root.classList.contains('is-wip') || !['klappen', 'wolfpeak'].includes(theme)) return; // Flying AI: §23, Abyss: §24
+  if (!['klappen', 'wolfpeak'].includes(theme)) return; // Flying AI: §23, Abyss: §24
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
   const cv = document.createElement('canvas');
@@ -1304,12 +1303,12 @@
   }
 })();
 
-/* 23. Flying AI art direction (WIP, only with ?wip): a living sky. Air currents drift by, and now and then a small drone
+/* 23. Flying AI art direction (published 25 Nov 2026): a living sky. Air currents drift by, and now and then a small drone
        weaves across, leaving its dashed trajectory. Click on empty space = an EQS query: points pop around the click,
        scored green to red, the best one is picked and a drone flies in to it, hovers, then leaves. */
 (() => {
   const root = document.documentElement;
-  if (!root.classList.contains('is-wip') || root.dataset.theme !== 'flying') return;
+  if (root.dataset.theme !== 'flying') return;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb';
   const cv = document.createElement('canvas');
@@ -1409,7 +1408,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { prev = performance.now(); requestAnimationFrame(frame); } });
 })();
 
-/* 24. Abyss art direction (WIP, only with ?wip): fish schools near the surface, and a click that changes with depth.
+/* 24. Abyss art direction (published 25 Nov 2026): fish schools near the surface, and a click that changes with depth.
        Near the top: a xenobiologist scan (reticle, sweep, bright chirp) and nearby fish scatter.
        Deep down: a low, slow sonar ping in red. And something lives there: you never see it move or see its body,
        only eyes that open slowly at an edge, watch, close, and open again elsewhere (they close if the mouse comes close).
@@ -1417,7 +1416,7 @@
        The scan has a purpose: a small codex in the depth gauge (fish school, jellyfish, unknown signal). */
 (() => {
   const root = document.documentElement;
-  if (!root.classList.contains('is-wip') || root.dataset.theme !== 'abyss') return;
+  if (root.dataset.theme !== 'abyss') return;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
   const cv = document.createElement('canvas');

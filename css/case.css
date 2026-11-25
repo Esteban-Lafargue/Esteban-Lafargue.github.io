@@ -375,8 +375,8 @@
 @media (prefers-reduced-motion: reduce) { .scan-tag { animation-name: scan-tag-soft; } @keyframes scan-tag-soft { 0%, 100% { opacity: 0; } 10%, 80% { opacity: 1; } } }
 
 .air { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; } /* Immersion (WIP, main.js §18) */
-.is-wip .depth { bottom: 64px; } /* above the ambience toggle (style.css §20) */
-@media (max-width: 640px) { .is-wip .depth { bottom: 52px; } }
+.depth { bottom: 64px; } /* above the ambience toggle (style.css §20) */
+@media (max-width: 640px) { .depth { bottom: 52px; } }
 
 /* Abyss dive (WIP, main.js §16): tension at the bottom of the page (--tension 0 → 1) */
 .dive__threat { opacity: var(--tension, 0); background: radial-gradient(120% 90% at 50% 50%, transparent 45%, #6a0c2488 80%, #34001acc 100%); animation: dive-throb 3.2s ease-in-out infinite; }
