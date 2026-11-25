@@ -576,7 +576,7 @@ html.is-aiming, html.is-aiming body, html.is-aiming body *:not(a):not(button) { 
 @media (prefers-reduced-motion: reduce) { .amb.is-on .amb__bars i { animation: none; height: 7px; } }
 @media (max-width: 640px) { .amb { right: 10px; bottom: 10px; padding: 6px 10px; } }
 
-/* Entrance (WIP, js §23): boot screen once per session, first-screen cascade, weightier scroll reveals */
+/* Entrance (public, js §23): boot screen once per session, first-screen cascade, weightier scroll reveals */
 html.fx-pre main { opacity: 0; animation: fx-safety .3s ease 1.6s forwards; } /* set by the head script; fades in by itself if JS never runs */
 html.fx-preboot::after { content: ""; position: fixed; inset: 0; z-index: 10001; background: var(--bg); animation: fx-safety-out .3s ease 1.6s forwards; }
 @keyframes fx-safety { to { opacity: 1; } }
@@ -614,7 +614,7 @@ html.fx-preboot::after { content: ""; position: fixed; inset: 0; z-index: 10001;
 /* art-direction canvases (css/da.css loads late, in WIP): fixed from the first paint so the page doesn't jump */
 .da-fx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
 
-/* Page transitions v2 (WIP, html.fx-vt set by the head script when the browser supports cross-document
+/* Page transitions v2 (html.fx-vt set by the head script when the browser supports cross-document
    View Transitions). The next page loads while the current one slides up and fades; then the new page
    rises in. The menu and the grid stay put. A wire runs along the top while the next page loads. */
 .fx-vt .nav { view-transition-name: fx-nav; }

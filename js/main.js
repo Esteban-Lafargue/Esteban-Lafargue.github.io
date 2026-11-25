@@ -755,7 +755,7 @@
   }
   addEventListener('pageshow', (e) => { if (e.persisted) { wipe.className = 'wipe'; root.classList.remove('fx-leaving'); } });
 
-  // WIP: the browser itself animates between pages (cross-document View Transitions, see the head script and
+  // The browser itself animates between pages (cross-document View Transitions, see the head script and
   // css "Page transitions v2"). We navigate at once, so the next page loads while the current one slides away:
   // no frozen page. A wire runs along the top while the next page loads.
   const vt = root.classList.contains('fx-vt');
@@ -1206,12 +1206,12 @@
   };
 })();
 
-/* 23. Entrance (WIP, only with ?wip): the site "boots" on the first visit of the session (a wire draws out of the
-   logo, then the screen opens), the first screen of every page arrives in a cascade, and content revealed on
-   scroll lands with a little weight (rise, unblur, slight overshoot), staggered when several items come in together. */
+/* 23. Entrance (public since 25 Nov 2026): the site "boots" on the first visit of the session (a wire draws out of the
+   logo, then the screen opens), the first screen of every page arrives in a cascade (the title word by word), and
+   content revealed on scroll lands with a little weight (rise, unblur, slight overshoot), staggered when several
+   items come in together. */
 (() => {
   const root = document.documentElement;
-  if (!root.classList.contains('is-wip')) return;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.classList.add('fx-entry');
 
