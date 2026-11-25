@@ -147,19 +147,20 @@
     const els = [...main.querySelectorAll('.stitle, [data-stop]')].filter((e) => e.offsetParent !== null);
     if (els.length < 2) { rail.hidden = true; return; }
     rail.hidden = false;
-    const mTop = main.getBoundingClientRect().top + scrollY;
-    const rLeft = rail.getBoundingClientRect().left;
+    let mTop = 0; for (let n = main; n; n = n.offsetParent) mTop += n.offsetTop;
+    let rLeft = 0; for (let n = rail; n; n = n.offsetParent) rLeft += n.offsetLeft;
     stops = els.map((el) => {
-      const r = el.getBoundingClientRect();
-      const anchor = el.querySelector('.stitle__tag, .node__head') || el;
+      const anchor = el.querySelector('.stitle__tag, .node__head, .career__role') || el;
       const ar = anchor.getBoundingClientRect();
-      const y = ar.top + scrollY - mTop + Math.min(ar.height, 44) / 2;
+      let top = 0; for (let n = anchor; n; n = n.offsetParent) top += n.offsetTop; // layout position, ignores reveal transforms
+      const y = top - mTop + Math.min(ar.height, 44) / 2;
       const c = getComputedStyle(anchor).getPropertyValue('--c').trim() || getComputedStyle(el).getPropertyValue('--c').trim();
       const s = document.createElement('span');
       s.className = 'rail__stop';
       s.style.top = `${y}px`;
       if (c) s.style.setProperty('--c', c);
-      s.style.setProperty('--w', `${Math.max(0, r.left - rLeft - 6)}px`);
+      let left = 0; for (let n = el; n; n = n.offsetParent) left += n.offsetLeft; // ignores reveal transforms too
+      s.style.setProperty('--w', `${Math.max(0, left - rLeft - 6)}px`);
       rail.append(s);
       return { y, s, el };
     });

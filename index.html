@@ -17,8 +17,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=94">
-  <link rel="stylesheet" href="css/home.css?v=94">
+  <link rel="stylesheet" href="css/style.css?v=95">
+  <link rel="stylesheet" href="css/home.css?v=95">
   <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}try{var q=location.search,s=sessionStorage,h=document.documentElement;h.classList.add('fx-pre');if('CSSViewTransitionRule' in window){var st=document.createElement('style');st.textContent='@view-transition{navigation:auto}';document.head.appendChild(st);h.classList.add('fx-vt')}if(!s.getItem('booted')&&!h.classList.contains('is-arriving'))h.classList.add('fx-preboot')}catch(e){}</script>
 </head>
 <body>
@@ -104,50 +104,56 @@
 
   <!-- ===== Career path: one node per step, each one a stop on the exec rail (WIP: hidden for visitors) ===== -->
   <section id="path" class="career" aria-labelledby="path-title">
-    <h2 class="stitle" style="--c:var(--c-xp)"><span class="stitle__tag" id="path-title">Career path</span><span class="stitle__rule"></span></h2>
+    <h2 class="stitle" style="--c:var(--text-strong)"><span class="stitle__tag" id="path-title">Career path</span><span class="stitle__rule"></span></h2>
     <ol class="career__list">
-      <li class="node career__item reveal" data-stop style="--c:var(--c-xp)">
-        <div class="node__head"><span class="node__icon" aria-hidden="true">▸</span><span class="career__role">Unreal Engine Instructor</span><span class="meta">Dec 2025 – now</span></div>
-        <div class="node__body">
+      <li class="career__item reveal" data-stop>
+        <p class="career__date">Dec 2025 – now</p>
+        <div class="career__body">
+          <h3 class="career__role">Unreal Engine Instructor</h3>
           <p class="career__org">Brassart Montpellier</p>
           <p class="career__line">Lead technical instructor in Game Design, 60+ students.</p>
           <details class="career__more"><summary>Details</summary><p>Technical supervision of final-year projects and mid-term jury · tiered Blueprint workshops, VR workshops, production standards.</p></details>
         </div>
       </li>
-      <li class="node career__item reveal" data-stop style="--c:var(--c-xp)">
-        <div class="node__head"><span class="node__icon" aria-hidden="true">▸</span><span class="career__role">Technical Designer (volunteer)</span><span class="meta">Jan 2026 – now</span></div>
-        <div class="node__body">
+      <li class="career__item reveal" data-stop>
+        <p class="career__date">Jan 2026 – now</p>
+        <div class="career__body">
+          <h3 class="career__role">Technical Designer (volunteer)</h3>
           <p class="career__org"><a href="wolfpeak/">WolfPeak Studio</a> <span class="tag-nda">[NDA]</span></p>
           <p class="career__line">Inventory, crafting, interaction and equipment refactored.</p>
           <details class="career__more"><summary>Details</summary><p>Action Objects, effects without code · health, XP and a CommonUI skill card system · team training.</p><a class="career__link" href="wolfpeak/">Read the case study ▷</a></details>
         </div>
       </li>
-      <li class="node career__item reveal" data-stop style="--c:var(--c-xp)">
-        <div class="node__head"><span class="node__icon" aria-hidden="true">▸</span><span class="career__role">Gameplay Programmer (intern)</span><span class="meta">Jul 2025 – Jan 2026</span></div>
-        <div class="node__body">
+      <li class="career__item reveal" data-stop>
+        <p class="career__date">Jul 2025 – Jan 2026</p>
+        <div class="career__body">
+          <h3 class="career__role">Gameplay Programmer (intern)</h3>
           <p class="career__org"><a href="wolfpeak/">WolfPeak Studio</a> <span class="tag-nda">[NDA]</span></p>
           <p class="career__line">AI for 4 enemy types, 30+ custom BT / EQS nodes.</p>
           <details class="career__more"><summary>Details</summary><p>5 visual debug tools, tuning applied live in sprint reviews.</p><a class="career__link" href="wolfpeak/">Read the case study ▷</a></details>
         </div>
       </li>
-      <li class="node career__item reveal" data-stop style="--c:var(--c-edu)">
-        <div class="node__head"><span class="node__icon" aria-hidden="true">▸</span><span class="career__role">Bachelor’s in Game Design</span><span class="meta">2022 – 2025</span></div>
-        <div class="node__body">
+      <li class="career__item reveal" data-stop>
+        <p class="career__date">2022 – 2025<span class="career__kind">Education</span></p>
+        <div class="career__body">
+          <h3 class="career__role">Bachelor’s in Game Design</h3>
           <p class="career__org">Brassart Montpellier</p>
           <p class="career__line">Graduation project: <a href="klappen/">Kläppen</a>, a cozy building game made by a team of 3.</p>
         </div>
       </li>
-      <li class="node career__item reveal" data-stop style="--c:var(--c-xp)">
-        <div class="node__head"><span class="node__icon" aria-hidden="true">▸</span><span class="career__role">Gameplay Programmer (intern)</span><span class="meta">Aug 2023</span></div>
-        <div class="node__body">
+      <li class="career__item reveal" data-stop>
+        <p class="career__date">Aug 2023</p>
+        <div class="career__body">
+          <h3 class="career__role">Gameplay Programmer (intern)</h3>
           <p class="career__org">Mythspawn</p>
           <p class="career__line">Refactoring on <em>Fairy Tag</em> with my mentor.</p>
           <details class="career__more"><summary>Details</summary><p>Broken Blueprints and game modes repaired, Gameplay Framework learned, project folders reorganised · Android mobile build.</p></details>
         </div>
       </li>
-      <li class="node career__item reveal" data-stop style="--c:var(--c-xp)">
-        <div class="node__head"><span class="node__icon" aria-hidden="true">▸</span><span class="career__role">QA Tester (intern)</span><span class="meta">Jan 2019</span></div>
-        <div class="node__body">
+      <li class="career__item reveal" data-stop>
+        <p class="career__date">Jan 2019</p>
+        <div class="career__body">
+          <h3 class="career__role">QA Tester (intern)</h3>
           <p class="career__org">Pixel Reef</p>
           <p class="career__line">Daily bug log, bug reports to the tech team.</p>
         </div>
@@ -201,7 +207,7 @@
   </footer>
 </main>
 
-<script src="js/projects.js?v=94" defer></script>
-<script src="js/main.js?v=94" defer></script>
+<script src="js/projects.js?v=95" defer></script>
+<script src="js/main.js?v=95" defer></script>
 </body>
 </html>

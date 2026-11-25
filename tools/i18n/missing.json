@@ -1,14 +1,3 @@
 {
- "<span aria-hidden=\"true\" class=\"node__icon\">⚙</span>Technical design<span class=\"meta\">Systems · UI logic</span>": "klappen/",
- "Core gameplay systems and mechanics, starting with the <strong>building system</strong>: design intentions turned into robust, scalable technical solutions.": "klappen/",
- "19 building pieces in one <strong>Data Table</strong>, editable by Designers.": "klappen/",
- "Snapping points with a <strong>virtual math grid</strong> as fallback, and actors converted to <strong>HISM</strong> beyond 2,000 units.": "klappen/",
- "UI logic structure, and its integration with gameplay systems such as the <strong>Inventory Menu</strong>.": "klappen/",
- "Technical design contributions ▷": "klappen/",
- "<span aria-hidden=\"true\" class=\"node__icon\">◎</span>Gameplay / UX design<span class=\"meta\">Player · playtests</span>": "klappen/",
- "Game Design decisions: prototyping features, iterating on mechanics, keeping every player interaction in line with the project’s vision and tone.": "klappen/",
- "Interfaces designed for <strong>clarity, accessibility and player comfort</strong>, refined through playtesting.": "klappen/",
- "Rotation limited to <strong>90° steps on one axis</strong> after playtests, with preset variants to keep visual diversity.": "klappen/",
- "Close work with the Designers and Artists, balancing technical constraints, design goals and player experience.": "klappen/",
- "Gameplay / UX design contributions ▷": "klappen/"
+ "2022 – 2025<span class=\"career__kind\">Education</span>": ""
 }

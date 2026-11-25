@@ -128,31 +128,36 @@
 @media (max-width: 640px) { .hero__contact { display: inline-flex; } }
 
 /* ---------- Career path (WIP): one node per step, each one a stop on the exec rail ---------- */
-.career__list { list-style: none; margin: 0 auto; padding: 0; display: grid; gap: 18px; max-width: 820px; }
-.career__item .node__head { flex-wrap: wrap; row-gap: 2px; }
-.career__role { min-width: 0; }
-.career__item .node__body { padding: 14px 20px 16px; }
-.career__org { margin: 0; font: 500 13px var(--mono); color: var(--c); }
-.career__org a { color: inherit; border-bottom: 1px solid color-mix(in srgb, var(--c) 40%, transparent); }
-.career__org a:hover { border-bottom-color: var(--c); }
-.career__line { margin: 6px 0 0; color: var(--text); font-size: 15px; }
+.career__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.career__item { --c: var(--ac); position: relative; display: grid; grid-template-columns: 180px 1fr; gap: 28px; padding: 20px 26px; border: 1px solid var(--line-soft); border-radius: 12px; background: var(--node); transition: border-color .3s, background .3s, box-shadow .4s; }
+.career__item:hover { border-color: var(--line); background: var(--node-2); }
+.career__date { margin: 2px 0 0; display: grid; align-content: start; gap: 8px; font: 500 13px/1.4 var(--mono); color: var(--text-faint); transition: color .4s; }
+.career__kind { justify-self: start; padding: 2px 8px; border: 1px solid var(--line); border-radius: 20px; font-size: 11px; letter-spacing: .06em; color: var(--text-muted); }
+.career__role { margin: 0; font-size: 18px; font-weight: 600; color: var(--text-strong); letter-spacing: -.005em; }
+.career__org { margin: 4px 0 0; font: 500 13px var(--mono); color: var(--text-muted); }
+.career__org a { color: var(--text); border-bottom: 1px solid var(--line); }
+.career__org a:hover { color: var(--text-strong); border-bottom-color: var(--text-muted); }
+.career__line { margin: 10px 0 0; color: var(--text); font-size: 15px; }
 .career__line a { color: var(--text-strong); border-bottom: 1px solid var(--line); }
-.career__more { margin-top: 10px; }
-.career__more summary { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border: 1px solid color-mix(in srgb, var(--c) 45%, var(--line)); border-radius: 20px; font: 500 12px var(--mono); color: var(--c); cursor: pointer; list-style: none; user-select: none; transition: background .2s, border-color .2s; }
+.career__more { margin-top: 12px; }
+.career__more summary { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 20px; font: 500 12px var(--mono); color: var(--text-muted); cursor: pointer; list-style: none; transition: color .2s, border-color .2s, background .2s; }
 .career__more summary::-webkit-details-marker { display: none; }
 .career__more summary::after { content: "▷"; transition: transform .2s; }
 .career__more[open] summary::after { transform: rotate(90deg); }
-.career__more summary:hover, .career__more summary:focus-visible { background: color-mix(in srgb, var(--c) 14%, transparent); border-color: var(--c); }
+.career__more summary:hover, .career__more summary:focus-visible { color: var(--text-strong); border-color: var(--text-muted); background: #ffffff0a; }
 .career__more p { margin: 10px 0 0; font-size: 14px; color: var(--text-muted); }
-.career__link { display: inline-block; margin-top: 8px; font: 13px var(--mono); color: var(--c); }
-.career__about { display: flex; width: fit-content; margin: 24px auto 0; }
+.career__link { display: inline-block; margin-top: 8px; font: 13px var(--mono); color: var(--ac); }
+.career__about { display: flex; width: fit-content; margin: 24px 0 0; }
+@media (max-width: 720px) {
+  .career__item { grid-template-columns: 1fr; gap: 8px; padding: 18px 18px; }
+  .career__date { grid-auto-flow: column; justify-content: start; align-items: center; gap: 10px; }
+}
 
-/* Juice (WIP): when the rail reaches a career step, its node pops with the pin and its header lights up */
-.career__item .node__head { transition: filter .4s, box-shadow .4s; }
-.career__item.is-reached .node__head { box-shadow: inset 3px 0 0 var(--c); }
-.career__item.is-reached .node__icon { color: var(--c); text-shadow: 0 0 8px var(--c); }
+/* Juice: when the rail reaches a career step, the row pops with its pin and lights up */
+.career__item.is-reached { border-color: color-mix(in srgb, var(--c) 30%, var(--line)); box-shadow: inset 2px 0 0 var(--c); }
+.career__item.is-reached .career__date { color: var(--text-strong); }
 .career__item.is-hit { animation: career-pop .55s cubic-bezier(.34, 1.8, .64, 1) .08s; }
-.career__item.is-hit .node__head { animation: career-flash .7s ease-out .08s; }
-@keyframes career-pop { 0% { transform: none; } 35% { transform: translateX(6px) scale(1.015); } 100% { transform: none; } }
-@keyframes career-flash { 0% { filter: none; } 25% { filter: brightness(1.7); } 100% { filter: none; } }
+.career__item.is-hit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 18%, transparent), transparent 60%); animation: career-flash .8s ease-out .08s both; }
+@keyframes career-pop { 0% { transform: none; } 35% { transform: translateX(6px) scale(1.01); } 100% { transform: none; } }
+@keyframes career-flash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .career__item.is-hit { animation: none; } }
