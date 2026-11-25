@@ -148,9 +148,23 @@
 .career__more p { margin: 10px 0 0; font-size: 14px; color: var(--text-muted); }
 .career__link { display: inline-block; margin-top: 8px; font: 13px var(--mono); color: var(--ac); }
 .career__about { display: flex; width: fit-content; margin: 24px 0 0; }
+.career__item { overflow: hidden; }
+.career__item > * { position: relative; z-index: 1; }
+/* each step has a faint background that says who it is, faded towards the text */
+.career__item::before { content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: min(52%, 520px); background: var(--bg) right center / cover no-repeat; opacity: .2; -webkit-mask-image: linear-gradient(90deg, transparent, #000 65%); mask-image: linear-gradient(90deg, transparent, #000 65%); pointer-events: none; transition: opacity .4s, transform .6s cubic-bezier(.2, .8, .2, 1); }
+.career__item:hover::before { opacity: .34; transform: scale(1.03); }
+.career__item.is-reached::before { opacity: .28; }
+.career__item--teach { --bg: url(../assets/img/career/blueprint.svg); }
+.career__item--wolfpeak { --bg: url(../assets/img/career/wolfpeak-peak.jpg); }
+.career__item--ai { --bg: url(../assets/img/career/ai.svg); }
+.career__item--klappen { --bg: url(../assets/img/career/klappen.jpg); }
+.career__item--fairy { --bg: url(../assets/img/career/fairy-tag.jpg); }
+.career__item--qa { --bg: url(../assets/img/career/qa.svg); }
+.career__item--teach::before, .career__item--ai::before, .career__item--qa::before { background-size: contain; background-position: right 16px center; }
 @media (max-width: 720px) {
   .career__item { grid-template-columns: 1fr; gap: 8px; padding: 18px 18px; }
   .career__date { grid-auto-flow: column; justify-content: start; align-items: center; gap: 10px; }
+  .career__item::before, .career__item.is-reached::before { width: 70%; opacity: .13; }
 }
 
 /* Juice: when the rail reaches a career step, the row pops with its pin and lights up */
