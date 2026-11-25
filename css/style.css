@@ -634,3 +634,11 @@ html.fx-leaving main { opacity: .3; transform: translateY(-14px); filter: blur(3
   ::view-transition-new(root) { animation: fx-fade .4s ease both; }
   @keyframes fx-fade-out { to { opacity: 0; } }
 }
+
+/* Performance on phones and tablets: blur filters are costly to repaint over the animated
+   backgrounds, so touch screens get the same motion without blur (desktop look unchanged). */
+@media (pointer: coarse) {
+  .fx-entry .fx-in, .fx-entry .reveal:not(.fx-done) { filter: none; }
+  html.fx-leaving main { filter: none; }
+  @keyframes fx-vt-out { to { opacity: 0; transform: translateY(-24px) scale(.985); } }
+}

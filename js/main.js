@@ -295,7 +295,7 @@
   let w = 0, h = 0, pulses = [], mx = -1e4, my = -1e4, gx = -1e4, gy = -1e4, prev = 0, nextSpawn = 0;
 
   const size = () => {
-    const dpr = Math.min(2, devicePixelRatio || 1);
+    const dpr = (matchMedia("(pointer: coarse)").matches ? 1 : Math.min(2, devicePixelRatio || 1));
     w = innerWidth; h = innerHeight;
     cv.width = w * dpr; cv.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -893,7 +893,7 @@
   if (!ctx) return;
   let w = 0, h = 0, flakes = [];
   const size = () => {
-    const dpr = Math.min(2, devicePixelRatio || 1);
+    const dpr = (matchMedia("(pointer: coarse)").matches ? 1 : Math.min(2, devicePixelRatio || 1));
     w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const n = Math.round(w * h / (calm ? 26000 : 14000));
     flakes = Array.from({ length: n }, () => ({ x: Math.random() * w, y: Math.random() * h, r: .5 + Math.random() * 1.6, s: 4 + Math.random() * 14, p: Math.random() * 6.28, a: .15 + Math.random() * .35 }));
@@ -939,7 +939,7 @@
     return { x: R() * w, y: R() * h, s: 12 + R() * 30, r: .6 + R() * 1.8, p: R() * 6.28, a: .2 + R() * .45 };
   };
   const size = () => {
-    const dpr = Math.min(2, devicePixelRatio || 1);
+    const dpr = (matchMedia("(pointer: coarse)").matches ? 1 : Math.min(2, devicePixelRatio || 1));
     w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const per = theme === 'flying' ? 160000 : theme === 'klappen' ? 26000 : 16000;
     items = Array.from({ length: Math.max(4, Math.round(w * h / per)) }, make);
@@ -1122,7 +1122,7 @@
   const ctx = cv.getContext('2d');
   if (!ctx) return;
   let w = 0, h = 0, fx = [], running = false, actx = null;
-  const size = () => { const dpr = Math.min(2, devicePixelRatio || 1); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  const size = () => { const dpr = (matchMedia("(pointer: coarse)").matches ? 1 : Math.min(2, devicePixelRatio || 1)); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
   size(); addEventListener('resize', size);
   const R = Math.random;
   const audio = () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; } catch (err) { return null; } };
@@ -1320,7 +1320,7 @@
   const R = Math.random;
   let w = 0, h = 0, wind = [], drones = [], queries = [], actx = null, nextDrone = performance.now() + 2500;
   const size = () => {
-    const dpr = Math.min(2, devicePixelRatio || 1); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const dpr = (matchMedia("(pointer: coarse)").matches ? 1 : Math.min(2, devicePixelRatio || 1)); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     wind = Array.from({ length: Math.round(w * h / 45000) }, () => ({ x: R() * w, y: R() * h, len: 40 + R() * 120, s: 60 + R() * 140, a: .05 + R() * .1, p: R() * 6 }));
   };
   size(); addEventListener('resize', size);
@@ -1433,7 +1433,7 @@
     const n = 10 + (R() * 16 | 0), dir = fromLeft ? 1 : -1;
     return { x: fromLeft ? -120 : w + 120, y: 80 + R() * (h * .7), dir, sp: 22 + R() * 26, p: R() * 6, fish: Array.from({ length: n }, () => ({ ox: (R() - .5) * 110, oy: (R() - .5) * 50, ph: R() * 6, vx: 0, vy: 0, dx: 0, dy: 0, s: .7 + R() * .6 })) };
   };
-  const size = () => { const dpr = Math.min(2, devicePixelRatio || 1); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  const size = () => { const dpr = (matchMedia("(pointer: coarse)").matches ? 1 : Math.min(2, devicePixelRatio || 1)); w = innerWidth; h = innerHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
   size(); addEventListener('resize', size);
   schools = [school(true), school(false)]; schools[0].x = w * .2; schools[1].x = w * .75;
   // jellyfish: two of them, drifting up slowly in the middle of the dive

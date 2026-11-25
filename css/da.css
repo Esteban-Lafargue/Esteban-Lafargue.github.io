@@ -80,3 +80,9 @@ html.da-wolfpeak .stitle__tag { letter-spacing: .12em; font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) { html.da-abyss .dive__light::before, html.da-abyss .dive__light::after { animation-duration: 60s; } }
 .da-fx { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; } /* main.js §22 */
+
+/* Phones and tablets: no backdrop blur behind the panels (costly over the animated background) */
+@media (pointer: coarse) {
+  html.da-abyss .node { -webkit-backdrop-filter: none; backdrop-filter: none; background: #071222eb; }
+  html.da-wolfpeak .node { -webkit-backdrop-filter: none; backdrop-filter: none; background: #111b2ceb; }
+}
