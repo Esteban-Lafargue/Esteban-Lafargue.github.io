@@ -260,6 +260,7 @@
       under the cursor. Low contrast, behind everything, paused when the tab is hidden. */
 (() => {
   // soft mode when the system asks for less motion: slower, fewer pulses, shapes don't spin
+  if (document.documentElement.classList.contains('da')) return; // project pages draw their own world (§21-22)
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const cv = document.createElement('canvas');
   cv.className = 'bg-live';
@@ -1099,13 +1100,16 @@
   const theme = root.dataset.theme;
   const FONTS = { abyss: 'Exo+2:wght@300;500;600', klappen: 'Fredoka:wght@400;500;600', flying: 'Rajdhani:wght@500;600;700', wolfpeak: 'Barlow+Condensed:wght@500;600;700' };
   if (!FONTS[theme]) return;
+  const font = document.createElement('link');
+  font.rel = 'stylesheet'; font.href = `https://fonts.googleapis.com/css2?family=${FONTS[theme]}&display=swap`;
+  document.head.append(font);
+  // da.css is linked in the page head (no flash of the shared grid); fallback for a page that lacks it
+  if (document.querySelector('link[href*="css/da.css"]')) { root.classList.add('da', 'da-' + theme); return; }
   const me = document.querySelector('script[src*="js/main.js"]');
   const css = document.createElement('link');
   css.rel = 'stylesheet'; css.href = new URL('../css/da.css' + (me ? new URL(me.src).search : ''), me ? me.src : location.href).href;
   css.onload = () => root.classList.add('da', 'da-' + theme);
-  const font = document.createElement('link');
-  font.rel = 'stylesheet'; font.href = `https://fonts.googleapis.com/css2?family=${FONTS[theme]}&display=swap`;
-  document.head.append(font, css);
+  document.head.append(css);
 })();
 
 /* 22. Art direction (published 25 Nov 2026): a click on empty space has its own effect and sound on each project page.
