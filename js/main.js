@@ -1024,7 +1024,7 @@
   }
 
   let ctx = null, master = null, on = false, voice = null, frame = null;
-  const VOL = { home: .05, klappen: .07, abyss: .09, flying: .06, wolfpeak: .05 };
+  const VOL = { home: .05, klappen: .045, abyss: .09, flying: .04, wolfpeak: .032 }; // Kläppen, Flying AI, WolfPeak lowered on 26 Nov 2026 (too loud)
   const noise = (kind) => { // white, pink-ish or brown noise buffer, looped
     const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
     let last = 0, b = [0, 0, 0];
@@ -1239,7 +1239,7 @@
     if (theme === 'abyss') { tone(a, 1180 + R() * 120, 1.4, .05); tone(a, 1180, .9, .018, 'sine', .32); tone(a, 1180, .7, .008, 'sine', .64); }
     else if (theme === 'klappen') noiseBurst(a, .22, 2600, 1400, 1.4, .06);
     else if (theme === 'flying') noiseBurst(a, .4, 380, 1700, 1.8, .07);
-    else { const b = [2093, 2349, 2637, 3136][(R() * 4) | 0]; tone(a, b, .5, .03); tone(a, b * 1.5, .35, .015, 'sine', .05); }
+    else { const b = [2093, 2349, 2637, 3136][(R() * 4) | 0]; tone(a, b, .5, .017); tone(a, b * 1.5, .35, .008, 'sine', .05); } // WolfPeak: softer since 26 Nov 2026
   };
   addEventListener('click', (e) => {
     if (e.button !== 0 || getSelection().toString() || (e.target.closest && e.target.closest(SKIP))) return;
