@@ -986,18 +986,42 @@
 
 /* 20. Immersion (published 25 Nov 2026): optional ambient sound, off by default, made by the browser (no audio file).
        Kläppen forest (leaves + birds), Flying AI wind, Abyss underwater (muffled, deeper as you scroll, bubbles),
-       WolfPeak cold wind, other pages a soft pad. The choice follows you from page to page in the tab. */
+       WolfPeak cold wind, other pages a soft pad. The choice follows you from page to page (localStorage).
+       Seamless pages: while the sound plays, a click on an internal link opens the next page in a full-screen frame
+       inside this same document, so the sound never stops; it crossfades to the new page's ambience instead.
+       Inside that frame, this section only draws the button and drives the sound of the page that hosts it. */
 (() => {
   const root = document.documentElement;
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return;
   const fr = root.lang === 'fr';
-  const theme = root.dataset.theme || 'home';
+  const themeOf = (r) => r.dataset.theme || 'home';
+  const ICON = '<svg class="amb__ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path class="amb__w1" d="M15.5 9.2a4 4 0 0 1 0 5.6"/><path class="amb__w2" d="M18 6.8a7.4 7.4 0 0 1 0 10.4"/><path class="amb__x" d="M16 9.5l5 5m0-5l-5 5"/></svg>';
   const btn = document.createElement('button');
   btn.type = 'button'; btn.className = 'amb';
-  const label = (on) => { btn.innerHTML = `<span class="amb__ico" aria-hidden="true">${on ? '🔊' : '🔈'}</span>${fr ? 'Ambiance' : 'Ambience'}<span class="amb__bars" aria-hidden="true"><i></i><i></i><i></i></span>`; btn.setAttribute('aria-pressed', on); btn.classList.toggle('is-on', on); };
+  // built once: re-rendering on click would detach the clicked node, and the page's click effects would no longer see it was the button
+  btn.innerHTML = `${ICON}<span class="amb__txt">${fr ? 'Ambiance' : 'Ambience'}</span><span class="amb__bars" aria-hidden="true"><i></i><i></i><i></i></span>`;
+  btn.setAttribute('aria-label', fr ? 'Son d’ambiance' : 'Ambient sound');
+  const label = (on, armed) => {
+    btn.setAttribute('aria-pressed', on);
+    btn.classList.toggle('is-on', on); btn.classList.toggle('is-armed', !!armed);
+  };
   document.body.append(btn);
-  let ctx = null, master = null, on = false, timers = [];
+  // phones: the button (and the Abyss gauge) step aside while you scroll down, and come back when you scroll up
+  let lastY = scrollY;
+  addEventListener('scroll', () => { const y = scrollY; if (Math.abs(y - lastY) > 12) { root.classList.toggle('hud-away', y > lastY && y > 200); lastY = y; } }, { passive: true });
+
+  // ---- inside the seamless frame: the host document plays the sound ----
+  let host = null; try { host = window.parent !== window && window.parent.__amb ? window.parent.__amb : null; } catch (err) { host = null; }
+  if (host) {
+    const sync = () => label(host.isOn(), host.isArmed());
+    btn.addEventListener('click', () => { host.toggle(); sync(); });
+    host.attach(window, sync); sync();
+    return;
+  }
+
+  let ctx = null, master = null, on = false, voice = null, frame = null;
+  const VOL = { home: .05, klappen: .07, abyss: .09, flying: .06, wolfpeak: .05 };
   const noise = (kind) => { // white, pink-ish or brown noise buffer, looped
     const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
     let last = 0, b = [0, 0, 0];
@@ -1009,87 +1033,149 @@
     }
     const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; return s;
   };
-  const lfo = (target, rate, depth, base) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = rate; g.gain.value = depth; o.connect(g).connect(target); target.value = base; o.start(); };
-  const chirp = (f0, f1, dur, vol) => {
-    const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
-    o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    o.connect(g).connect(master); o.start(t); o.stop(t + dur + .05);
-  };
-  const every = (min, max, fn) => { const go = () => { timers.push(setTimeout(() => { if (on) fn(); go(); }, min + Math.random() * (max - min))); }; go(); };
-  let abyssFilter = null, tens = null;
-  const build = () => {
-    ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+  // one voice = the ambience of one page; it owns its nodes and timers so it can fade out and stop on its own
+  const makeVoice = (theme) => {
+    const v = { theme, out: ctx.createGain(), srcs: [], timers: [], alive: true, filter: null, tens: null };
+    v.out.gain.value = 0; v.out.connect(master);
+    const start = (n) => { n.start(); v.srcs.push(n); return n; };
+    const lfo = (target, rate, depth, base) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = rate; g.gain.value = depth; o.connect(g).connect(target); target.value = base; start(o); };
+    const chirp = (f0, f1, dur, vol) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime;
+      o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g).connect(v.out); o.start(t); o.stop(t + dur + .05);
+    };
+    const every = (min, max, fn) => { const go = () => { v.timers.push(setTimeout(() => { if (!v.alive) return; if (on) fn(); go(); }, min + Math.random() * (max - min))); }; go(); };
     if (theme === 'klappen') {
       const n = noise('pink'), f = ctx.createBiquadFilter(), g = ctx.createGain();
       f.type = 'bandpass'; f.Q.value = .6; lfo(f.frequency, .07, 500, 1400); lfo(g.gain, .11, .25, .55);
-      n.connect(f).connect(g).connect(master); n.start();
+      n.connect(f).connect(g).connect(v.out); start(n);
       every(2500, 7000, () => { const b = 2400 + Math.random() * 1600, k = 1 + (Math.random() * 3 | 0); for (let i = 0; i < k; i++) setTimeout(() => chirp(b, b * 1.35, .09, .05), i * 130); });
     } else if (theme === 'abyss') {
       const n = noise('brown'), f = ctx.createBiquadFilter(), g = ctx.createGain();
-      f.type = 'lowpass'; f.Q.value = 1.5; f.frequency.value = 520; abyssFilter = f; lfo(g.gain, .06, .3, .9);
-      n.connect(f).connect(g).connect(master); n.start();
-      const hum = ctx.createOscillator(), hg = ctx.createGain(); hum.frequency.value = 55; hg.gain.value = .05; hum.connect(hg).connect(master); hum.start();
+      f.type = 'lowpass'; f.Q.value = 1.5; f.frequency.value = 520; v.filter = f; lfo(g.gain, .06, .3, .9);
+      n.connect(f).connect(g).connect(v.out); start(n);
+      const hum = ctx.createOscillator(), hg = ctx.createGain(); hum.frequency.value = 55; hg.gain.value = .05; hum.connect(hg).connect(v.out); start(hum);
       every(1800, 6000, () => { const k = 2 + (Math.random() * 4 | 0); for (let i = 0; i < k; i++) setTimeout(() => { const b = 300 + Math.random() * 500; chirp(b, b * 2.2, .07, .035); }, i * (60 + Math.random() * 80)); });
       // tension layer: two close low tones beat against each other, louder near the bottom of the page
-      tens = ctx.createGain(); tens.gain.value = 0; tens.connect(master);
-      [41, 41.8].forEach((hz) => { const o = ctx.createOscillator(), lp = ctx.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.value = hz; lp.type = 'lowpass'; lp.frequency.value = 160; o.connect(lp).connect(tens); o.start(); });
+      v.tens = ctx.createGain(); v.tens.gain.value = 0; v.tens.connect(v.out);
+      [41, 41.8].forEach((hz) => { const o = ctx.createOscillator(), lp = ctx.createBiquadFilter(); o.type = 'sawtooth'; o.frequency.value = hz; lp.type = 'lowpass'; lp.frequency.value = 160; o.connect(lp).connect(v.tens); start(o); });
       every(7000, 14000, () => { // a distant groan, only when deep
-        if (!tens || tens.gain.value < .15) return;
-        const o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter(), t = ctx.currentTime;
+        if (v.tens.gain.value < .15) return;
+        const o = ctx.createOscillator(), g2 = ctx.createGain(), lp = ctx.createBiquadFilter(), t = ctx.currentTime;
         o.type = 'sawtooth'; o.frequency.setValueAtTime(70, t); o.frequency.exponentialRampToValueAtTime(34, t + 3.5);
-        lp.type = 'lowpass'; lp.frequency.value = 220; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.35 * tens.gain.value, t + 1.2); g.gain.exponentialRampToValueAtTime(.0001, t + 4);
-        o.connect(lp).connect(g).connect(master); o.start(t); o.stop(t + 4.2);
+        lp.type = 'lowpass'; lp.frequency.value = 220; g2.gain.setValueAtTime(0, t); g2.gain.linearRampToValueAtTime(.35 * v.tens.gain.value, t + 1.2); g2.gain.exponentialRampToValueAtTime(.0001, t + 4);
+        o.connect(lp).connect(g2).connect(v.out); o.start(t); o.stop(t + 4.2);
       });
     } else if (theme === 'flying' || theme === 'wolfpeak') {
       const n = noise(theme === 'flying' ? 'pink' : 'white'), f = ctx.createBiquadFilter(), g = ctx.createGain();
       f.type = 'bandpass'; f.Q.value = theme === 'flying' ? 1.2 : 3; lfo(f.frequency, .05, theme === 'flying' ? 350 : 700, theme === 'flying' ? 600 : 1600);
       lfo(g.gain, .09, .3, theme === 'flying' ? .6 : .25);
-      n.connect(f).connect(g).connect(master); n.start();
+      n.connect(f).connect(g).connect(v.out); start(n);
     } else {
-      const f = ctx.createBiquadFilter(); f.type = 'lowpass'; lfo(f.frequency, .04, 250, 700); f.connect(master);
-      [110, 164.8, 220.5, 277.2].forEach((hz, i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = i % 2 ? 'triangle' : 'sine'; o.frequency.value = hz; o.detune.value = (Math.random() - .5) * 12; lfo(g.gain, .03 + i * .017, .05, .07); o.connect(g).connect(f); o.start(); });
+      const f = ctx.createBiquadFilter(); f.type = 'lowpass'; lfo(f.frequency, .04, 250, 700); f.connect(v.out);
+      [110, 164.8, 220.5, 277.2].forEach((hz, i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = i % 2 ? 'triangle' : 'sine'; o.frequency.value = hz; o.detune.value = (Math.random() - .5) * 12; lfo(g.gain, .03 + i * .017, .05, .07); o.connect(g).connect(f); start(o); });
     }
+    v.out.gain.setTargetAtTime(VOL[theme] || .05, ctx.currentTime, .9);
+    v.stop = () => { v.alive = false; v.timers.forEach(clearTimeout); v.out.gain.setTargetAtTime(0, ctx.currentTime, .5); setTimeout(() => { v.srcs.forEach((n) => { try { n.stop(); } catch (err) { /* already stopped */ } }); v.out.disconnect(); }, 3000); };
+    return v;
   };
-  const VOL = { home: .05, klappen: .07, abyss: .09, flying: .06, wolfpeak: .05 };
-  // the choice is remembered (localStorage) until the visitor turns it off, on every page and visit
-  const store = (v) => { try { v ? localStorage.setItem('amb', '1') : localStorage.removeItem('amb'); sessionStorage.removeItem('amb'); } catch (err) { /* private mode */ } };
+  const ensure = () => { if (ctx) return; ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination); };
+  let scrollRatio = () => Math.min(1, scrollY / Math.max(1, root.scrollHeight - innerHeight));
   const depthMix = () => {
-    if (!abyssFilter || !ctx) return;
-    const t = Math.min(1, scrollY / Math.max(1, root.scrollHeight - innerHeight));
-    abyssFilter.frequency.setTargetAtTime(520 - t * 340, ctx.currentTime, .3); // deeper = more muffled
-    if (tens) { const k = Math.min(1, Math.max(0, (t - .62) / .33)); tens.gain.setTargetAtTime(k * k * (3 - 2 * k) * .9, ctx.currentTime, .8); }
+    if (!voice || !voice.filter || !ctx) return;
+    const t = scrollRatio();
+    voice.filter.frequency.setTargetAtTime(520 - t * 340, ctx.currentTime, .3); // deeper = more muffled
+    const k = Math.min(1, Math.max(0, (t - .62) / .33)); voice.tens.gain.setTargetAtTime(k * k * (3 - 2 * k) * .9, ctx.currentTime, .8);
   };
-  const fadeIn = () => { if (ctx && on && ctx.state === 'running') { depthMix(); master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(VOL[theme] || .05, ctx.currentTime, .9); btn.classList.remove('is-armed'); } };
+  const crossfade = (theme) => { if (!ctx) return; if (voice && voice.theme === theme) return; if (voice) voice.stop(); voice = makeVoice(theme); depthMix(); };
+  const fadeIn = () => { if (ctx && on && ctx.state === 'running') { depthMix(); master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(1, ctx.currentTime, .6); label(true); listeners.forEach((f) => f()); } };
+  const listeners = new Set();
+  const store = (v) => { try { v ? localStorage.setItem('amb', '1') : localStorage.removeItem('amb'); sessionStorage.removeItem('amb'); } catch (err) { /* private mode */ } };
   const set = (v) => {
     on = v; label(on); store(on);
-    if (on && !ctx) build();
-    if (!ctx) return;
-    if (on) ctx.resume().then(fadeIn); else master.gain.setTargetAtTime(0, ctx.currentTime, .4);
+    if (on) { ensure(); crossfade(currentTheme()); ctx.resume().then(fadeIn); }
+    else if (ctx) master.gain.setTargetAtTime(0, ctx.currentTime, .4);
+    listeners.forEach((f) => f());
   };
+  let currentTheme = () => themeOf(root);
   btn.addEventListener('click', () => set(!on));
   addEventListener('scroll', depthMix, { passive: true });
-  // leaving the page: a short fade instead of a hard cut (the page transition leaves ~0.4 s)
-  const fadeOut = () => { if (ctx && on) master.gain.setTargetAtTime(0, ctx.currentTime, .09); };
-  document.addEventListener('click', (e) => {
+
+  // ---- seamless navigation: the next pages open in a full-screen frame of this document ----
+  const internal = (a, w) => {
+    if (!a || a.target === '_blank' || a.hasAttribute('download')) return null;
+    const u = new URL(a.getAttribute('href'), w.location.href);
+    if (u.origin !== location.origin || !/(\/|\.html)$/.test(u.pathname)) return null;
+    if (u.pathname === w.location.pathname && (u.hash || u.search === w.location.search)) return null;
+    return u;
+  };
+  // while the frame is up, the host page is out of sight: its animation loops see document.hidden and pause
+  let veiled = false;
+  try { const d = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden'); Object.defineProperty(document, 'hidden', { configurable: true, get: () => veiled || d.get.call(document) }); } catch (err) { /* old browser: loops keep running */ }
+  const show = (w) => { // the frame finished loading a page: sync the address bar, the title and the ambience
+    const d = w.document;
+    document.title = d.title; history.replaceState({ ambFrame: 1 }, '', w.location.href);
+    currentTheme = () => themeOf(d.documentElement);
+    scrollRatio = () => Math.min(1, w.scrollY / Math.max(1, d.documentElement.scrollHeight - w.innerHeight));
+    w.addEventListener('scroll', depthMix, { passive: true });
+    if (on) crossfade(currentTheme());
+    root.classList.remove('fx-leaving'); root.classList.add('has-amb-frame'); veiled = true;
+    try { w.focus(); } catch (err) { /* not focusable yet */ }
+  };
+  const hostTitle = document.title, hostURL = location.href;
+  const closeFrame = () => { // back to the page that hosts the frame
+    if (!frame) return;
+    frame.remove(); frame = null; root.classList.remove('has-amb-frame'); veiled = false;
+    document.title = hostTitle; currentTheme = () => themeOf(root);
+    scrollRatio = () => Math.min(1, scrollY / Math.max(1, root.scrollHeight - innerHeight));
+    if (on) crossfade(currentTheme());
+    document.dispatchEvent(new Event('visibilitychange'));
+  };
+  const openFrame = (url) => {
+    frame = document.createElement('iframe');
+    frame.className = 'amb-frame'; frame.title = document.title; frame.src = url;
+    frame.addEventListener('load', () => { try { show(frame.contentWindow); } catch (err) { location.href = url; } });
+    root.classList.add('fx-leaving'); // the host dims and the loading wire runs while the next page loads
+    history.pushState({ ambFrame: 1 }, '', url); // so that Back returns to this page
+    document.body.append(frame);
+  };
+  addEventListener('popstate', () => { if (frame && location.href === hostURL) closeFrame(); });
+  const onLink = (w) => (e) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const a = e.target.closest && e.target.closest('a[href]');
-    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank' || a.hasAttribute('download')) return;
-    const u = new URL(a.href, location.href);
-    if (u.origin === location.origin && !(u.pathname === location.pathname && u.hash)) fadeOut();
-  }, true);
-  addEventListener('pagehide', fadeOut);
+    if (!a) return;
+    const u = internal(a, w);
+    if (!u) { // leaving the site from inside the frame: open it in the whole tab, not in the frame
+      if (w !== window && a.target !== '_blank' && !a.hasAttribute('download') && /^https?:/.test(a.href) && new URL(a.href).origin !== location.origin) { e.preventDefault(); location.href = a.href; }
+      return;
+    }
+    if (!on || !ctx || ctx.state !== 'running') return; // sound off: normal navigation
+    if (w === window) { e.preventDefault(); e.stopImmediatePropagation(); openFrame(u.href); }
+  };
+  document.addEventListener('click', onLink(window), true);
+  // back / forward on the host page itself (before any frame) stay normal; inside the frame the browser history follows the frame
+
+  window.__amb = {
+    isOn: () => on, isArmed: () => btn.classList.contains('is-armed'),
+    toggle: () => set(!on),
+    attach: (w, sync) => { listeners.add(sync); w.addEventListener('pagehide', () => listeners.delete(sync)); w.document.addEventListener('click', onLink(w), true); },
+  };
+
+  // leaving the site or reloading: a short fade instead of a hard cut
+  addEventListener('pagehide', () => { if (ctx && on) master.gain.setTargetAtTime(0, ctx.currentTime, .09); });
   addEventListener('pageshow', (e) => { if (e.persisted && on && ctx) ctx.resume().then(fadeIn); });
-  // still on from a previous page: start right away if the browser allows it, otherwise on the first click, tap or key
+  // still on from a previous visit: start right away if the browser allows it, otherwise on the first click, tap or key
   let was = false; try { was = localStorage.getItem('amb') === '1' || sessionStorage.getItem('amb') === '1'; } catch (err) { /* private mode */ }
   label(false);
   if (was) {
-    on = true; label(true); store(true); build();
+    on = true; ensure(); crossfade(currentTheme());
     ctx.resume().then(fadeIn).catch(() => {});
     if (ctx.state !== 'running') {
-      btn.classList.add('is-armed');
+      label(true, true);
       const go = (e) => { if (e && e.target && e.target.closest && e.target.closest('.amb')) return; ['pointerdown', 'keydown', 'touchstart'].forEach((t) => removeEventListener(t, go, true)); if (on) ctx.resume().then(fadeIn); };
       ['pointerdown', 'keydown', 'touchstart'].forEach((t) => addEventListener(t, go, true));
-    }
+    } else label(true);
   }
 })();
 

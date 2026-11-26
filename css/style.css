@@ -564,17 +564,31 @@ html.is-aiming, html.is-aiming body, html.is-aiming body *:not(a):not(button) { 
 .wip-badge:hover { background: #f5a524; color: #0b0d12; }
 
 /* Immersion (WIP, main.js §20): ambient sound toggle, bottom right */
+/* Seamless pages while the ambience plays (main.js §20): the next page lives in a full-screen frame */
+.amb-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2147483000; background: var(--bg); color-scheme: dark; }
+.has-amb-frame body { overflow: hidden; }
+.has-amb-frame body > :not(.amb-frame) { visibility: hidden; }
 .amb { position: fixed; right: 18px; bottom: 18px; z-index: 60; display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 20px; background: #070a10e6; backdrop-filter: blur(4px); color: var(--text-muted); font: 500 12px var(--mono); cursor: pointer; transition: border-color .2s, color .2s, box-shadow .2s; }
 .amb:hover, .amb:focus-visible { color: var(--text-strong); border-color: var(--ac); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ac) 18%, transparent); }
 .amb.is-on { color: var(--text-strong); border-color: color-mix(in srgb, var(--pc, var(--ac)) 60%, var(--line)); }
 .amb.is-armed { border-style: dashed; }
-.amb__bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 10px; }
+.amb__ico { width: 16px; height: 16px; flex: none; }
+.amb__ico path:not([fill]) { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.amb__w1, .amb__w2 { display: none; } .amb.is-on .amb__w1, .amb.is-on .amb__w2 { display: inline; } .amb.is-on .amb__x { display: none; }
+.amb__bars { display: none; }
+.amb.is-on .amb__bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 10px; }
 .amb__bars i { width: 2px; height: 3px; border-radius: 1px; background: currentColor; opacity: .5; }
 .amb.is-on .amb__bars i { opacity: 1; background: var(--pc, var(--ac)); animation: amb-bar 1.1s ease-in-out infinite alternate; }
 .amb.is-on .amb__bars i:nth-child(2) { animation-delay: -.4s; } .amb.is-on .amb__bars i:nth-child(3) { animation-delay: -.8s; }
 @keyframes amb-bar { from { height: 3px; } to { height: 10px; } }
 @media (prefers-reduced-motion: reduce) { .amb.is-on .amb__bars i { animation: none; height: 7px; } }
-@media (max-width: 640px) { .amb { right: 10px; bottom: 10px; padding: 6px 10px; } }
+@media (max-width: 640px) {
+  .amb { right: 10px; bottom: 10px; width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 50%; transition: border-color .2s, color .2s, box-shadow .2s, transform .3s, opacity .3s; }
+  .amb__txt, .amb.is-on .amb__bars { display: none; }
+  .amb__ico { width: 20px; height: 20px; }
+  .amb.is-on .amb__ico { color: var(--pc, var(--ac)); }
+  html.hud-away .amb, html.hud-away .depth { transform: translateY(calc(100% + 16px)); opacity: 0; pointer-events: none; }
+}
 
 /* Entrance (public, js §23): boot screen once per session, first-screen cascade, weightier scroll reveals */
 html.fx-pre main { opacity: 0; animation: fx-safety .3s ease 1.6s forwards; } /* set by the head script; fades in by itself if JS never runs */
