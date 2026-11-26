@@ -45,7 +45,8 @@
       if (btn) { btn.disabled = true; btn.querySelector('.yt__label').textContent = document.documentElement.lang === 'fr' ? '[Showreel — lien à venir]' : '[Showreel — link to come]'; }
       return;
     }
-    btn.style.backgroundImage = `url(https://i.ytimg.com/vi/${id}/maxresdefault.jpg)`;
+    // our own thumbnail when the page gives one (maxresdefault does not exist for every video); else YouTube's, which always exists
+    btn.style.backgroundImage = box.dataset.poster ? `url("${box.dataset.poster}")` : `url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)`;
     btn.addEventListener('click', () => {
       const f = document.createElement('iframe');
       f.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
@@ -882,7 +883,9 @@
     root.style.setProperty('--depth', t.toFixed(3));
     const d = Math.round(t * MAX); val.textContent = d ? `−${d} m` : `0 m`;
     // the bottom of the page feels tense: a red pulse at the edges, the gauge turns to a warning, something big passes by
-    const k = Math.min(1, Math.max(0, (t - .62) / .33)), tension = k * k * (3 - 2 * k);
+    // the weight arrives early (Esteban, 26 Nov 2026): already murky on arrival, deep by mid-page, tense from a fifth of the way down
+    const m = Math.min(1, t / .5); root.style.setProperty('--murk', (.3 + .7 * (1 - (1 - m) * (1 - m))).toFixed(3));
+    const k = Math.min(1, Math.max(0, (t - .2) / .45)), tension = k * k * (3 - 2 * k);
     root.style.setProperty('--tension', tension.toFixed(3));
     gauge.classList.toggle('is-danger', tension > .5);
   };
@@ -1085,8 +1088,9 @@
   const depthMix = () => {
     if (!voice || !voice.filter || !ctx) return;
     const t = scrollRatio();
-    voice.filter.frequency.setTargetAtTime(520 - t * 340, ctx.currentTime, .3); // deeper = more muffled
-    const k = Math.min(1, Math.max(0, (t - .62) / .33)); voice.tens.gain.setTargetAtTime(k * k * (3 - 2 * k) * .9, ctx.currentTime, .8);
+    const m = Math.min(1, t / .5), murk = .3 + .7 * (1 - (1 - m) * (1 - m)); // same curve as §16
+    voice.filter.frequency.setTargetAtTime(520 - murk * 340, ctx.currentTime, .3); // deeper = more muffled
+    const k = Math.min(1, Math.max(0, (t - .2) / .45)); voice.tens.gain.setTargetAtTime(k * k * (3 - 2 * k) * .9, ctx.currentTime, .8);
   };
   const crossfade = (theme) => { if (!ctx) return; if (voice && voice.theme === theme) return; if (voice) voice.stop(); voice = makeVoice(theme); depthMix(); };
   const fadeIn = () => { if (ctx && on && ctx.state === 'running') { depthMix(); master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(1, ctx.currentTime, .6); label(true); listeners.forEach((f) => f()); } };

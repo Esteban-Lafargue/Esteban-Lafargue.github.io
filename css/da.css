@@ -16,7 +16,7 @@ html.da .da-layer svg { display: block; width: 100%; height: 100%; }
 /* ---------- Abyss: deep water, light shafts, glass and bioluminescence ---------- */
 html.da-abyss { --da-font: 'Exo 2', var(--font); }
 html.da-abyss body { background: linear-gradient(180deg, #0b3346 0%, #08243a 18%, #071528 45%, #050817 75%, #030209 100%) fixed; }
-html.da-abyss .dive__light { background: none; animation: none; opacity: calc(1 - var(--depth, 0) * 1.8); }
+html.da-abyss .dive__light { background: none; animation: none; opacity: calc(1 - var(--murk, 0) * 1.4); }
 html.da-abyss .dive__light::before, html.da-abyss .dive__light::after { content: ""; position: absolute; top: -10%; height: 90%; width: 70%; left: 15%;
   background: repeating-linear-gradient(100deg, transparent 0 7%, #8fe4ff14 9%, transparent 12%, transparent 19%, #8fe4ff0c 21%, transparent 25%);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 85%); mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
