@@ -56,7 +56,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; color-scheme: dark; } /* dark browser canvas: no white strip when a phone scrolls fast (no html background: it would hide the z-index -1 canvases under body) */
+html { scroll-behavior: smooth; color-scheme: dark; min-height: 100%; } /* dark browser canvas (no white strip on fast phone scroll); min-height so short pages do not repeat the body background under the footer. Never give html its own background: it would hide the z-index -1 canvases under body */
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
