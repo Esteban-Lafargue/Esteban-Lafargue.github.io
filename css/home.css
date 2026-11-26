@@ -86,7 +86,9 @@
   .bento { grid-template-columns: 1fr; gap: 16px; }
   .bento__item--1, .bento__item--2, .bento__item--3, .bento__item--4 { grid-column: auto; }
   .tuto-strip { grid-template-columns: 1fr; }
-  .direct__list a { grid-template-columns: 76px minmax(0, 1fr) auto; padding: 11px 14px; }
+  .direct__list a { grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 14px; } /* label above the value: the full email fits */
+  .direct__list b { grid-column: 1 / -1; }
+  .direct__list span { font-size: 15px; white-space: normal; overflow-wrap: anywhere; }
 }
 .hero2 .proof { grid-column: 1 / -1; margin-top: 24px; }
 
@@ -142,6 +144,7 @@
 .career__more { margin-top: 12px; }
 .career__more summary { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 20px; font: 500 12px var(--mono); color: var(--text-muted); cursor: pointer; list-style: none; transition: color .2s, border-color .2s, background .2s; }
 .career__more summary::-webkit-details-marker { display: none; }
+@media (max-width: 640px) { .career__more summary { position: relative; padding: 6px 14px; } .career__more summary::before { content: ""; position: absolute; inset: -8px -6px; } } /* 44px touch area */
 .career__more summary::after { content: "▷"; transition: transform .2s; }
 .career__more[open] summary::after { transform: rotate(90deg); }
 .career__more summary:hover, .career__more summary:focus-visible { color: var(--text-strong); border-color: var(--text-muted); background: #ffffff0a; }

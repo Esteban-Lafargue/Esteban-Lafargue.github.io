@@ -50,6 +50,10 @@ html.da-klappen .stitle__tag { border-radius: 30px; font-weight: 600; letter-spa
 html.da-klappen .chip, html.da-klappen .btn { border-radius: 30px; }
 html.da-klappen .hero-media { border-radius: 26px; }
 html.da-klappen .hero-media::after { background: linear-gradient(90deg, #120c08f0 0%, #120c08c8 45%, #120c0866 100%), linear-gradient(0deg, #120c08d8 0%, transparent 45%), radial-gradient(120% 90% at 85% 20%, #ff9a4a22, transparent 60%); }
+@media (max-width: 640px) { /* phones: a portrait crop of the loop, away from the HUD counter in the middle, and darker behind the text */
+  html.da-klappen .hero-media video { object-position: 12% 50%; }
+  html.da-klappen .hero-media::after { background: linear-gradient(0deg, #120c08f2 0%, #120c08d9 100%); }
+}
 
 /* ---------- Flying AI: dusk sky, a glowing horizon, cockpit-like HUD panels ---------- */
 html.da-flying { --da-font: 'Rajdhani', var(--font); }

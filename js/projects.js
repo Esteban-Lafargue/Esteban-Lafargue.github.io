@@ -51,7 +51,7 @@
         <div class="card__cat"><span class="chip" style="--c:var(${cat.color})">${esc(CL(cat))}</span>${known(L(p, 'team')) ? `<span class="card__team">${esc(L(p, 'team'))}</span>` : ''}</div>
         <p class="card__pitch">${esc(L(p, 'pitch'))}</p>
         ${known(L(p, 'role')) ? `<p class="card__role">${esc(L(p, 'role'))}</p>` : ''}
-        <span class="card__cta">${ctaMap[p.status] || ''}</span>
+        <span class="card__cta${linked ? '' : ' card__cta--note'}">${ctaMap[p.status] || ''}</span>
       </div>
     </${tag}>`;
   }
@@ -71,7 +71,7 @@
       <div class="card__body">
         <p class="bento__hook">${esc(L(p, 'hook') || L(p, 'pitch'))}</p>
         ${p.metric ? `<p class="bento__metric">${esc(L(p, 'metric'))}</p>` : ''}
-        <span class="card__cta">${(FRL ? CTA_FR : CTA)[p.status] || ''}</span>
+        <span class="card__cta${linked ? '' : ' card__cta--note'}">${(FRL ? CTA_FR : CTA)[p.status] || ''}</span>
       </div>
     </${tag}>`;
   }
@@ -94,7 +94,7 @@
         <p class="card__pitch">${esc(L(p, 'hook') || L(p, 'pitch'))}</p>
         ${p.metric ? `<p class="bento__metric">${esc(L(p, 'metric'))}</p>` : ''}
         ${known(L(p, 'role')) && !String(L(p, 'metric') || '').includes(L(p, 'role')) ? `<p class="card__role">${esc(L(p, 'role'))}</p>` : ''}
-        <span class="card__cta">${(FRL ? CTA_FR : CTA)[p.status] || ''}</span>
+        <span class="card__cta${linked ? '' : ' card__cta--note'}">${(FRL ? CTA_FR : CTA)[p.status] || ''}</span>
       </div>
     </${tag}>`;
   }
@@ -176,6 +176,10 @@
         <ul class="plist">${rest.map((p) => row(p, cats, base, linkBase)).join('')}</ul>
       </section>`;
     wireHover(host);
+    // phones: the chips scroll sideways; a fade on the right edge says there are more, until the end is reached
+    const fl = host.querySelector('.filters');
+    const edge = () => fl.classList.toggle('is-end', fl.scrollLeft + fl.clientWidth >= fl.scrollWidth - 4);
+    fl.addEventListener('scroll', edge, { passive: true }); addEventListener('resize', edge); edge();
     const apply = (f) => {
       host.querySelectorAll('[data-skills]').forEach((el) => { el.hidden = f !== 'all' && !el.dataset.skills.split(' ').includes(f); });
       host.querySelectorAll('.ptier').forEach((t) => { t.hidden = !t.querySelector('[data-skills]:not([hidden])'); });
