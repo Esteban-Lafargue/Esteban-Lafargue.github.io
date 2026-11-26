@@ -31,7 +31,7 @@
           io.unobserve(e.target);
         }
       }
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0 }); // a block reveals as soon as it enters, even a tall one
     live.forEach((el) => io.observe(el));
   } else {
     live.forEach((el) => el.classList.add('is-live'));
@@ -1293,7 +1293,7 @@
         if (first.includes(e.target)) return;
         // already on screen when the page opens (e.g. the demo reel on a tall screen): it joins the end of the
         // first-screen cascade instead of appearing at once, before the title
-        const s = performance.now() - t0 < 700 ? d + early++ * GAP : Math.min(batch, 5) * 110;
+        const s = performance.now() - t0 < 700 ? Math.min(d + early++ * GAP, 900) : Math.min(batch, 3) * 90;
         e.target.style.setProperty('--fx-s', `${s}ms`);
         e.target.classList.add('is-live');
         // once landed, back to its own hover transitions (tilt etc.)
@@ -1302,7 +1302,7 @@
         setTimeout(done, s + 3000);
         batch++; clearTimeout(batchT); batchT = setTimeout(() => { batch = 0; }, 120);
       });
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0 }); // a block reveals as soon as it enters, even a tall one
     document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
     window.fxReveal = (el) => io.observe(el); // project cards are built later by projects.js
   }
