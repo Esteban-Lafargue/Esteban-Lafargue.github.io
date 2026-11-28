@@ -15,9 +15,9 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../../css/style.css?v=107" rel="stylesheet"/>
-<link href="../../css/case.css?v=107" rel="stylesheet"/>
-<link href="../../css/da.css?v=107" rel="stylesheet"/>
+<link href="../../css/style.css?v=108" rel="stylesheet"/>
+<link href="../../css/case.css?v=108" rel="stylesheet"/>
+<link href="../../css/da.css?v=108" rel="stylesheet"/>
 <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}try{var q=location.search,s=sessionStorage,h=document.documentElement;h.classList.add('fx-pre');if('CSSViewTransitionRule' in window){var st=document.createElement('style');st.textContent='@view-transition{navigation:auto}';document.head.appendChild(st);h.classList.add('fx-vt')}if(!s.getItem('booted')&&!h.classList.contains('is-arriving'))h.classList.add('fx-preboot')}catch(e){}</script>
 </head>
 <body>
@@ -152,6 +152,36 @@
 </article>
 </div>
 </section>
+<section aria-labelledby="sandbox-title" data-wip="" hidden="" id="sandbox" style="margin-top:96px">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="sandbox-title">Essayez la requête</span><span class="stitle__rule"></span></h2>
+<p class="lead prose" style="margin:0 0 24px">Déplacez la cible et les obstacles, puis réglez la requête comme le ferait un Designer. Le vaisseau recalcule sa route à chaque tick.</p>
+<div class="node eqsbox reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">◎</span>EQS_FlyingAvoidance<span class="meta">Vue de dessus · un étage</span></div>
+<div class="eqsbox__body">
+<div class="eqsbox__stage">
+<canvas aria-label="Vue de dessus interactive de la requête EQS : déplacez la cible rouge ou les obstacles gris" class="eqsbox__cv"></canvas>
+<div aria-live="polite" class="eqsbox__hud"><span data-eqs="kept">0</span> points gardés · <span data-eqs="cut">0</span> filtrés · meilleur <span data-eqs="best">0.00</span></div>
+<div class="eqsbox__hint">Déplacez la cible ou un obstacle</div>
+</div>
+<form aria-label="Details" class="eqsbox__panel">
+<p class="eqsbox__cat">Générateur · SimpleGrid</p>
+<label class="eqsbox__row"><span>Rayon de la grille</span><input max="11000" min="3000" name="radius" step="500" type="range" value="7000"/><output>7000</output></label>
+<label class="eqsbox__row"><span>Espacement des points</span><input max="3000" min="1000" name="spacing" step="250" type="range" value="2000"/><output>2000</output></label>
+<label class="eqsbox__row"><span>Distance de départ</span><input max="8000" min="0" name="start" step="500" type="range" value="4000"/><output>4000</output></label>
+<p class="eqsbox__cat">Filtre · sphere trace</p>
+<label class="eqsbox__row"><span>Rayon du trace</span><input max="3000" min="250" name="trace" step="250" type="range" value="1500"/><output>1500</output></label>
+<p class="eqsbox__cat">Scores</p>
+<label class="eqsbox__row"><span>Distance à la cible <small>plus près</small></span><input max="2" min="0" name="wTarget" step="0.1" type="range" value="1"/><output>×1.0</output></label>
+<label class="eqsbox__row"><span>Distance à l’IA <small>plus loin</small></span><input max="2" min="0" name="wSelf" step="0.1" type="range" value="0.5"/><output>×0.5</output></label>
+<p class="eqsbox__cat">Controller · Pawn</p>
+<label class="eqsbox__row"><span>Intervalle de tick</span><input max="1.5" min="0.1" name="tick" step="0.1" type="range" value="0.3"/><output>0.3 s</output></label>
+<label class="eqsbox__row"><span>Banking power</span><input max="2" min="0" name="bank" step="0.1" type="range" value="1"/><output>×1.0</output></label>
+<button class="btn btn--ghost eqsbox__reset" type="reset">Valeurs par défaut</button>
+</form>
+</div>
+<p class="eqsbox__note">Une vue de dessus simplifiée d’un seul étage, dessinée dans le navigateur : même filtre, mêmes deux scores et mêmes poids par défaut que la requête Blueprint. Ce n’est pas le moteur lui-même.</p>
+</div>
+</section>
 <section aria-labelledby="tuning-title" id="tuning" style="margin-top:96px">
 <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="tuning-title">Pensé pour les Designers</span><span class="stitle__rule"></span></h2>
 <p class="lead prose" style="margin:0 0 24px">Tout ce qui façonne le comportement est une variable qu’un Designer peut modifier, sans ouvrir les graphes.</p>
@@ -240,6 +270,7 @@
 <button aria-label="Fermer" data-lb="close" type="button">✕</button>
 </div>
 </dialog>
-<script defer="" src="../../js/main.js?v=107"></script>
+<script defer="" src="../../js/eqs-sandbox.js?v=108"></script>
+<script defer="" src="../../js/main.js?v=108"></script>
 </body>
 </html>

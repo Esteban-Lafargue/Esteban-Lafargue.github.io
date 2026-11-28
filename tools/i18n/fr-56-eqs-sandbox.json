@@ -1,0 +1,23 @@
+{
+ "Try the query": "Essayez la requête",
+ "Drag the target and the obstacles, then tune the query like a Designer would. The ship re-plans on every tick.": "Déplacez la cible et les obstacles, puis réglez la requête comme le ferait un Designer. Le vaisseau recalcule sa route à chaque tick.",
+ "<span aria-hidden=\"true\" class=\"node__icon\">◎</span>EQS_FlyingAvoidance<span class=\"meta\">Top view · one floor</span>": "<span aria-hidden=\"true\" class=\"node__icon\">◎</span>EQS_FlyingAvoidance<span class=\"meta\">Vue de dessus · un étage</span>",
+ "Interactive top view of the EQS query: drag the red target or the grey obstacles": "Vue de dessus interactive de la requête EQS : déplacez la cible rouge ou les obstacles gris",
+ "<span data-eqs=\"kept\">0</span> points kept · <span data-eqs=\"cut\">0</span> filtered · best <span data-eqs=\"best\">0.00</span>": "<span data-eqs=\"kept\">0</span> points gardés · <span data-eqs=\"cut\">0</span> filtrés · meilleur <span data-eqs=\"best\">0.00</span>",
+ "Drag the target or an obstacle": "Déplacez la cible ou un obstacle",
+ "Generator · SimpleGrid": "Générateur · SimpleGrid",
+ "Grid radius": "Rayon de la grille",
+ "Point spacing": "Espacement des points",
+ "Start distance": "Distance de départ",
+ "Filter · sphere trace": "Filtre · sphere trace",
+ "Trace radius": "Rayon du trace",
+ "Scores": "Scores",
+ "Distance to target <small>closer</small>": "Distance à la cible <small>plus près</small>",
+ "Distance to AI <small>farther</small>": "Distance à l’IA <small>plus loin</small>",
+ "Controller · Pawn": "Controller · Pawn",
+ "Tick interval": "Intervalle de tick",
+ "0.3 s": "0.3 s",
+ "Banking power": "Banking power",
+ "Reset defaults": "Valeurs par défaut",
+ "A simplified top view of one floor, drawn in the browser: same filter, same two scores and default weights as the Blueprint query. Not the engine itself.": "Une vue de dessus simplifiée d’un seul étage, dessinée dans le navigateur : même filtre, mêmes deux scores et mêmes poids par défaut que la requête Blueprint. Ce n’est pas le moteur lui-même."
+}
