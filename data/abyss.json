@@ -10,9 +10,13 @@
         "Readability"
       ],
       "text": [
-        "The test creature now swims toward a moving target (here, the player) with smooth turns: its turn rate is limited, it slows down in tight curves, banks into each turn and levels out on straight lines. A yellow outline keeps it readable against the blue water.",
-        "Banking is measured, not predicted. Each frame, I compare the current yaw with last frame's yaw, turn the difference into a turn speed, then into a clamped, smoothed roll applied to the mesh only. Why: the turning logic will run on the server only, while clients just receive the replicated rotation. Measuring what actually happened works the same on every machine.",
+        "The test creature now swims toward a moving target (here, the player) with smooth turns: its turn rate is limited, it slows down in tight curves, **banks into each turn** and levels out on straight lines. A yellow outline keeps it readable against the blue water.",
+        "Banking is **measured, not predicted**. Each frame, I compare the current yaw with last frame's yaw, turn the difference into a turn speed, then into a clamped, smoothed roll applied to the mesh only. Why: the turning logic will run on the server only, while clients just receive the **replicated rotation**. Measuring what actually happened works the same on every machine.",
         "Known limit: it heads straight for its target and ignores obstacles. Avoiding them is the route layer's job (EQS waypoints), not locomotion's."
+      ],
+      "learned": [
+        "A networked visual effect reads the **replicated state**, never the server's logic.",
+        "Avoiding obstacles isn't locomotion's job: **each layer solves one problem**."
       ],
       "video": "assets/video/abyss/2026-11-28.mp4",
       "poster": "assets/img/abyss/2026-11-28.jpg",
@@ -24,9 +28,13 @@
           "Lisibilité"
         ],
         "text": [
-          "La créature de test nage maintenant vers une cible mobile (ici, le joueur) en virant en douceur : sa vitesse de rotation est limitée, elle ralentit dans les virages serrés, s'incline dans chaque courbe et se redresse en ligne droite. Un contour jaune la garde lisible sur le bleu de l'eau.",
-          "L'inclinaison se mesure, elle ne se prédit pas. À chaque frame, je compare le yaw actuel à celui de la frame précédente, j'en tire une vitesse de rotation, puis un roulis borné et lissé, appliqué au mesh seulement. Pourquoi : la logique de rotation ne tournera que sur le serveur, et les clients ne reçoivent que la rotation répliquée. Mesurer ce qui s'est vraiment passé marche pareil sur toutes les machines.",
+          "La créature de test nage maintenant vers une cible mobile (ici, le joueur) en virant en douceur : sa vitesse de rotation est limitée, elle ralentit dans les virages serrés, **s'incline dans chaque courbe** et se redresse en ligne droite. Un contour jaune la garde lisible sur le bleu de l'eau.",
+          "L'inclinaison **se mesure, elle ne se prédit pas**. À chaque frame, je compare le yaw actuel à celui de la frame précédente, j'en tire une vitesse de rotation, puis un roulis borné et lissé, appliqué au mesh seulement. Pourquoi : la logique de rotation ne tournera que sur le serveur, et les clients ne reçoivent que la **rotation répliquée**. Mesurer ce qui s'est vraiment passé marche pareil sur toutes les machines.",
           "Limite connue : elle fonce droit vers sa cible et ignore les obstacles. Les éviter, c'est le rôle de la couche route (waypoints EQS), pas de la locomotion."
+        ],
+        "learned": [
+          "Un effet visuel en réseau se base sur l'**état répliqué**, jamais sur la logique du serveur.",
+          "Éviter les obstacles n'est pas le rôle de la locomotion : **chaque couche règle un seul problème**."
         ]
       }
     },
@@ -40,8 +48,11 @@
       ],
       "text": [
         "First playable piece: the player swims in 3D in first person, towards where the camera looks, with ascend, descend and sprint, on keyboard and mouse as well as gamepad. Every speed is a tuning variable, and the player spawns directly in swimming mode.",
-        "Biggest decision of the week: creature navigation is split into three layers, following Reynolds’ model. A Behavior Tree or State Tree decides what to do, an EQS query picks the next free waypoint towards that goal, and a steering component makes the creature swim there smoothly. EQS alone plans well but zigzags and stops at each point; steering alone is short-sighted. Together, the creature plans ahead and moves like it’s alive.",
+        "Biggest decision of the week: creature navigation is split into **three layers**, following **Reynolds’ model**. A Behavior Tree or State Tree decides what to do, an EQS query picks the next free waypoint towards that goal, and a steering component makes the creature swim there smoothly. EQS alone plans well but zigzags and stops at each point; steering alone is short-sighted. Together, the creature **plans ahead and moves like it’s alive**.",
         "Workflow: no Git LFS. Large third-party packs stay out of the repository, and work flows from a Programmation branch to Develop, then main."
+      ],
+      "learned": [
+        "Planning a path and moving smoothly are **two different problems**: EQS plans, steering moves."
       ],
       "fr": {
         "title": "Lancement : la nage, et une navigation en trois couches",
@@ -52,8 +63,11 @@
         ],
         "text": [
           "Premier élément jouable : le joueur nage en 3D à la première personne, vers là où regarde la caméra, avec montée, descente et sprint, au clavier et à la souris comme à la manette. Chaque vitesse est une variable de réglage, et le joueur apparaît directement en mode nage.",
-          "La grande décision de la semaine : la navigation des créatures est découpée en trois couches, selon le modèle de Reynolds. Un Behavior Tree ou un State Tree décide quoi faire, une requête EQS choisit le prochain point de passage libre vers cet objectif, et un composant de steering fait nager la créature jusque-là en douceur. L’EQS seul planifie bien mais zigzague et s’arrête à chaque point ; le steering seul voit trop court. Ensemble, la créature anticipe et bouge comme un être vivant.",
+          "La grande décision de la semaine : la navigation des créatures est découpée en **trois couches**, selon le **modèle de Reynolds**. Un Behavior Tree ou un State Tree décide quoi faire, une requête EQS choisit le prochain point de passage libre vers cet objectif, et un composant de steering fait nager la créature jusque-là en douceur. L’EQS seul planifie bien mais zigzague et s’arrête à chaque point ; le steering seul voit trop court. Ensemble, la créature **anticipe et bouge comme un être vivant**.",
           "Workflow : pas de Git LFS. Les gros packs tiers restent hors du dépôt, et le travail passe d’une branche Programmation à Develop, puis à main."
+        ],
+        "learned": [
+          "Planifier un chemin et nager en douceur sont **deux problèmes différents** : l’EQS planifie, le steering déplace."
         ]
       }
     },
@@ -64,8 +78,11 @@
         "Planning"
       ],
       "text": [
-        "Before any code: a Technical Design Document and a production plan. 16 weeks at 6 to 8 hours a week, every task between 2 and 4 hours with a clear “done when” criterion, and every milestone ending playable.",
-        "The plan is honest about scope: the minimum viable demo fits in about 113 hours, the target version needs about 21 more. Cut lines and a freeze rule decide what gets dropped, not the deadline."
+        "Before any code: a Technical Design Document and a production plan. 16 weeks at 6 to 8 hours a week, every task between 2 and 4 hours with a clear **“done when”** criterion, and every milestone ending playable.",
+        "The plan is honest about scope: the minimum viable demo fits in about 113 hours, the target version needs about 21 more. **Cut lines** and a **freeze rule** decide what gets dropped, not the deadline."
+      ],
+      "learned": [
+        "Cut lines written **before** the crunch decide what drops, not the deadline."
       ],
       "fr": {
         "title": "Technical design et plan de production",
@@ -73,8 +90,11 @@
           "Planification"
         ],
         "text": [
-          "Avant la moindre ligne de code : un Technical Design Document et un plan de production. 16 semaines à 6 à 8 heures par semaine, chaque tâche entre 2 et 4 heures avec un critère « terminé quand » clair, et chaque jalon qui se termine par une version jouable.",
-          "Le plan est honnête sur le périmètre : la démo minimale tient en 113 heures environ, la version cible en demande 21 de plus. Ce sont des seuils de coupe et une règle de gel qui décident de ce qu’on abandonne, pas la date limite."
+          "Avant la moindre ligne de code : un Technical Design Document et un plan de production. 16 semaines à 6 à 8 heures par semaine, chaque tâche entre 2 et 4 heures avec un critère **« terminé quand »** clair, et chaque jalon qui se termine par une version jouable.",
+          "Le plan est honnête sur le périmètre : la démo minimale tient en 113 heures environ, la version cible en demande 21 de plus. Ce sont des **seuils de coupe** et une **règle de gel** qui décident de ce qu’on abandonne, pas la date limite."
+        ],
+        "learned": [
+          "Des seuils de coupe écrits **avant** le rush décident de ce qui saute, pas la date limite."
         ]
       }
     }

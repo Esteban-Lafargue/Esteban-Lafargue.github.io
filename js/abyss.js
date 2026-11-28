@@ -5,9 +5,11 @@
   const log = document.querySelector('[data-abyss-devlog]');
   if (!road && !log) return;
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  /* **key words** in devlog text become highlights (escaped first, so no HTML can slip in) */
+  const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong class="hl">$1</strong>');
   const FRL = document.documentElement.lang === 'fr';
-  const T = FRL ? { tasks: 'tâches terminées', plan: 'du plan', all: 'tous les jalons', done: 'Terminé', last: 'dernière mise à jour', isDone: ' (terminée)' }
-                : { tasks: 'tasks done', plan: 'of the plan', all: 'all milestones', done: 'Done', last: 'last update', isDone: ' (done)' };
+  const T = FRL ? { tasks: 'tâches terminées', plan: 'du plan', all: 'tous les jalons', done: 'Terminé', last: 'dernière mise à jour', isDone: ' (terminée)', learned: "Ce que j'ai appris" }
+                : { tasks: 'tasks done', plan: 'of the plan', all: 'all milestones', done: 'Done', last: 'last update', isDone: ' (done)', learned: 'What I learned' };
   const fmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString(FRL ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const base = (road || log).dataset.base || (road && road.dataset.base) || '../';
@@ -45,7 +47,8 @@
           <div class="node__head"><span class="node__icon" aria-hidden="true">✎</span>${esc(e.title)}<span class="meta">${fmt(e.date)}</span></div>
           <div class="node__body">
             ${(e.tags || []).length ? `<div class="card__tags">${e.tags.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
-            ${(e.text || []).map((p) => `<p>${esc(p)}</p>`).join('')}
+            ${(e.text || []).map((p) => `<p>${md(p)}</p>`).join('')}
+            ${(e.learned || []).length ? `<aside class="entry__learned"><p class="entry__learned-title"><span aria-hidden="true">💡</span> ${T.learned}</p><ul>${e.learned.map((l) => `<li>${md(l)}</li>`).join('')}</ul></aside>` : ''}
             ${e.video ? `<video class="entry__media" controls preload="none" playsinline ${e.poster ? `poster="${base}${esc(e.poster)}"` : ''}><source src="${base}${esc(e.video)}" type="video/mp4"></video>` : ''}
             ${(e.images || []).map((i) => `<figure class="entry__fig"><img src="${base}${esc(i.src)}" alt="${esc(i.alt || '')}" loading="lazy"><figcaption>${esc(i.caption || '')}</figcaption></figure>`).join('')}
           </div>
