@@ -95,7 +95,17 @@
         ],
         "learned": [
           "Des seuils de coupe écrits **avant** le rush décident de ce qui saute, pas la date limite."
-        ]
+        ],
+        "link": {
+          "href": "tdd/",
+          "label": "Lire le Technical Design Document",
+          "wip": true
+        }
+      },
+      "link": {
+        "href": "tdd/",
+        "label": "Read the Technical Design Document",
+        "wip": true
       }
     }
   ],

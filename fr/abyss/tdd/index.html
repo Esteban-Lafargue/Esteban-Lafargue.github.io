@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+
+<html class="no-js" data-theme="abyss" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Project Abyss — Technical Design Document · Esteban Lafargue</title>
+<meta content="Le Technical Design Document de Project Abyss : architecture, données, IA des créatures, système d’observation, Creature Tuner, outils de debug et risques d’une démo technique sous-marine sous Unreal Engine 5." name="description"/>
+<meta content="noindex" name="robots"/>
+<link href="https://esteban-lafargue.github.io/abyss/tdd/" hreflang="en" rel="alternate"/>
+<link href="https://esteban-lafargue.github.io/fr/abyss/tdd/" hreflang="fr" rel="alternate"/>
+<meta content="#050505" name="theme-color"/>
+<link href="/favicon.ico" rel="icon" sizes="any"/>
+<link href="/assets/img/icons/icon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/assets/img/icons/icon-180.png" rel="apple-touch-icon"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="../../../css/style.css?v=109" rel="stylesheet"/>
+<link href="../../../css/case.css?v=109" rel="stylesheet"/>
+<script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}try{var q=location.search,s=sessionStorage,h=document.documentElement;h.classList.add('fx-pre');if('CSSViewTransitionRule' in window){var st=document.createElement('style');st.textContent='@view-transition{navigation:auto}';document.head.appendChild(st);h.classList.add('fx-vt')}if(!s.getItem('booted')&&!h.classList.contains('is-arriving'))h.classList.add('fx-preboot')}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="nav">
+<div class="nav__inner">
+<a aria-label="Esteban Lafargue, accueil" class="nav__logo" href="../../">EL<span>.</span></a>
+<nav aria-label="Principal" class="nav__links">
+<a href="../../">Accueil</a>
+<a href="../../projects/">Projets</a>
+<a href="../../tutorials/">Tutoriels</a>
+<a href="../../about/">À propos</a>
+<a href="../../contact/">Contact</a>
+<a aria-label="Version anglaise" class="lang" data-lang-switch="" href="../../../abyss/tdd/" hreflang="en" lang="en">EN</a>
+<a class="btn btn--primary" download="CV FR - Technical Designer - Esteban Lafargue.pdf" href="../../../Esteban-Lafargue-CV-FR.pdf">CV · PDF ↓</a>
+</nav>
+</div>
+</header>
+<main class="wrap tdd" id="main" tabindex="-1">
+<section class="case-hero">
+<a class="back" href="../#devlog">◂ Devlog de Project Abyss</a>
+<div class="eyebrow" data-stop="" style="margin-top:18px;--c:var(--ac)"><span aria-hidden="true" class="exec"></span>Project Abyss · Technical design</div>
+<h1>Technical Design Document<span class="dot">.</span></h1>
+<p class="case-hero__pitch">Comment Project Abyss est construit, écrit <em>avant</em> le premier Blueprint : architecture, données, IA des créatures, outils et risques. C’est une version lisible du document vivant que je mets à jour à chaque décision d’architecture.</p>
+<dl class="facts">
+<div><dt>Auteur</dt><dd>Esteban Lafargue</dd></div>
+<div><dt>Moteur</dt><dd>UE 5.8 · Blueprint d’abord</dd></div>
+<div><dt>Version</dt><dd>24 oct. 2026, avant le jalon M0</dd></div>
+<div><dt>Statut</dt><dd>Document vivant</dd></div>
+</dl>
+<p class="tdd-note">Chaque valeur de ce document (vitesses, durées, seuils) est une <b>valeur de départ</b>, réglée en playtest. Elles vivent toutes dans les données, jamais en dur.</p>
+</section>
+<nav aria-label="Sommaire" class="tdd-toc">
+<a href="#overview"><span>01</span>Vue d’ensemble</a>
+<a href="#architecture"><span>02</span>Architecture</a>
+<a href="#data"><span>03</span>Données</a>
+<a href="#ai"><span>04</span>IA des créatures</a>
+<a href="#observation"><span>05</span>Observation</a>
+<a href="#patience"><span>06</span>Patience du joueur</a>
+<a href="#tuner"><span>07</span>Creature Tuner</a>
+<a href="#risks"><span>08</span>Debug et risques</a>
+</nav>
+<!-- 01 -->
+<section aria-labelledby="overview-title" class="tdd-sec" id="overview">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="overview-title">01 · Vue d’ensemble</span><span class="stitle__rule"></span></h2>
+<p class="lead prose">Une démo technique jouable de 10 à 15 minutes. Le joueur est un xénobiologiste qui étudie la faune d’une petite crique sous-marine. Pas d’arme : <b>on progresse en comprenant les créatures</b>. Chaque fiche de recherche demande un scan, puis l’observation de comportements précis. Les fiches complétées ouvrent des zones plus profondes, jusqu’à une rencontre finale avec une présence immense aperçue dans le noir.</p>
+<h3 class="tdd-h3">Les piliers, et comment la technique les sert</h3>
+<div class="lessons">
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Curiosité<span class="meta">« J’ai envie de m’approcher. »</span></div><div class="node__body">Un pilotage 3D crédible, des comportements au repos lisibles, une créature qui vient vers le joueur.</div></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Tension<span class="meta">« Il prévient avant d’agir. »</span></div><div class="node__body">Une vigilance progressive, avec des paliers explicites et des charges annoncées, le tout dans les données.</div></div>
+<div class="node reveal" style="--c:var(--pc)"><div class="node__head"><span aria-hidden="true" class="pin"></span>Lisibilité<span class="meta">« Je comprends toujours. »</span></div><div class="node__body">Chaque comportement observable émet un signal (posture, lumière, son) piloté par les données, avec des outils de debug pour le vérifier.</div></div>
+</div>
+<div class="tdd-split">
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">◎</span>Objectifs pour le portfolio</div>
+<ol class="tdd-list">
+<li>Montrer une <b>IA de créatures</b> crédible, lisible et agréable à regarder.</li>
+<li>Montrer que ces systèmes sont <b>réglables par les Designers sans code</b>, grâce au Creature Tuner.</li>
+<li>Montrer que je travaille <b>dans les frameworks d’Unreal</b> (AI Perception, Behavior Trees, State Tree, EQS, Gameplay Tags, Editor Utility Widgets) au lieu de les réinventer.</li>
+</ol>
+</article>
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">⚠</span>Contraintes</div>
+<ul class="tdd-list">
+<li>Blueprint d’abord. Du C++ seulement si un problème de performance mesuré l’exige, toujours proposé et justifié avant.</li>
+<li>Machine milieu de gamme, textures 1K max. Objectif : 60 fps en 1080p, <b>budget IA ≤ 2 ms</b> sur le game thread.</li>
+<li>Git sans LFS, petits pushs réguliers. Tout en anglais.</li>
+<li>Graphismes : primitives et assets Fab gratuits uniquement. Pas de modélisation, pas de matériaux complexes.</li>
+</ul>
+</article>
+</div>
+<h3 class="tdd-h3">Niveaux de périmètre</h3>
+<ol class="tdd-tiers">
+<li class="reveal"><b>Minimum viable</b><span class="tdd-tiers__tag">Indispensable</span><p>Nage du joueur, navigation 3D, banc de poissons, serpent de mer prédateur, mécanique d’observation et journal de recherche, Creature Tuner, vidéo.</p></li>
+<li class="reveal"><b>Cible</b><p>Créature curieuse, encyclopédie complète, apparition par zone avec EQS, zone abyssale finale avec la Présence abyssale, coups de pouce comportementaux.</p></li>
+<li class="reveal"><b>Bonus</b><p>Cycle jour/nuit qui influence les comportements.</p></li>
+<li class="reveal"><b>Version 2</b><p>Un petit submersible pilotable, après la sortie.</p></li>
+</ol>
+</section>
+<!-- 02 -->
+<section aria-labelledby="architecture-title" class="tdd-sec" id="architecture">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="architecture-title">02 · Architecture</span><span class="stitle__rule"></span></h2>
+<div class="tdd-split">
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">⚙</span>Principes</div>
+<ul class="tdd-list">
+<li><b>Composants plutôt qu’héritage</b> pour les comportements, petits arbres d’héritage pour les acteurs.</li>
+<li><b>Event Dispatchers</b> pour communiquer, <b>interfaces</b> quand plusieurs composants peuvent réagir, appels directs quand la cible est unique.</li>
+<li><b>Pull + push :</b> getters à l’initialisation ou au moment de décider, dispatchers pour les changements.</li>
+<li><b>Données :</b> un Primary Data Asset par espèce, une ligne de Data Table par tâche de recherche, des variables Toolkit pour les réglages globaux.</li>
+<li><b>Les Data Assets sont en lecture seule au runtime.</b> En play-in-editor, ils sont partagés avec l’éditeur : y écrire depuis le gameplay les modifierait pour de bon. Seul le Creature Tuner y écrit, volontairement.</li>
+<li><b>Blueprints défensifs :</b> chaque référence validée, une erreur de script claire en cas d’échec critique, chaque Switch a un Default géré.</li>
+</ul>
+</article>
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">▦</span>Vue d’ensemble</div>
+<div class="tdd-map">
+<div class="tdd-map__box"><b>Framework</b><code>GM_Player</code><code>PC_Player</code> <small>+ journal de recherche</small><code>GS_Player</code> <small>+ registre d’observation</small><code>HUD_Player</code></div>
+<div class="tdd-map__box"><b>Joueur</b><code>BP_Player</code> <small>nage dans l’océan</small><code>AC_Scanner</code><code>AC_ObservationTracker</code><code>AC_DiverTools</code></div>
+<div class="tdd-map__box tdd-map__box--wide"><b>Créatures</b><code>BP_AI_Base</code> <small>Floating Pawn Movement</small><code>AC_CreatureSteering</code><code>AC_Vigilance</code><code>AC_BehaviorScheduler</code><code>AC_ObservableEmitter</code><code>AC_CreatureSignals</code><code>AC_CreatureDebug</code></div>
+<div class="tdd-map__box"><b>Données</b><code>DA_Species_*</code><code>DT_ResearchTasks</code><code>DT_Encyclopedia</code></div>
+<div class="tdd-map__box"><b>Outils · éditeur uniquement</b><code>EUW_CreatureTuner</code><code>DA_TunerChannel</code><code>BP_TunerBridge</code></div>
+</div>
+</article>
+</div>
+<h3 class="tdd-h3">Pourquoi un Behavior Tree ici et un State Tree là</h3>
+<div aria-label="Comparaison Behavior Tree et State Tree" class="tdd-scroll" role="region" tabindex="0">
+<table class="tdd-table">
+<thead><tr><th scope="col"></th><th scope="col">Behavior Tree</th><th scope="col">State Tree</th></tr></thead>
+<tbody>
+<tr><th scope="row">Modèle</th><td>Arbre de priorités, réévalué en continu</td><td>Machine à états hiérarchique avec des transitions explicites</td></tr>
+<tr><th scope="row">Forces</th><td>Réactif (decorators, observer aborts), outils matures, pris en charge par le Gameplay Debugger</td><td>L’état courant est explicite et lisible ; tourne sur n’importe quel Actor via un composant, sans AI Controller</td></tr>
+<tr><th scope="row">Faiblesses</th><td>Les états sont implicites ; le Blackboard est rigide</td><td>Système plus jeune, API encore en évolution d’une version du moteur à l’autre</td></tr>
+</tbody>
+</table>
+</div>
+<div class="pm" style="margin-top:20px">
+<article class="node pm__item reveal" style="--c:var(--pc)">
+<div class="node__head"><span class="n">→</span>Décision</div>
+<dl class="pm__rows">
+<div><dt>Serpent de mer</dt><dd><mark class="hl">Behavior Tree.</mark> Un cerveau réactif, guidé par les priorités : être dissuadé doit interrompre une charge. Les observer aborts l’expriment directement.</dd></div>
+<div><dt>Banc de poissons</dt><dd><mark class="hl">State Tree.</mark> Un groupe avec quelques états clairs (Cruise, Flee, Regroup), et un seul acteur qui n’est pas un pawn. Un composant State Tree lui convient, sans faux AI Controller.</dd></div>
+<div><dt>Règle</dt><dd><mark class="hl">Un seul cerveau par créature.</mark> Mélanger les deux sur une même créature rendrait « qui décide ? » ambigu et plus dur à déboguer.</dd></div>
+</dl>
+</article>
+</div>
+</section>
+<!-- 03 -->
+<section aria-labelledby="data-title" class="tdd-sec" id="data">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="data-title">03 · Données</span><span class="stitle__rule"></span></h2>
+<p class="lead prose">Chaque valeur a une seule place, pour qu’un Designer sache toujours où la régler.</p>
+<div aria-label="Où vit chaque valeur" class="tdd-scroll" role="region" tabindex="0">
+<table class="tdd-table">
+<thead><tr><th scope="col">Type de valeur</th><th scope="col">Où elle vit</th><th scope="col">Exemple</th></tr></thead>
+<tbody>
+<tr><th scope="row">Par espèce</th><td><code>DA_Species_*</code> (Primary Data Asset)</td><td>Vitesse, perception, taux de vigilance</td></tr>
+<tr><th scope="row">Par tâche de recherche</th><td>Ligne de <code>DT_ResearchTasks</code></td><td>Tag observable, durée, portée, angle, indices</td></tr>
+<tr><th scope="row">Texte de l’encyclopédie</th><td>Ligne de <code>DT_Encyclopedia</code></td><td>Sections de fiche débloquées par les tâches</td></tr>
+<tr><th scope="row">Réglages globaux</th><td>Variables Toolkit sur le composant concerné</td><td>Intervalle de vérification de l’observation, vitesse de nage</td></tr>
+</tbody>
+</table>
+</div>
+<div class="tdd-split">
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">◆</span>Data Assets d’espèce<span class="meta">PDA_CreatureSpecies</span></div>
+<div class="node__body">
+<p>Une classe parente, avec des classes enfants pour les blocs propres à une espèce (boids pour le banc, chaîne de segments et charge pour le serpent). Les champs sont rangés par catégorie, et les catégories apparaissent telles quelles dans le Creature Tuner :</p>
+<div class="card__tags"><span class="chip">Identité</span><span class="chip">Visuel</span><span class="chip">Déplacement</span><span class="chip">Navigation</span><span class="chip">Perception</span><span class="chip">Tempérament</span><span class="chip">Distances</span><span class="chip">Fréquences de comportement</span><span class="chip">Signaux</span></div>
+</div>
+</article>
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">≡</span>Un seul pipeline pour les scans et les observations</div>
+<div class="node__body">
+<p>Un <b>scan</b> est simplement une tâche de recherche dont l’observable est permanent (actif tant que la créature est en vie). Scans et observations de comportements partagent <b>un seul pipeline</b> : il n’y a pas de système de scan à part.</p>
+<p>Chaque ligne de tâche contient son tag observable, la durée requise, la portée et l’angle max, les prérequis, la zone qu’elle débloque, et des indices de plus en plus précis avec le temps.</p>
+</div>
+</article>
+</div>
+<h3 class="tdd-h3">Gameplay Tags ou Enums</h3>
+<div class="tdd-split">
+<pre aria-label="Gameplay Tag hierarchy" class="tdd-code"><code>Species.Shoal | .Serpent | .Curious | .Presence
+
+Observable.Shoal.Present | .Flee | .Evade
+Observable.Serpent.Present | .Warning | .Charge
+                   | .HuntShoal | .Deterred
+Observable.Curious.Present | .Inspect | .Startled
+Observable.Presence.Glimpse
+
+Stimulus.Noise.Sprint | Stimulus.Light.Flash
+Stimulus.Impact.Charge
+
+Zone.Shallows | .Kelp | .Ridge | .Abyss</code></pre>
+<div class="prose tdd-aside">
+<p>Des <b>Tags</b> pour les ensembles ouverts que les Designers enrichissent : comportements, observables, stimuli, zones.</p>
+<p>Des <b>Enums</b> pour les ensembles fermés et ordonnés utilisés dans des Switch : les paliers de vigilance (Calm, Suspicious, Warning, Aggressive) et les états de tâche (Locked, Active, Completed).</p>
+</div>
+</div>
+</section>
+<!-- 04 -->
+<section aria-labelledby="ai-title" class="tdd-sec" id="ai">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="ai-title">04 · IA des créatures</span><span class="stitle__rule"></span></h2>
+<h3 class="tdd-h3">Navigation 3D sans NavMesh, en trois couches</h3>
+<p class="prose">Le NavMesh d’Unreal ne couvre que les surfaces où l’on marche : les créatures naviguent donc en trois couches, selon le modèle de Reynolds (choix de l’action, puis du chemin, puis locomotion). C’est la suite de mon projet <a href="../../flying-ai/">Flying AI</a>.</p>
+<figure class="node reveal" style="--c:var(--pc);margin:0">
+<div class="node__head"><span aria-hidden="true" class="node__icon">⇢</span>Trois couches<span class="meta">Les cerveaux fixent des objectifs · le composant déplace</span></div>
+<div class="flow">
+<div class="flow__node"><b>1 · Décision</b><span>Behavior Tree ou State Tree. <em>Que dois-je faire ?</em> Patrouiller, fuir, chasser… donne un objectif.</span></div>
+<span aria-hidden="true" class="flow__arrow"></span>
+<div class="flow__node"><b>2 · Itinéraire</b><span>Requête EQS. <em>Quel est mon prochain point de passage libre vers cet objectif ?</em></span></div>
+<span aria-hidden="true" class="flow__arrow"></span>
+<div class="flow__node"><b>3 · Locomotion</b><span>Composant de steering + Floating Pawn Movement. <em>Comment y nager en douceur ?</em></span></div>
+<figcaption>Les capteurs seuls voient trop court et restent coincés dans les rochers en U. L’EQS seul zigzague et s’arrête à chaque point. L’EQS anticipe ; le steering rend le mouvement vivant.</figcaption>
+</div>
+</figure>
+<div class="tdd-split">
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">⌖</span>Couche 2 : itinéraire EQS<span class="meta">Tests peu coûteux d’abord</span></div>
+<ol class="tdd-list">
+<li><b>Distance à la créature</b> : un filtre, qui garde un anneau entre une distance min et max.</li>
+<li><b>Trace depuis la créature</b> : un filtre, avec une sphère aussi large que la créature plus une marge.</li>
+<li><b>Distance à l’objectif</b> : un score, plus proche est meilleur.</li>
+<li><b>Produit scalaire avec la vitesse actuelle</b> : un score qui récompense la <b>continuité</b>, pour des courbes douces.</li>
+</ol>
+<p class="tdd-small">Le filtre de distance passe en premier, donc moins de points ont besoin d’une trace. Toutes les valeurs viennent des données de l’espèce.</p>
+</article>
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">≋</span>Couche 3 : locomotion, à chaque tick</div>
+<pre class="tdd-code tdd-code--flat"><code>desired  = direction to current waypoint
+smoothed = interp at Turn Rate      ← no instant turns
+speed    = lower in tight curves
+rotation = face velocity, roll from turn rate
+safety   = short sphere trace: hit → re-query now
+progress ≥ 60 % of segment → next waypoint
+           (chains without stopping)
+depth band: goals between floor and surface
+no progress for a while → OnStuck</code></pre>
+</article>
+</div>
+<h3 class="tdd-h3">Perception</h3>
+<p class="prose">AI Perception (vue et ouïe) est réglée sur des valeurs maximales généreuses, et <b>la perception de chaque espèce est filtrée en Blueprint</b> à partir de ses données. Pourquoi : les réglages des sens ne se modifient pas au runtime en Blueprint, alors que le Creature Tuner doit changer la perception en direct. Le sprint du joueur est un événement de bruit ; le flash est envoyé directement via une interface, car la lumière n’est pas un sens de perception.</p>
+<div class="tdd-split">
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">✦</span>Banc de poissons<span class="meta">State Tree</span></div>
+<div class="node__body">
+<p><b>Un seul acteur, 30 poissons en instances</b> d’un même mesh, sans collision. L’acteur est l’ancre : il erre grâce au composant de steering, et les poissons le suivent avec les règles des boids (cohésion, alignement, séparation, attraction vers l’ancre), mises à jour à 30 Hz en un seul lot par image.</p>
+<div aria-label="États du banc" class="tdd-states">
+<span class="tdd-state">Cruise</span><span class="tdd-state__to">menace proche</span><span class="tdd-state">Flee</span><span class="tdd-state__to">calme revenu</span><span class="tdd-state">Regroup</span><span class="tdd-state__to">groupe reformé</span><span class="tdd-state">Cruise</span>
+</div>
+<p class="tdd-small">Les poissons scintillent en argent quand ils fuient, avec un « whoosh ». Le tutoriel : sprinter dans le banc, puis observer la fuite.</p>
+</div>
+</article>
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">∿</span>Serpent de mer<span class="meta">Behavior Tree</span></div>
+<div class="node__body">
+<p><b>Un corps fait de segments qui suivent la trace de la tête.</b> Le corps passe exactement là où la tête est passée : il ne coupe jamais à travers les rochers que la tête a évités. Seule la tête a une collision.</p>
+<div aria-label="Vigilance de 0 à 1 : Calm, Suspicious à partir de 0,25, Warning à partir de 0,5, Aggressive à partir de 0,85" class="tdd-vig" role="img">
+<span style="--w:25%">Calm</span><span style="--w:25%">Suspicious</span><span style="--w:35%">Warning</span><span style="--w:15%">Aggressive</span>
+</div>
+<p class="tdd-small">La vigilance monte tant que le joueur est sur son territoire (plus vite s’il est proche) et avec le bruit du sprint, puis redescend. Un flash le dissuade.</p>
+</div>
+</article>
+</div>
+<div aria-label="Behavior Tree du serpent de mer" class="tdd-scroll" role="region" tabindex="0">
+<table class="tdd-table">
+<thead><tr><th scope="col">Priorité</th><th scope="col">Branche</th><th scope="col">Quand</th><th scope="col">Comportement</th><th scope="col">Signal lisible</th></tr></thead>
+<tbody>
+<tr><th scope="row">1</th><td>Retraite</td><td>Dissuadé, ou après une charge</td><td>Fuit vers son antre, vigilance remise à zéro</td><td>Lumière éteinte, retraite rapide</td></tr>
+<tr><th scope="row">2</th><td>Charge</td><td>Aggressive</td><td>Préparation (1,2 s, la tête recule), puis une ruée en ligne droite (vitesse ×3, 2 s max)</td><td>Lumière rouge fixe, grognement</td></tr>
+<tr><th scope="row">3</th><td>Avertir</td><td>Warning</td><td>Fait face au joueur, s’enroule, approche lente</td><td>Lumière rouge pulsée, grondement sourd</td></tr>
+<tr><th scope="row">4</th><td>Chasser le banc</td><td>Comportement prêt</td><td>S’approche du banc et le traverse d’un coup</td><td>Lumière qui baisse, changement de vitesse</td></tr>
+<tr><th scope="row">5</th><td>Patrouille</td><td>Sinon</td><td>Points de patrouille EQS sur son territoire</td><td>Toujours observable</td></tr>
+</tbody>
+</table>
+</div>
+<p class="prose tdd-after">Une charge qui touche repousse le joueur, secoue la caméra et bloque les commandes 1 s. <b>Pas de mort :</b> la punition, c’est perdre sa position et du temps, ce qui garde la démo accessible aux joueurs patients. Trois façons de le dissuader, sans arme : le flasher, rester hors de son territoire, ou s’enfuir en sprintant. Un Warning précède toujours une Charge.</p>
+<div class="pm" style="margin-top:24px">
+<article class="node pm__item reveal" style="--c:var(--pc)">
+<div class="node__head"><span class="n">+</span>Un système, deux échelles<span class="meta">Niveau cible</span></div>
+<dl class="pm__rows">
+<div><dt>Présence abyssale</dt><dd>Pas une vraie IA : un <mark class="hl">passage scripté</mark> le long d’une spline, dans le noir au-delà de la lampe, éclairé seulement par quelques lumières bioluminescentes. Elle réutilise la chaîne de segments du serpent à échelle géante. Montrer qu’un seul système sert à la fois un serpent de 6 m et un léviathan de 150 m est un choix délibéré.</dd></div>
+<div><dt>Signaux lisibles</dt><dd>Un composant de signaux associe chaque observable à une lumière (couleur, intensité, pulsation) et à un son, depuis les données de l’espèce. Un Designer peut changer la façon dont un comportement <mark class="hl">s’annonce</mark> depuis le Creature Tuner, sans code.</dd></div>
+</dl>
+</article>
+</div>
+</section>
+<!-- 05 -->
+<section aria-labelledby="observation-title" class="tdd-sec" id="observation">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="observation-title">05 · Système d’observation</span><span class="stitle__rule"></span></h2>
+<figure class="node reveal" style="--c:var(--pc);margin:0">
+<div class="node__head"><span aria-hidden="true" class="node__icon">◉</span>Flux<span class="meta">Vérifié toutes les 0,1 s</span></div>
+<div class="flow">
+<div class="flow__node"><b>Cerveau de la créature</b><span>Lance un comportement et le déclare observable, par exemple le Warning du serpent.</span></div>
+<span aria-hidden="true" class="flow__arrow"></span>
+<div class="flow__node"><b>Registre</b><span>Garde la courte liste des événements actifs à cet instant, dans le Game State.</span></div>
+<span aria-hidden="true" class="flow__arrow"></span>
+<div class="flow__node"><b>Tracker</b><span>Tant que le joueur maintient le mode observation : portée, angle, ligne de vue, puis la progression s’accumule.</span></div>
+<span aria-hidden="true" class="flow__arrow"></span>
+<div class="flow__node"><b>Journal de recherche</b><span>Valide la tâche, débloque les zones, prévient le HUD.</span></div>
+</div>
+</figure>
+<div class="tdd-split">
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">?</span>Pourquoi un registre</div>
+<div class="node__body"><p>Le tracker ne parcourt que les événements <b>actifs à cet instant</b> (en général 1 à 5), au lieu de chercher dans tous les acteurs toutes les 0,1 s, ou d’utiliser un overlap qui ignore ce qui est vraiment observable. Les émetteurs poussent, le tracker tire une courte liste. Il vit sur le Game State car des subsystems demanderaient du C++.</p></div>
+</article>
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">♥</span>Tolérant par conception</div>
+<div class="node__body"><p>Si la cible est perdue : <b>0,5 s de grâce</b>, puis la progression <b>redescend lentement</b>, jamais de remise à zéro instantanée. Les valeurs du tutoriel sont généreuses (angle de 25°, 2 s).</p></div>
+</article>
+</div>
+</section>
+<!-- 06 -->
+<section aria-labelledby="patience-title" class="tdd-sec" id="patience">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="patience-title">06 · Patience du joueur</span><span class="stitle__rule"></span></h2>
+<p class="lead prose">Une démo où l’on observe des créatures peut vite devenir lente. Ces objectifs sont réglables, et vérifiés en playtest.</p>
+<div class="tdd-split">
+<div aria-label="Objectifs de patience" class="tdd-scroll" role="region" tabindex="0">
+<table class="tdd-table">
+<thead><tr><th scope="col">Cible</th><th scope="col">Mécanisme</th></tr></thead>
+<tbody>
+<tr><th scope="row">Première observation en moins d’1 min</th><td>Tutoriel déclenché par le joueur, banc visible dès le départ, indice précis tout de suite, valeurs généreuses.</td></tr>
+<tr><th scope="row">Chaque tâche suivante en moins de 3 min</th><td>Fréquences de comportement par espèce, indices de plus en plus précis avec le temps, et <b>coups de pouce comportementaux</b> : quand une tâche stagne, les créatures concernées font ce comportement plus souvent.</td></tr>
+<tr><th scope="row">Démo complète en 10 à 15 min</th><td>Le budget temps ci-contre.</td></tr>
+</tbody>
+</table>
+</div>
+<div aria-label="Budget temps" class="tdd-scroll" role="region" tabindex="0">
+<table class="tdd-table">
+<thead><tr><th scope="col">Zone</th><th scope="col">Tâches</th><th scope="col">Budget</th></tr></thead>
+<tbody>
+<tr><th scope="row">Shallows</th><td>Scan du banc, fuite du banc (tutoriel)</td><td>2 min</td></tr>
+<tr><th scope="row">Kelp</th><td>Scan et inspection de la créature curieuse</td><td>3 min</td></tr>
+<tr><th scope="row">Ridge</th><td>Scan du serpent, avertissement, chasse du banc</td><td>6 min</td></tr>
+<tr><th scope="row">Abyss</th><td>Apparition de la présence</td><td>2 min</td></tr>
+<tr><th scope="row">Trajets</th><td>Exploration</td><td>2 min</td></tr>
+<tr class="tdd-table__total"><th scope="row">Total</th><td>8 tâches</td><td>≈ 15 min</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<p class="prose tdd-after">Mesuré en playtests internes : chaque activation et validation de tâche écrit une ligne dans le log (temps, objectif, indices utilisés, tentatives), et un overlay de debug affiche les mêmes données en direct, en rouge quand une tâche dépasse son objectif.</p>
+</section>
+<!-- 07 -->
+<section aria-labelledby="tuner-title" class="tdd-sec" id="tuner">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="tuner-title">07 · Creature Tuner</span><span class="stitle__rule"></span></h2>
+<p class="lead prose">Un Designer choisit une espèce, la règle, la fait apparaître et suit en direct sa perception, sa vigilance et ses événements observables, <b>sans code</b>. C’est la pièce maîtresse de la vidéo de la démo.</p>
+<div class="tdd-split">
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">⚒</span>Fonctionnalités<span class="meta">Editor Utility Widget</span></div>
+<ul class="tdd-list">
+<li><b>Choix de l’espèce</b> depuis l’Asset Registry, classes enfants comprises.</li>
+<li><b>Modifier les valeurs</b> dans une Details View liée au Data Asset : un nouveau champ ajouté à la classe d’espèce apparaît tout seul.</li>
+<li><b>Nouvelle espèce</b> en dupliquant une espèce existante, puis en changeant le mesh et les valeurs.</li>
+<li><b>Faire apparaître en jeu</b> devant la caméra, et <b>appliquer en direct</b> à toutes les créatures de cette espèce.</li>
+<li><b>Suivi en direct</b> : comportement, vigilance, acteurs perçus et vitesse de la créature sélectionnée, environ 5 fois par seconde.</li>
+<li><b>Calques de debug</b> : cône de perception, barre de vigilance, trajectoire, points EQS, trace de sécurité, objectif, observables actifs.</li>
+</ul>
+</article>
+<article class="node reveal" style="--c:var(--pc)">
+<div class="node__head"><span aria-hidden="true" class="node__icon">⇄</span>Éditeur ↔ session de jeu</div>
+<div class="node__body">
+<p>Le widget vit dans le <b>monde de l’éditeur</b>, les créatures dans le <b>monde de jeu</b>. Les assets sont partagés entre les deux, donc un <b>Data Asset sert de canal</b> :</p>
+<div class="tdd-bridge">
+<span class="tdd-bridge__end">Creature Tuner<small>monde de l’éditeur</small></span>
+<span class="tdd-bridge__mid"><code>DA_TunerChannel</code><small>référence au pont, jamais sauvegardée</small></span>
+<span class="tdd-bridge__end">Acteur pont<small>monde de jeu · hors build final</small></span>
+</div>
+<p class="tdd-small">Le pont s’inscrit dans le canal au lancement du jeu et s’efface à l’arrêt. La référence n’est jamais sauvegardée : si elle est vide, le widget affiche « Start PIE to spawn ». Ce même partage explique le réglage en direct : la créature en jeu lit l’asset même que la Details View modifie.</p>
+</div>
+</article>
+</div>
+<div class="pm" style="margin-top:24px">
+<article class="node pm__item reveal" style="--c:var(--pc)">
+<div class="node__head"><span class="n">▶</span>Scénario de la vidéo<span class="meta">Cible</span></div>
+<dl class="pm__rows">
+<div><dt>Zéro code</dt><dd>Un Designer duplique la créature curieuse, la renomme <em>Glimmer Ray</em>, change son mesh, la rend plus craintive (la peur monte plus vite, distance d’inspection plus grande) et donne une lumière jaune à son signal d’inspection. Il la fait apparaître en jeu et regarde sa barre de peur et ses signaux réagir au joueur.</dd></div>
+</dl>
+</article>
+</div>
+</section>
+<!-- 08 -->
+<section aria-labelledby="risks-title" class="tdd-sec" id="risks">
+<h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="risks-title">08 · Outils de debug et risques</span><span class="stitle__rule"></span></h2>
+<p class="prose">À la demande, chaque créature dessine son cône de perception (valeurs de l’espèce), sa barre et son palier de vigilance, sa trajectoire, ses points EQS actuel et suivant, sa trace de sécurité (verte si libre, rouge si touchée), son objectif et ses observables actifs. Le Gameplay Debugger couvre les Behavior Trees, la perception et l’EQS ; le Visual Logger permet de revoir une charge après coup. Le dessin de debug est coupé dans les builds finaux.</p>
+<div aria-label="Principaux risques" class="tdd-scroll" role="region" tabindex="0">
+<table class="tdd-table tdd-table--risks">
+<thead><tr><th scope="col">Risque</th><th scope="col">Impact</th><th scope="col">Parade</th></tr></thead>
+<tbody>
+<tr><th scope="row">Coût en Blueprint de 30 boids (≈ 435 paires de voisins par mise à jour)</th><td>Chutes de framerate</td><td>Mise à jour fixe à 30 Hz, instances mises à jour par lot, un tiers des poissons par image, profilage avec Unreal Insights. Le <b>seul cas valable pour du C++</b>, proposé seulement si les mesures dépassent le budget.</td></tr>
+<tr><th scope="row">Réglages de perception non modifiables au runtime en Blueprint</th><td>Le Tuner ne peut pas régler la perception</td><td>Valeurs max dans la config, filtrées en Blueprint depuis les données de l’espèce.</td></tr>
+<tr><th scope="row">Communication éditeur ↔ jeu pour le Tuner</th><td>Pièce maîtresse bloquée</td><td>Un prototype tôt, et le pont par asset partagé. Repli : régler dans l’éditeur, faire apparaître avec une touche de debug.</td></tr>
+<tr><th scope="row">Prise en main du State Tree, changements d’API</th><td>Banc de poissons en retard</td><td>Banc limité à 3 états, temps borné. Repli : une machine à états par Enum, même logique.</td></tr>
+<tr><th scope="row">Zigzags, créatures coincées dans les rochers</th><td>IA peu crédible</td><td>Navigation en trois couches, score de continuité, requêtes enchaînées, trace de sécurité, détection de blocage, niveaux de test en greybox (mur, piège en U, forêt de colonnes).</td></tr>
+<tr><th scope="row">Patience du joueur</th><td>Le joueur abandonne</td><td>Indices, coups de pouce, fréquences, métriques, un playtest à chaque jalon.</td></tr>
+<tr><th scope="row">Périmètre vs temps hebdo variable</th><td>Démo inachevée</td><td>Le minimum viable d’abord, des jalons toujours jouables, des seuils de coupe explicites dans le plan.</td></tr>
+<tr><th scope="row">Corps du serpent qui traverse les rochers</th><td>Problèmes visuels</td><td>Un corps qui suit la trace de la tête, des segments sans collision.</td></tr>
+<tr><th scope="row">Prédateur illisible</th><td>Charges injustes</td><td>Délais d’annonce dans les données, signaux par palier, un Warning toujours avant une Charge.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section aria-labelledby="contact-title" class="contact">
+<div>
+<div class="eyebrow" data-stop="" style="--c:var(--ac)"><span aria-hidden="true" class="exec"></span>Event OnContact</div>
+<h2 id="contact-title">Envie de le voir grandir ? Suivez le devlog<span class="dot">.</span></h2>
+</div>
+<div class="contact__links">
+<a class="link-pill" href="../#devlog">Devlog de Project Abyss <span>↗</span></a>
+<a class="link-pill" href="../../contact/">Envoyer un message <span>↗</span></a>
+<a class="link-pill" href="https://www.linkedin.com/in/esteban-lafargue/">LinkedIn <span>↗</span></a>
+</div>
+</section>
+<footer class="footer">
+<span>© 2026 Esteban Lafargue</span>
+<span>Fait main · sans framework · hébergé sur GitHub Pages</span>
+</footer>
+</main>
+<script defer="" src="../../../js/main.js?v=109"></script>
+</body>
+</html>

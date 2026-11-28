@@ -43,6 +43,8 @@
     }
     if (log) {
       // the newest entry wears a small "New" badge for 14 days after its date
+      // a link marked "wip" (unfinished page) only shows in WIP mode (?wip), like [data-wip][hidden] elements
+      const isWip = () => { try { return document.documentElement.classList.contains('is-wip') || sessionStorage.getItem('wip') === '1'; } catch (err) { return false; } };
       const isFresh = (d) => (Date.now() - new Date(d + 'T12:00:00')) / 864e5 < 14;
       log.innerHTML = (data.devlog || []).map((e0, i) => { const e = FRL && e0.fr ? { ...e0, ...e0.fr } : e0; return `
         <article class="node entry reveal is-live" style="--c:var(--pc, var(--ac))">
@@ -50,6 +52,7 @@
           <div class="node__body">
             ${(e.tags || []).length ? `<div class="card__tags">${e.tags.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
             ${(e.text || []).map((p) => `<p>${md(p)}</p>`).join('')}
+            ${e.link && (!e.link.wip || isWip()) ? `<p class="entry__link"${e.link.wip ? ' data-wip' : ''}><a class="btn btn--ghost" href="${esc(e.link.href)}">${esc(e.link.label)} ▷</a></p>` : ''}
             ${(e.learned || []).length ? `<aside class="entry__learned"><p class="entry__learned-title"><span aria-hidden="true">💡</span> ${T.learned}</p><ul>${e.learned.map((l) => `<li>${md(l)}</li>`).join('')}</ul></aside>` : ''}
             ${e.video ? `<video class="entry__media" controls preload="none" playsinline ${e.poster ? `poster="${base}${esc(e.poster)}"` : ''}><source src="${base}${esc(e.video)}" type="video/mp4"></video>` : ''}
             ${(e.images || []).map((i) => `<figure class="entry__fig"><img src="${base}${esc(i.src)}" alt="${esc(i.alt || '')}" loading="lazy"><figcaption>${esc(i.caption || '')}</figcaption></figure>`).join('')}
