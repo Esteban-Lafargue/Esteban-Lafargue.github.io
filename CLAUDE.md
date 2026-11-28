@@ -17,7 +17,7 @@ le site est en **anglais d'abord**, puis traduit en français dans `/fr/` (gén�
 - Ton : phrases courtes, concrètes ; un recruteur lit en 30 s.
 
 ## Structure
-- Pages EN : `index.html` (accueil), `projects/`, `klappen/`, `klappen/building/`, `wolfpeak/`, `flying-ai/`, `abyss/`, `about/`, `tutorials/`, `contact/`.
+- Pages EN : `index.html` (accueil), `projects/`, `klappen/`, `klappen/building/`, `wolfpeak/`, `flying-ai/`, `abyss/`, `abyss/tdd/` (Technical Design Document d'Abyss, publié le 28 nov. 2026, lien depuis l'entrée de devlog du 24 oct. ; contenu tiré uniquement de `Docs/TDD.md` du projet Abyss), `about/`, `tutorials/`, `contact/`.
 - `fr/…` : **généré, ne jamais modifier à la main.**
 - `css/style.css` (tokens, nav, nodes Blueprint, rail, cartes, survols), `css/case.css` (études de cas, thèmes `[data-theme]`), `css/home.css` (accueil + page contact).
 - `js/main.js` : apparition au scroll, façade YouTube, vidéos au survol, lightbox, **rail d'exécution** (fil à gauche, arrêts sur `.stitle` et `[data-stop]`), formulaire Web3Forms, bouton lecture de la Demo Reel.
