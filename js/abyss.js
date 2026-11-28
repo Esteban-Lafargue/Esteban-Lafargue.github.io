@@ -8,8 +8,8 @@
   /* **key words** in devlog text become highlights (escaped first, so no HTML can slip in) */
   const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<strong class="hl">$1</strong>');
   const FRL = document.documentElement.lang === 'fr';
-  const T = FRL ? { tasks: 'tâches terminées', plan: 'du plan', all: 'tous les jalons', done: 'Terminé', last: 'dernière mise à jour', isDone: ' (terminée)', learned: "Ce que j'ai appris" }
-                : { tasks: 'tasks done', plan: 'of the plan', all: 'all milestones', done: 'Done', last: 'last update', isDone: ' (done)', learned: 'What I learned' };
+  const T = FRL ? { tasks: 'tâches terminées', plan: 'du plan', all: 'tous les jalons', done: 'Terminé', last: 'dernière mise à jour', isDone: ' (terminée)', learned: "Ce que j'ai appris", fresh: 'Nouveau' }
+                : { tasks: 'tasks done', plan: 'of the plan', all: 'all milestones', done: 'Done', last: 'last update', isDone: ' (done)', learned: 'What I learned', fresh: 'New' };
   const fmt = (d) => new Date(d + 'T12:00:00').toLocaleDateString(FRL ? 'fr-FR' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
   const base = (road || log).dataset.base || (road && road.dataset.base) || '../';
@@ -42,9 +42,11 @@
         }).join('')}</ol>`;
     }
     if (log) {
-      log.innerHTML = (data.devlog || []).map((e0) => { const e = FRL && e0.fr ? { ...e0, ...e0.fr } : e0; return `
+      // the newest entry wears a small "New" badge for 14 days after its date
+      const isFresh = (d) => (Date.now() - new Date(d + 'T12:00:00')) / 864e5 < 14;
+      log.innerHTML = (data.devlog || []).map((e0, i) => { const e = FRL && e0.fr ? { ...e0, ...e0.fr } : e0; return `
         <article class="node entry reveal is-live" style="--c:var(--pc, var(--ac))">
-          <div class="node__head"><span class="node__icon" aria-hidden="true">✎</span>${esc(e.title)}<span class="meta">${fmt(e.date)}</span></div>
+          <div class="node__head"><span class="node__icon" aria-hidden="true">✎</span><span class="entry__title">${esc(e.title)}</span>${i === 0 && isFresh(e.date) ? `<span class="entry__new">${T.fresh}</span>` : ''}<span class="meta">${fmt(e.date)}</span></div>
           <div class="node__body">
             ${(e.tags || []).length ? `<div class="card__tags">${e.tags.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
             ${(e.text || []).map((p) => `<p>${md(p)}</p>`).join('')}
@@ -54,6 +56,16 @@
           </div>
         </article>`; }).join('');
     }
+    // juice: when an entry comes on screen, a band of the project colour sweeps across its title once,
+    // then pulls back and leaves a thin underline
+    if (log && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => es.forEach((en) => {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        en.target.classList.add('is-swept');
+      }), { rootMargin: '0px 0px -15% 0px', threshold: 0 });
+      log.querySelectorAll('.entry').forEach((el) => io.observe(el));
+    } else if (log) log.querySelectorAll('.entry').forEach((el) => el.classList.add('is-swept'));
     document.dispatchEvent(new CustomEvent('layout:changed'));
   }).catch(() => {});
 })();
