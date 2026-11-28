@@ -16,8 +16,8 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="../../../css/style.css?v=110" rel="stylesheet"/>
-<link href="../../../css/case.css?v=110" rel="stylesheet"/>
+<link href="../../../css/style.css?v=111" rel="stylesheet"/>
+<link href="../../../css/case.css?v=111" rel="stylesheet"/>
 <script>document.documentElement.classList.replace('no-js', 'js');try{if(sessionStorage.getItem('wipe')){sessionStorage.removeItem('wipe');document.documentElement.classList.add('is-arriving')}}catch(e){}try{var q=location.search,s=sessionStorage,h=document.documentElement;h.classList.add('fx-pre');if('CSSViewTransitionRule' in window){var st=document.createElement('style');st.textContent='@view-transition{navigation:auto}';document.head.appendChild(st);h.classList.add('fx-vt')}if(!s.getItem('booted')&&!h.classList.contains('is-arriving'))h.classList.add('fx-preboot')}catch(e){}</script>
 </head>
 <body>
@@ -82,7 +82,7 @@
 <a class="node tdd-keycard reveal" href="#tuner" style="--c:var(--pc)">
 <span class="tdd-keycard__n">03</span>
 <b>Régler sans code</b>
-<span>Un outil d’éditeur parle à la session de jeu via un <mark class="hl">Data Asset partagé</mark> : on règle une espèce, on la voit réagir en direct.</span>
+<span>Un <mark class="hl">Editor Utility Widget</mark> parle à la session de jeu via un Data Asset partagé : on règle une espèce, on la voit réagir en direct.</span>
 <span class="tdd-keycard__go">Creature Tuner ▷</span>
 </a>
 <a class="node tdd-keycard reveal" href="#ai" style="--c:var(--pc)">
@@ -93,8 +93,8 @@
 </a>
 <a class="node tdd-keycard reveal" href="#observation" style="--c:var(--pc)">
 <span class="tdd-keycard__n">05</span>
-<b>Un registre, pas une recherche</b>
-<span>Les créatures déclarent ce qui est observable maintenant ; le joueur vérifie <mark class="hl">une liste de 1 à 5 événements</mark>, pas tous les acteurs.</span>
+<b>Observer sans chercher</b>
+<span>Une créature qui fait quelque chose d’observable l’ajoute à une <mark class="hl">liste partagée</mark>. Le scanner ne vérifie que cette liste (1 à 5 événements), jamais tous les acteurs.</span>
 <span class="tdd-keycard__go">Observation ▷</span>
 </a>
 <a class="node tdd-keycard reveal" href="#risks" style="--c:var(--pc)">
@@ -175,7 +175,7 @@
 <div class="tdd-more__body">
 <ul class="tdd-list">
 <li><b>Event Dispatchers</b> pour communiquer, <b>interfaces</b> quand plusieurs composants peuvent réagir, appels directs quand la cible est unique.</li>
-<li><b>Pull + push :</b> getters à l’initialisation ou au moment de décider, dispatchers pour les changements.</li>
+<li><b>Lire au moment de décider, annoncer les changements :</b> les valeurs sont lues quand une créature démarre ou prend une décision ; les changements sont annoncés par des Event Dispatchers.</li>
 <li><b>Données :</b> un Primary Data Asset par espèce, une ligne de Data Table par tâche de recherche, des variables Toolkit pour les réglages globaux.</li>
 <li><b>Les Data Assets sont en lecture seule au runtime.</b> En play-in-editor, ils sont partagés avec l’éditeur : y écrire depuis le gameplay les modifierait pour de bon. Seul le Creature Tuner y écrit, volontairement.</li>
 <li><b>Blueprints défensifs :</b> chaque référence validée, une erreur de script claire en cas d’échec critique, chaque Switch a un Default géré.</li>
@@ -287,7 +287,7 @@ no progress for a while → OnStuck</code></pre>
 <!-- 05 -->
 <section aria-labelledby="observation-title" class="tdd-sec" id="observation">
 <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="observation-title">05 · Système d’observation</span><span class="stitle__rule"></span></h2>
-<p class="tdd-key"><span class="tdd-key__tag">Point clé</span>Les créatures <mark class="hl">poussent</mark> ce qui est observable maintenant dans un registre ; le joueur <mark class="hl">tire une courte liste</mark> toutes les 0,1 s au lieu de chercher dans tous les acteurs.</p>
+<p class="tdd-key"><span class="tdd-key__tag">Point clé</span>Quand une créature commence un comportement observable, elle <mark class="hl">l’ajoute à une liste partagée</mark>, et l’en retire quand elle s’arrête. Pendant que le joueur scanne, le jeu <mark class="hl">ne vérifie que cette courte liste</mark> toutes les 0,1 s, jamais tous les acteurs du niveau.</p>
 <figure class="node tdd-fig reveal" style="--c:var(--pc)">
 <div class="node__head"><span aria-hidden="true" class="node__icon">◉</span>Flux<span class="meta">Vérifié toutes les 0,1 s</span></div>
 <div class="flow">
@@ -334,11 +334,11 @@ no progress for a while → OnStuck</code></pre>
 <!-- 07 -->
 <section aria-labelledby="tuner-title" class="tdd-sec" id="tuner">
 <h2 class="stitle" style="--c:var(--pc)"><span class="stitle__tag" id="tuner-title">07 · Creature Tuner</span><span class="stitle__rule"></span></h2>
-<p class="tdd-key"><span class="tdd-key__tag">Point clé</span>Un Designer choisit une espèce, la règle, la fait apparaître et la regarde réagir en direct, <mark class="hl">sans code</mark>. L’éditeur et la session de jeu sont deux mondes, donc <mark class="hl">un Data Asset sert de pont</mark>.</p>
+<p class="tdd-key"><span class="tdd-key__tag">Point clé</span>Le Creature Tuner est un <mark class="hl">Editor Utility Widget</mark> : un Designer choisit une espèce, la règle, la fait apparaître et la regarde réagir en direct, <mark class="hl">sans code</mark>. L’éditeur et la session de jeu sont deux mondes, donc <mark class="hl">un Data Asset sert de pont</mark>.</p>
 <figure class="node tdd-fig reveal" style="--c:var(--pc)">
 <div class="node__head"><span aria-hidden="true" class="node__icon">⇄</span>Éditeur ↔ session de jeu<span class="meta">Editor Utility Widget</span></div>
 <div class="tdd-bridge">
-<span class="tdd-bridge__end"><b>Creature Tuner</b><small>monde de l’éditeur</small></span>
+<span class="tdd-bridge__end"><b>Creature Tuner</b><small>Editor Utility Widget · monde de l’éditeur</small></span>
 <span aria-hidden="true" class="tdd-bridge__wire"></span>
 <span class="tdd-bridge__mid"><code>DA_TunerChannel</code><small>partagé par les deux mondes</small></span>
 <span aria-hidden="true" class="tdd-bridge__wire"></span>
@@ -401,7 +401,7 @@ no progress for a while → OnStuck</code></pre>
 <span>Fait main · sans framework · hébergé sur GitHub Pages</span>
 </footer>
 </main>
-<script defer="" src="../../../js/tdd.js?v=110"></script>
-<script defer="" src="../../../js/main.js?v=110"></script>
+<script defer="" src="../../../js/tdd.js?v=111"></script>
+<script defer="" src="../../../js/main.js?v=111"></script>
 </body>
 </html>

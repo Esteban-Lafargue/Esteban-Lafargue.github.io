@@ -306,7 +306,7 @@
   // ahead and turn (or go back) when the next crossing is covered by text, a card, an image... Now and then
   // a rare golden "critical bug" shows up.
   let bugs = [], nextCrit = performance.now() + 25000 + Math.random() * 20000, bugId = 0;
-  const BLOCK = 'a, button, input, textarea, select, label, video, img, svg, iframe, figure, table, form, .node, .card, p, h1, h2, h3, h4, h5, li, dl, dt, dd, span, small, strong, em, b, blockquote, figcaption, .btn, .nav, .lightbox, .stitle, .chip, .rail, .kills, .loot, .wipe';
+  const BLOCK = 'a, button, input, textarea, select, label, video, img, svg, iframe, figure, table, form, .node, .card, p, h1, h2, h3, h4, h5, li, dl, dt, dd, span, small, strong, em, b, blockquote, figcaption, .btn, .nav, .lightbox, .stitle, .chip, .rail, .kills, .loot, .wipe, summary, details, pre, .tdd-nav';
   const navH = () => { const n = document.querySelector('.nav'); return n ? n.getBoundingClientRect().bottom : 0; };
   const blocked = (x, y) => { // viewport coordinates
     if (x < 6 || x > w - 6 || y < navH() + 6 || y > h - 6) return true;
@@ -593,7 +593,7 @@
     document.addEventListener('pointerleave', () => { mx = my = gx = gy = -1e4; });
   }
   // click on the empty grid: the nearest crossing fires pulses along its four lines
-  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox';
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, summary, details, table, pre, figure, .tdd-nav';
   const hex2rgb = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)).join(',');
   // a very soft synthesized "blip" on grid clicks: notes from a pentatonic scale, slight detune,
   // panned toward the click side, so it never sounds twice the same (Web Audio, no file to load)
@@ -1209,7 +1209,7 @@
   const theme = root.dataset.theme;
   if (!['klappen', 'wolfpeak'].includes(theme)) return; // Flying AI: §23, Abyss: §24
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth, summary, details, table, pre, figure, .tdd-nav';
   const cv = document.createElement('canvas');
   cv.className = 'da-fx'; cv.setAttribute('aria-hidden', 'true');
   document.body.prepend(cv);
@@ -1405,7 +1405,7 @@
   const root = document.documentElement;
   if (root.dataset.theme !== 'flying') return;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb';
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, summary, details, table, pre, figure, .tdd-nav';
   const cv = document.createElement('canvas');
   cv.className = 'da-fx'; cv.setAttribute('aria-hidden', 'true');
   document.body.prepend(cv);
@@ -1513,7 +1513,7 @@
   const root = document.documentElement;
   if (root.dataset.theme !== 'abyss') return;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth';
+  const SKIP = 'a, button, input, textarea, select, label, video, img, .node, .card, p, h1, h2, h3, li, dl, .btn, .nav, .lightbox, .amb, .depth, summary, details, table, pre, figure, .tdd-nav';
   const cv = document.createElement('canvas');
   cv.className = 'da-fx'; cv.setAttribute('aria-hidden', 'true');
   const dv = document.querySelector(".dive"); if (dv) dv.after(cv); else document.body.prepend(cv); // above the dark water of §16
